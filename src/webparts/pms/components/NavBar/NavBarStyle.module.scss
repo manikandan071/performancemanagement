@@ -1,0 +1,21 @@
+
+.optionContainer{
+    margin: 10px 0px 0px 30px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 17px;
+    font-weight: 500;
+    // padding-top: 10px;
+}
+.optionContainer:hover{
+    background-color: #fff;
+    color: "green";
+}
+.seletedOptionContainer{
+    margin: 10px 0px 0px 30px;
+        color: "green";
+        cursor: pointer;
+        font-size: 17px;
+        font-weight: 500;
+        background-color: #fff;
+}

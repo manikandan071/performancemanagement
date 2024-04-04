@@ -1,0 +1,39 @@
+.addCategory{
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 10px ;
+}
+.accordionMain{
+    margin: 0!important;
+}
+.accordionBox{
+    padding: 5px;
+    margin-bottom:"5px";
+    border-radius: 10px;
+}
+.editIcon{
+    cursor: pointer;
+    color:"green";
+    font-size: 17px;
+}
+.submitIcon{
+    cursor: pointer;
+    color:"green";
+    font-size: 20px;
+    margin-right: 10px;
+}
+.cancelIcon{
+    cursor: pointer;
+    color:"red";
+    font-size: 17px;
+}
+.addIcon{
+    margin-right: 10px;
+    color: green;
+    font-size: 20px;
+    cursor: pointer;
+    :hover{
+        background-color: green!important;
+        color: #fff;
+    }
+}
