@@ -13,6 +13,8 @@ const MembersComponent = (props: any) => {
   const[Roles,setRoles] = useState<any[]>([]);
 //   const[mergedArrays,setMergedArrays] = useState<any[]>([]);
 //   console.log(mergedArrays);
+console.log("test");
+
   
   
   const columns = [
