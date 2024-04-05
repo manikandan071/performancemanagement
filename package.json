@@ -13,6 +13,8 @@
     "serve": "fast-serve"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
     "@fluentui/react": "^8.106.4",
     "@microsoft/sp-component-base": "1.18.2",
     "@microsoft/sp-core-library": "1.18.2",
@@ -20,11 +22,14 @@
     "@microsoft/sp-office-ui-fabric-core": "1.18.2",
     "@microsoft/sp-property-pane": "1.18.2",
     "@microsoft/sp-webpart-base": "1.18.2",
+    "@mui/icons-material": "^5.15.15",
+    "@mui/material": "^5.15.15",
     "@pnp/cli-microsoft365": "^7.5.0",
     "@pnp/pnpjs": "^2.14.0",
     "@pnp/sp": "^2.11.0",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "moment": "^2.30.1",
     "primereact": "^10.6.2",
     "react": "17.0.1",
     "react-dom": "17.0.1",

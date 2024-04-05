@@ -7,9 +7,11 @@ import { RxCaretRight } from "react-icons/rx";
 // import { CgClose } from "react-icons/cg";
 // import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import Goals from "./Goals/GoalsComponent";
+import ManagerComponent from "./Manager/ManagerComponent";
 
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
+  console.log(props.context)
 
   //   const urlParams = new URLSearchParams(window.location.search);
   //   const pagename: any = urlParams.get("Page");
@@ -113,7 +115,7 @@ const MainComponent = (props: any) => {
           </div>
         ) : isNavOption === "Manager" ? (
           <div>
-            <h1>Manager</h1>
+            <ManagerComponent ManageContext = {UserEmail}/>
           </div>
         ) : (
           <div>
