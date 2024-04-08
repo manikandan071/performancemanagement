@@ -27,3 +27,6 @@
     padding: 7PX;
     font-size: 0.8125rem !important;
 }
+.p-accordion-content{
+    padding: 0 !important;
+}

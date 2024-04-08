@@ -12,10 +12,9 @@ import Button from "@mui/material/Button";
 import styles from "./EmployeeStyle.module.scss"
 import GoalsComponent from "../Manager/GoalsComponent";
 
-const EmployeeComponent = () => {
+const EmployeeComponent = (props :any) => {
   const [masterData, setmasterData] = useState([{}]);
   const [show, setShow] = useState("AppraisalCycles");
-
   const columns = [
     {
       key: "columns1",
@@ -144,7 +143,7 @@ const EmployeeComponent = () => {
           selectionMode={SelectionMode.none}
         />
       </div> : (
-        show == "GoalsComponent" ? <GoalsComponent/> : ""
+        show == "GoalsComponent" ? <GoalsComponent currentUsermail = {props.currentUserEmail}/> : ""
       )}
      
     </>

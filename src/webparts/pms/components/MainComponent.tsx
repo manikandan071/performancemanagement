@@ -120,7 +120,7 @@ const MainComponent = (props: any) => {
           </div>
         ) : (
           <div>
-            <EmployeeComponent/>
+            <EmployeeComponent currentUserEmail = {UserEmail}/>
           </div>
         )}
       </div>

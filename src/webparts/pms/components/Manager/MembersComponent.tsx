@@ -8,12 +8,12 @@ import {
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
 
+
 const MembersComponent = (props: any) => {
   const currentUser = props.currentUser;
   const currentUserName = props.CurrentUserName;
   const [membersList, setMembersList] = useState<any[]>([]);
-  // const [membersDetails, setMembersDetails] = useState<any[]>([]);
-
+  
   const columns = [
     {
       key: "columns1",
@@ -79,8 +79,7 @@ const MembersComponent = (props: any) => {
           <div>
             <Button
               onClick={() => {
-                props.state("GoalsComponent");
-                // setMembersDetails({});
+                props.state("GoalsComponent",item.Email);             
               }}
               size="small"
             >
