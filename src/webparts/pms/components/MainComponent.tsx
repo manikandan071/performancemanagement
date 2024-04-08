@@ -5,10 +5,11 @@ import { IoIosClose } from "react-icons/io";
 import { RxCaretRight } from "react-icons/rx";
 import Goals from "./Goals/GoalsComponent";
 import ManagerComponent from "./Manager/ManagerComponent";
+import EmployeeComponent from "./Employee/EmployeeComponent";
 
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
-  console.log(props.context)
+  let UserName = props.context.pageContext.user.displayName
 
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
@@ -80,11 +81,11 @@ const MainComponent = (props: any) => {
           </div>
         ) : isNavOption === "Manager" ? (
           <div>
-            <ManagerComponent ManageContext = {UserEmail}/>
+            <ManagerComponent ManageContext = {UserEmail} UserName = {UserName}/>
           </div>
         ) : (
           <div>
-            <h2>Employee</h2>
+            <EmployeeComponent/>
           </div>
         )}
       </div>
