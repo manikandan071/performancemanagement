@@ -21,6 +21,8 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
+import { GiOrganigram } from "react-icons/gi";
+import { PiUserFocusDuotone } from "react-icons/pi";
 import "./GoalsStyles.module.scss";
 import styles from "./GoalsStyles.module.scss";
 import "./goals.css";
@@ -79,7 +81,7 @@ const Goals = () => {
                     name: role,
                     code: role,
                   }))
-                : [{ name: "", code: "" }],
+                : [],
               ID: obj.ID,
               isRowEdit: false,
               isNew: false,
@@ -97,7 +99,7 @@ const Goals = () => {
                         name: role,
                         code: role,
                       }))
-                    : [{ name: "", code: "" }],
+                    : [],
                   ID: obj.ID,
                   isRowEdit: false,
                   isNew: false,
@@ -118,7 +120,7 @@ const Goals = () => {
               : { name: "", code: "" },
             Role: obj.Role
               ? obj.Role.map((role: any) => ({ name: role, code: role }))
-              : [{ name: "", code: "" }],
+              : [],
             isRowEdit: false,
             isNew: false,
           };
@@ -231,7 +233,7 @@ const Goals = () => {
           GoalCategory: categoryHandleObj.newCategory,
           GoalName: "",
           AssignLevel: { name: "", code: "" },
-          Role: { name: "", code: "" },
+          Role: [],
           isRowEdit: true,
           isNew: true,
         });
@@ -304,7 +306,7 @@ const Goals = () => {
             ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
           ) + 1,
         AssignLevel: { name: "", code: "" },
-        Role: { name: "", code: "" },
+        Role: [],
         GoalName: "",
         isRowEdit: true,
         isNew: true,
@@ -319,7 +321,7 @@ const Goals = () => {
             ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
           ) + 1,
         AssignLevel: { name: "", code: "" },
-        Role: { name: "", code: "" },
+        Role: [],
         GoalName: "",
         isRowEdit: true,
         isNew: true,
@@ -381,7 +383,9 @@ const Goals = () => {
     let tempObj = duplicateData[index];
     let addObj: any = {
       AssignLevel: tempObj.AssignLevel.name,
-      Role: tempObj.Role.name,
+      Role: tempObj.Role
+        ? { results: tempObj.Role.map((role: any) => role.name) }
+        : { results: [""] },
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
     };
@@ -391,9 +395,12 @@ const Goals = () => {
         .getByTitle(`HrGoals`)
         .items.add({
           AssignLevel: tempObj.AssignLevel.name,
-          Role: tempObj.Role.name,
+          Role: tempObj.Role
+            ? { results: tempObj.Role.map((role: any) => role.name) }
+            : { results: [""] },
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
+          isDelete: false,
         })
         .then((res) => {
           console.log(res);
@@ -490,7 +497,7 @@ const Goals = () => {
         if (type === "AssignLevel") {
           obj.AssignLevel = value;
           if (value.name == "Organization") {
-            obj.Role = [{ name: "", code: "" }];
+            obj.Role = [];
             return obj;
           } else {
             return obj;
@@ -530,7 +537,14 @@ const Goals = () => {
         className="w-full md:w-14rem"
       />
     ) : (
-      <div style={{ paddingLeft: "15px" }}>{rowData.AssignLevel.name}</div>
+      <div style={{ paddingLeft: "15px" }}>
+        {rowData.AssignLevel.name === "Organization" ? (
+          <GiOrganigram className="roleIcon" />
+        ) : (
+          <PiUserFocusDuotone className="roleIcon" />
+        )}
+        {rowData.AssignLevel.name}
+      </div>
     );
   };
 
@@ -546,13 +560,14 @@ const Goals = () => {
         //   placeholder="Select a Role"
         //   className="w-full md:w-14rem"
         // />
+
         <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
           options={rolesList}
           optionLabel="name"
           display="chip"
-          placeholder="Select Cities"
+          placeholder="Select Roles"
           maxSelectedLabels={3}
           className="w-full md:w-20rem"
         />
@@ -562,7 +577,7 @@ const Goals = () => {
     ) : (
       <div style={{ paddingLeft: "15px" }}>
         {rowData.Role.map((role: any) => (
-          <p>{role.name}</p>
+          <p style={{ margin: "0px" }}>{role.name}</p>
         ))}
       </div>
     );
@@ -735,21 +750,32 @@ const Goals = () => {
                   tableStyle={{ minWidth: "30rem" }}
                 >
                   <Column
+                    className="col1"
                     field="GoalName"
                     header="Goal Name"
+                    style={{ width: "35%" }}
                     body={GoalnameBodyTemplate}
                   ></Column>
                   <Column
+                    className="col2"
                     field="AssignLevel"
                     header="Assign Level"
+                    style={{ width: "20%" }}
                     body={AssignLevelBodyTemplate}
                   ></Column>
                   <Column
+                    className="col3"
                     field="Role"
                     header="Role"
+                    style={{ width: "40%" }}
                     body={RoleBodyTemplate}
                   ></Column>
-                  <Column header="Action" body={ActionBodyTemplate}></Column>
+                  <Column
+                    className="col4"
+                    header="Action"
+                    style={{ width: "5%" }}
+                    body={ActionBodyTemplate}
+                  ></Column>
                 </DataTable>
               </div>
             </AccordionTab>
