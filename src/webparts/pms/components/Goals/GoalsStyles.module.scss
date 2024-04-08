@@ -1,10 +1,7 @@
 .addCategory{
     display: flex;
     justify-content: flex-end;
-    margin: 10px 10px ;
-}
-.accordionMain{
-    margin: 0!important;
+    margin: 10px 0px ;
 }
 .accordionBox{
     padding: 5px;
@@ -15,6 +12,7 @@
     cursor: pointer;
     color:"green";
     font-size: 17px;
+    margin-right: 10px;
 }
 .submitIcon{
     cursor: pointer;
@@ -30,10 +28,7 @@
 .addIcon{
     margin-right: 10px;
     color: green;
-    font-size: 20px;
+    padding: 5px;
+    font-size: 27px;
     cursor: pointer;
-    :hover{
-        background-color: green!important;
-        color: #fff;
-    }
 }

@@ -9,36 +9,52 @@ import {
 } from "primereact/datatable";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
+import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "primereact/resources/primereact.min.css";
+import { Dialog } from "primereact/dialog";
+// import { Toast } from "primereact/toast";
 import { HiPencil } from "react-icons/hi2";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
-import { VscAdd } from "react-icons/vsc";
+import { GrAdd } from "react-icons/gr";
+import { MdDelete } from "react-icons/md";
 import "./GoalsStyles.module.scss";
 import styles from "./GoalsStyles.module.scss";
 import "./goals.css";
 
 const Goals = () => {
-  const [newCategory, setNewCategory] = useState<string>("");
-  const [categories, setCategories] = useState<any[]>([]);
+  // const toast = useRef("");
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [deletedGoals, setDeletedGoals] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
   const [rolesList, setRolesList] = useState<any[]>([{ name: "", code: "" }]);
   const [assignLevelList, setAssignLevelList] = useState<any[]>([
     { name: "", code: "" },
   ]);
-  const [isAddCategory, setIsAddCategory] = useState<Boolean>(false);
+  const [isPopup, setIsPopup] = useState<any>({
+    delPopup: false,
+    delIndex: null,
+  });
+  const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
+    ID: null,
+    newCategory: "",
+    isNew: false,
+    isUpdate: false,
+  });
+
   console.log(
-    categories,
     usersList,
-    rolesList,
-    newCategory,
+    deletedGoals,
+    categories,
     masterData,
-    duplicateData
+    duplicateData,
+    categoryHandleObj,
+    isPopup
   );
 
   const getPreDefinedGoals = () => {
@@ -48,7 +64,9 @@ const Goals = () => {
       .then((res) => {
         let tempArr: any = [];
         let ID = 1;
-        let groupedArray = res.reduce((acc, obj) => {
+        let deletedGoals = res.filter((del) => del.isDelete);
+        let assignedGoals = res.filter((del) => !del.isDelete);
+        let groupedArray = assignedGoals.reduce((acc, obj) => {
           let existingCategory = acc.find(
             (item: any) => item.GoalCategory === obj.GoalCategory
           );
@@ -56,9 +74,15 @@ const Goals = () => {
             existingCategory.values.push({
               GoalName: obj.GoalName,
               AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-              Role: { name: obj.Role, code: obj.Role },
+              Role: obj.Role
+                ? obj.Role.map((role: any) => ({
+                    name: role,
+                    code: role,
+                  }))
+                : [{ name: "", code: "" }],
               ID: obj.ID,
               isRowEdit: false,
+              isNew: false,
             });
           } else {
             acc.push({
@@ -68,9 +92,15 @@ const Goals = () => {
                 {
                   GoalName: obj.GoalName,
                   AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-                  Role: { name: obj.Role, code: obj.Role },
+                  Role: obj.Role
+                    ? obj.Role.map((role: any) => ({
+                        name: role,
+                        code: role,
+                      }))
+                    : [{ name: "", code: "" }],
                   ID: obj.ID,
                   isRowEdit: false,
+                  isNew: false,
                 },
               ],
             });
@@ -78,7 +108,7 @@ const Goals = () => {
           return acc;
         }, []);
         console.log(groupedArray);
-        res.forEach((obj) => {
+        assignedGoals.forEach((obj) => {
           let json = {
             ID: obj.ID ? obj.ID : null,
             GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
@@ -87,13 +117,15 @@ const Goals = () => {
               ? { name: obj.AssignLevel, code: obj.AssignLevel }
               : { name: "", code: "" },
             Role: obj.Role
-              ? { name: obj.Role, code: obj.Role }
-              : { name: "", code: "" },
+              ? obj.Role.map((role: any) => ({ name: role, code: role }))
+              : [{ name: "", code: "" }],
             isRowEdit: false,
+            isNew: false,
           };
           tempArr.push(json);
         });
         let tempaArray = [...tempArr];
+        setDeletedGoals([...deletedGoals]);
         setCategories([...groupedArray]);
         setDuplicateData(tempaArray);
         setMasterData(tempaArray);
@@ -126,7 +158,7 @@ const Goals = () => {
           });
           setRolesList([...rolesArr]);
           setAssignLevelList([
-            { name: "Common", code: "Common" },
+            { name: "Organization", code: "Organization" },
             { name: "Role", code: "Role" },
           ]);
           let userArr: {
@@ -162,6 +194,7 @@ const Goals = () => {
           Role: obj.Role,
           ID: obj.ID,
           isRowEdit: obj.isRowEdit,
+          isNew: obj.isNew,
         });
       } else {
         acc.push({
@@ -174,6 +207,7 @@ const Goals = () => {
               Role: obj.Role,
               ID: obj.ID,
               isRowEdit: obj.isRowEdit,
+              isNew: obj.isNew,
             },
           ],
         });
@@ -184,70 +218,152 @@ const Goals = () => {
     setCategories([...groupedArray]);
   };
 
-  const addNewCategory = () => {
-    // setCategories([...categories, ...newCategory]);
-    duplicateData.push({
-      ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-      GoalCategory: newCategory,
-      GoalName: "",
-      AssignLevel: { name: "", code: "" },
-      Role: { name: "", code: "" },
-      isRowEdit: false,
-    });
-    categoryHandleFun([...duplicateData]), setIsAddCategory(false);
-    setNewCategory("");
+  const addNewCategory = (condition: boolean) => {
+    let tempArr = [...duplicateData];
+    let tempCategoryArr = [...categories];
+    if (condition) {
+      if (categoryHandleObj.newCategory != "") {
+        tempArr.push({
+          ID:
+            Math.max(
+              ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+            ) + 1,
+          GoalCategory: categoryHandleObj.newCategory,
+          GoalName: "",
+          AssignLevel: { name: "", code: "" },
+          Role: { name: "", code: "" },
+          isRowEdit: true,
+          isNew: true,
+        });
+        console.log(tempArr, duplicateData);
+        setDuplicateData([...tempArr]);
+        categoryHandleFun([...tempArr]);
+        setCategoryHandleObj({
+          ...categoryHandleObj,
+          newCategory: "",
+          isNew: false,
+        });
+      } else {
+        alert("please enter category");
+      }
+    } else {
+      let index = tempCategoryArr.findIndex(
+        (ind) => ind.mainID === categoryHandleObj.ID
+      );
+      let tempObj = tempCategoryArr[index];
+      if (tempObj.GoalCategory != categoryHandleObj.newCategory) {
+        console.log("changed");
+        // tempObj.GoalCategory = categoryHandleObj.newCategory;
+        let categoryGolasArr = tempObj.values;
+        categoryGolasArr.forEach((obj: any) => {
+          sp.web.lists
+            .getByTitle(`HrGoals`)
+            .items.getById(obj.ID)
+            .update({ GoalCategory: categoryHandleObj.newCategory })
+            .then((res) => {
+              let duplicateindex = tempArr.findIndex(
+                (temp) => temp.ID === obj.ID
+              );
+              let duplicateObj = tempArr[duplicateindex];
+              tempArr[duplicateindex] = {
+                ...duplicateObj,
+                [`${"GoalCategory"}`]: categoryHandleObj.newCategory,
+              };
+              setCategoryHandleObj({
+                ...categoryHandleObj,
+                newCategory: "",
+                isNew: false,
+                isUpdate: false,
+                ID: null,
+              });
+              setMasterData([...tempArr]);
+              setDuplicateData([...tempArr]);
+              categoryHandleFun([...tempArr]);
+            })
+            .catch((err) => console.log(err));
+        });
+      }
+      console.log(tempObj);
+    }
   };
 
   const addGoalFunction = (ind: number) => {
+    let result = duplicateData.filter(
+      (o) => !masterData.some((v) => v.ID === o.ID)
+    );
+    console.log(result);
+
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
     let data = tempArr[index];
-    // data.values.push({
-    //   ID: Math.max(...masterData.map((o) => o.ID)) + 1,
-    //   AssignLevel: { name: "", code: "" },
-    //   Role: { name: "", code: "" },
-    //   GoalName: "",
-    //   isRowEdit: false,
-    // });
     setDuplicateData([
       ...duplicateData,
       {
-        ID: Math.max(...masterData.map((o) => o.ID)) + 1,
+        ID:
+          Math.max(
+            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+          ) + 1,
         AssignLevel: { name: "", code: "" },
         Role: { name: "", code: "" },
         GoalName: "",
         isRowEdit: true,
+        isNew: true,
         GoalCategory: data.GoalCategory,
       },
     ]);
-    // duplicateData.push({
-    //   ID: Math.max(...masterData.map((o) => o.ID)) + 1,
-    //   AssignLevel: { name: "", code: "" },
-    //   Role: { name: "", code: "" },
-    //   GoalName: "",
-    //   isRowEdit: false,
-    //   GoalCategory: data.GoalCategory,
-    // });
     categoryHandleFun([
       ...duplicateData,
       {
-        ID: Math.max(...masterData.map((o) => o.ID)) + 1,
+        ID:
+          Math.max(
+            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+          ) + 1,
         AssignLevel: { name: "", code: "" },
         Role: { name: "", code: "" },
         GoalName: "",
         isRowEdit: true,
+        isNew: true,
         GoalCategory: data.GoalCategory,
       },
     ]);
-
-    // data.values.push({
-    //   ID: Math.max(...masterData.map((o) => o.ID)) + 1,
-    //   AssignLevel: { name: "", code: "" },
-    //   Role: { name: "", code: "" },
-    //   GoalName: "",
-    //   isRowEdit: false,
-    // });
     console.log(data);
+  };
+
+  const editCategoryFun = (ind: number) => {
+    console.log(ind);
+    setCategoryHandleObj({
+      ...categoryHandleObj,
+      ID: ind + 1,
+      newCategory: categories[ind].GoalCategory,
+      isUpdate: true,
+    });
+  };
+
+  const deleteCategoryFun = () => {
+    let duplicateArray = [...duplicateData];
+    let tempCategoryArr = [...categories];
+    let index = tempCategoryArr.findIndex(
+      (ind) => ind.mainID === isPopup.delIndex + 1
+    );
+    let tempObj = tempCategoryArr[index];
+    let categoryGolasArr = tempObj.values;
+    categoryGolasArr.forEach((obj: any) => {
+      duplicateArray = duplicateArray.filter((fill) => fill.ID !== obj.ID);
+      setDuplicateData([...duplicateArray]);
+      setIsPopup({ ...isPopup, delIndex: null, delPopup: false });
+      setMasterData([...duplicateArray]);
+      categoryHandleFun([...duplicateArray]);
+      sp.web.lists
+        .getByTitle(`HrGoals`)
+        .items.getById(obj.ID)
+        .update({ isDelete: true })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => console.log(err));
+    });
+
+    console.log(isPopup);
   };
 
   const editRowFunction = (data: any) => {
@@ -258,6 +374,68 @@ const Goals = () => {
     console.log(duplicateArr);
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
+  };
+
+  const goalSubmitFun = (data: any) => {
+    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
+    let tempObj = duplicateData[index];
+    let addObj: any = {
+      AssignLevel: tempObj.AssignLevel.name,
+      Role: tempObj.Role.name,
+      GoalName: tempObj.GoalName,
+      GoalCategory: tempObj.GoalCategory,
+    };
+    console.log(tempObj, addObj);
+    if (tempObj.isNew) {
+      sp.web.lists
+        .getByTitle(`HrGoals`)
+        .items.add({
+          AssignLevel: tempObj.AssignLevel.name,
+          Role: tempObj.Role.name,
+          GoalName: tempObj.GoalName,
+          GoalCategory: tempObj.GoalCategory,
+        })
+        .then((res) => {
+          console.log(res);
+          let duplicateArr = [...duplicateData];
+          let index = [...duplicateArr].findIndex(
+            (obj: any) => obj.ID === data.ID
+          );
+          let tempObj = duplicateArr[index];
+          duplicateArr[index] = {
+            ...tempObj,
+            [`${"isRowEdit"}`]: false,
+            [`${"isNew"}`]: false,
+          };
+          console.log(duplicateArr);
+          setDuplicateData([...duplicateArr]);
+          setMasterData([...duplicateArr]);
+          categoryHandleFun([...duplicateArr]);
+        })
+        .catch((err) => console.log(err));
+    } else {
+      sp.web.lists
+        .getByTitle(`HrGoals`)
+        .items.getById(tempObj.ID)
+        .update(addObj)
+        .then((res) => {
+          console.log(res);
+          let duplicateArr = [...duplicateData];
+          let index = [...duplicateArr].findIndex(
+            (obj: any) => obj.ID === data.ID
+          );
+          let tempObj = duplicateArr[index];
+          duplicateArr[index] = {
+            ...tempObj,
+            [`${"isRowEdit"}`]: false,
+          };
+          console.log(duplicateArr);
+          setDuplicateData([...duplicateArr]);
+          setMasterData([...duplicateArr]);
+          categoryHandleFun([...duplicateArr]);
+        })
+        .catch((err) => console.log(err));
+    }
   };
 
   const editCancelFun = (data: any) => {
@@ -272,8 +450,29 @@ const Goals = () => {
     }
     // let tempObj = duplicateArr[index];
     console.log(tempObjMain, duplicateArr);
-    categoryHandleFun([...duplicateArr]);
     setDuplicateData([...duplicateArr]);
+    categoryHandleFun([...duplicateArr]);
+  };
+
+  const goalDeleteFun = (data: any) => {
+    console.log(data);
+
+    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
+    let delObj = duplicateData[index];
+    setDeletedGoals([...deletedGoals, delObj]);
+    console.log(duplicateData);
+    let delArray = duplicateData.filter((items) => items.ID != data.ID);
+    sp.web.lists
+      .getByTitle(`HrGoals`)
+      .items.getById(delObj.ID)
+      .update({ isDelete: true })
+      .then((res) => {
+        console.log(res);
+        categoryHandleFun([...delArray]);
+        setDuplicateData([...delArray]);
+        setMasterData([...delArray]);
+      })
+      .catch((err) => console.log(err));
   };
 
   const onChangeHandleFun = (value: any, type: string, id: number) => {
@@ -290,7 +489,7 @@ const Goals = () => {
         }
         if (type === "AssignLevel") {
           obj.AssignLevel = value;
-          if (value.name == "Common") {
+          if (value.name == "Organization") {
             obj.Role = [{ name: "", code: "" }];
             return obj;
           } else {
@@ -315,12 +514,11 @@ const Goals = () => {
         }
       />
     ) : (
-      <div>{rowData.GoalName}</div>
+      <div style={{ padding: "8px 0px 8px 15px" }}>{rowData.GoalName}</div>
     );
   };
 
   const AssignLevelBodyTemplate = (rowData: any) => {
-    // return <div>{rowData.AssignLevel}</div>;
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       <Dropdown
@@ -332,7 +530,7 @@ const Goals = () => {
         className="w-full md:w-14rem"
       />
     ) : (
-      <div>{rowData.AssignLevel.name}</div>
+      <div style={{ paddingLeft: "15px" }}>{rowData.AssignLevel.name}</div>
     );
   };
 
@@ -340,26 +538,43 @@ const Goals = () => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       rowData.AssignLevel.name == "Role" ? (
-        <Dropdown
+        // <Dropdown
+        //   value={rowData.Role}
+        //   onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
+        //   options={rolesList}
+        //   optionLabel="name"
+        //   placeholder="Select a Role"
+        //   className="w-full md:w-14rem"
+        // />
+        <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
           options={rolesList}
           optionLabel="name"
-          placeholder="Select a Role"
-          className="w-full md:w-14rem"
+          display="chip"
+          placeholder="Select Cities"
+          maxSelectedLabels={3}
+          className="w-full md:w-20rem"
         />
       ) : (
         <div></div>
       )
     ) : (
-      <div>{rowData.Role.name}</div>
+      <div style={{ paddingLeft: "15px" }}>
+        {rowData.Role.map((role: any) => (
+          <p>{role.name}</p>
+        ))}
+      </div>
     );
   };
   const ActionBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       <div>
-        <IoMdCheckmark className={styles.submitIcon} />
+        <IoMdCheckmark
+          className={styles.submitIcon}
+          onClick={() => goalSubmitFun(rowData)}
+        />
         <MdOutlineClose
           className={styles.cancelIcon}
           onClick={() => editCancelFun(rowData)}
@@ -370,6 +585,10 @@ const Goals = () => {
         <HiPencil
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
+        />
+        <MdDelete
+          className={styles.cancelIcon}
+          onClick={() => goalDeleteFun(rowData)}
         />
       </div>
     );
@@ -382,23 +601,55 @@ const Goals = () => {
   return (
     <div className="">
       <div className={styles.addCategory}>
-        {isAddCategory ? (
-          <div>
+        {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
+          <div style={{ display: "flex", gap: 5 }}>
             <InputText
-              value={newCategory}
+              value={categoryHandleObj.newCategory}
               id="category"
               type="text"
               placeholder="Category"
               onChange={(e) => {
-                setNewCategory(e.target.value);
+                setCategoryHandleObj({
+                  ...categoryHandleObj,
+                  newCategory: e.target.value,
+                });
               }}
             />
-            <Button label="Submit" onClick={(e) => addNewCategory()} />
+            {categoryHandleObj.isUpdate ? (
+              <Button
+                label="Submit"
+                severity="success"
+                onClick={(e) => addNewCategory(false)}
+              />
+            ) : (
+              <Button
+                label="Add"
+                severity="success"
+                onClick={(e) => addNewCategory(true)}
+              />
+            )}
+
+            <Button
+              label="Cancel"
+              severity="danger"
+              text
+              onClick={(e) => {
+                // setNewCategory("");
+                setCategoryHandleObj({
+                  ...categoryHandleObj,
+                  newCategory: "",
+                  isNew: false,
+                  isUpdate: false,
+                });
+              }}
+            />
           </div>
         ) : (
           <Button
             label="New Category"
-            onClick={(e) => setIsAddCategory(true)}
+            onClick={(e) =>
+              setCategoryHandleObj({ ...categoryHandleObj, isNew: true })
+            }
           />
         )}
       </div>
@@ -406,23 +657,77 @@ const Goals = () => {
         {categories.map((data, index) => {
           return (
             <AccordionTab
-              className={styles.accordionMain}
+              className="accordionMain"
               header={
-                <span className="flex d-flex justify-content-between align-items-center gap-2 w-full">
+                <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                   {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
-                  <span className="">{data.GoalCategory}</span>
-                  <span className="font-bold addIconSec">
-                    <VscAdd
-                      className={styles.addIcon}
-                      onClick={() => addGoalFunction(index)}
+                  <span className="CategoryTitle">{data.GoalCategory}</span>
+                  <div className="font-bold iconSec">
+                    {/* <Toast ref={toast} /> */}
+                    {isPopup.delIndex === index && isPopup.delPopup && (
+                      <Dialog
+                        header="Header"
+                        visible={isPopup.delPopup}
+                        style={{ width: "25%" }}
+                        onClick={(e) => e.stopPropagation()}
+                        onHide={() =>
+                          setIsPopup({
+                            ...isPopup,
+                            delPopup: false,
+                            delIndex: null,
+                          })
+                        }
+                      >
+                        <div>
+                          <p>Do you want to delete this category?</p>
+                          <Button
+                            onClick={() => deleteCategoryFun()}
+                            icon="pi pi-check"
+                            label="Confirm"
+                            className="mr-2"
+                          ></Button>
+                          <Button
+                            // onClick={confirm2}
+                            text
+                            icon="pi pi-times"
+                            label="Delete"
+                          ></Button>
+                        </div>
+                      </Dialog>
+                    )}
+                    {data.values.filter((val: any) => val.isNew).length ===
+                    0 ? (
+                      <GrAdd
+                        className="addIcon"
+                        onClick={() => addGoalFunction(index)}
+                      />
+                    ) : null}
+                    <HiPencil
+                      className="editIcon"
+                      onClick={(event) => {
+                        event.preventDefault(),
+                          event.stopPropagation(),
+                          editCategoryFun(index);
+                      }}
                     />
-                    <HiPencil className={styles.editIcon} />
-                  </span>
+                    <MdDelete
+                      className={styles.cancelIcon}
+                      onClick={(event) => {
+                        event.preventDefault(),
+                          event.stopPropagation(),
+                          setIsPopup({
+                            ...isPopup,
+                            delPopup: true,
+                            delIndex: index,
+                          });
+                      }}
+                    />
+                  </div>
                   {/* <Badge value="3" className="ml-auto" /> */}
                 </span>
               }
             >
-              <div className="NestedTable22">
+              <div className="goalsTable">
                 <DataTable
                   value={data.values}
                   size="normal"
