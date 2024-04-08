@@ -1,27 +1,21 @@
 import * as React from "react";
-import styles from "./ManagerStyle.module.scss";
 import { useEffect, useState } from "react";
 import { sp } from "@pnp/sp";
-import Button from "@mui/material/Button";
-import "../../components/style.css"
+import * as moment from "moment";
+import "../../components/style.css";
 import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
 } from "@fluentui/react";
-import * as moment from "moment";
-import MembersComponent from "./MembersComponent";
-import GoalsComponent from "./GoalsComponent";
+import Button from "@mui/material/Button";
+import styles from "./EmployeeStyle.module.scss"
+import GoalsComponent from "../Manager/GoalsComponent";
 
-
-const ManagerComponent = (props: any) => {
+const EmployeeComponent = () => {
   const [masterData, setmasterData] = useState([{}]);
-  const [ismember, setisMember] = useState("ManagerComponent");
-  // const currentYear = moment().format("YYYY")
-  const goalComponent = (arg :any) => {
-    setisMember(arg);
-  }
- 
+  const [show, setShow] = useState("AppraisalCycles");
+
   const columns = [
     {
       key: "columns1",
@@ -85,15 +79,14 @@ const ManagerComponent = (props: any) => {
       onRender: (item: any) => (
         <>
           <div>
-            <Button size="small" onClick={() => setisMember("MembersComponent")}>
-              UserList
+            <Button size="small" onClick={() => setShow("GoalsComponent")}>
+              Goals
             </Button>
           </div>
         </>
       ),
     },
   ];
-
   const getDetails = () => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
@@ -129,54 +122,32 @@ const ManagerComponent = (props: any) => {
   }, []);
   console.log(masterData);
 
-
   return (
     <>
-      <section>
+      {show == "AppraisalCycles" ?  <div>
         <div className={styles.container}>
-          <div className={styles.AppraisalCycles}>
           <Button
             size="small"
-            onClick={() => setisMember("ManagerComponent")}
+            onClick={() => setShow("AppraisalCycles")}
             style={{
-              color: ismember == "ManagerComponent" ? "green" : ""
+              color: show == "AppraisalCycles" ? "green" : "", 
             }}
           >
-           AppraisalCycles
+            AppraisalCycles
           </Button>
-          </div>
-          <div className={styles.AppraisalCycles}>
-          <Button size="small" onClick={() => setisMember("MembersComponent")} style={{color : ismember == "MembersComponent" ? "green" : "", display : ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex" : "none"}}>
-              EmployeeList
-          </Button>
-          </div>
-          <div className={styles.AppraisalCycles}>
-          <Button size="small" onClick={() => setisMember("GoalsComponent")} style={{color : ismember == "GoalsComponent" ? "green" : "" , display : ismember == "GoalsComponent" ? "" : "none" }}>
-              GoalsComponent
-          </Button>
-          </div>
-         
-          
         </div>
-        <div>
-          {ismember == "ManagerComponent" ? (
-            <div>
-              <DetailsList
-                items={masterData}
-                columns={columns}
-                setKey="set"
-                layoutMode={DetailsListLayoutMode.justified}
-                selectionMode={SelectionMode.none}
-              />
-            </div>
-          ) : ismember == "MembersComponent" ? (
-            <MembersComponent currentUser = {props.ManageContext} CurrentUserName = {props.UserName} state = {goalComponent}/>
-          ) : (
-            ismember == "GoalsComponent" ? <GoalsComponent/> : ""
-          )}
-        </div>
-      </section>
+        <DetailsList
+          items={masterData}
+          columns={columns}
+          setKey="set"
+          layoutMode={DetailsListLayoutMode.justified}
+          selectionMode={SelectionMode.none}
+        />
+      </div> : (
+        show == "GoalsComponent" ? <GoalsComponent/> : ""
+      )}
+     
     </>
   );
 };
-export default ManagerComponent;
+export default EmployeeComponent;

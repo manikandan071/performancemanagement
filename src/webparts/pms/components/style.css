@@ -7,3 +7,23 @@
     padding: 0 !important;
     max-width: 100% !important;
 }
+.css-1knaqv7-MuiButtonBase-root-MuiButton-root {
+    padding: 0 !important;
+}
+.ms-DetailsHeader {
+    background-color: rgba(0, 128, 0, 0.618) !important;
+}
+.root-93 {
+    color: white !important;
+}
+.root-77{
+    padding-top: 0 !important;
+}
+.root-93:hover {
+    background:transparent !important
+}
+.heading{
+    color: green;
+    padding: 7PX;
+    font-size: 0.8125rem !important;
+}
