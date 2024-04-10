@@ -9,7 +9,7 @@ import EmployeeComponent from "./Employee/EmployeeComponent";
 
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
-  let UserName = props.context.pageContext.user.displayName
+  let UserName = props.context.pageContext.user.displayName;
 
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
@@ -25,8 +25,12 @@ const MainComponent = (props: any) => {
         display: "flex",
         width: "100%",
         position: "relative",
+        // flexWrap: "wrap",
       }}
     >
+      {/* <div style={{ width: "100%" }}>
+        <img src="../assets/images/companyLogo.jpg" alt="" />
+      </div> */}
       <div
         style={{
           width: isNavBar ? "15%" : "5%",
@@ -81,11 +85,11 @@ const MainComponent = (props: any) => {
           </div>
         ) : isNavOption === "Manager" ? (
           <div>
-            <ManagerComponent ManageContext = {UserEmail} UserName = {UserName}/>
+            <ManagerComponent ManageContext={UserEmail} UserName={UserName} />
           </div>
         ) : (
           <div>
-            <EmployeeComponent currentUserEmail = {UserEmail}/>
+            <EmployeeComponent currentUserEmail={UserEmail} />
           </div>
         )}
       </div>
