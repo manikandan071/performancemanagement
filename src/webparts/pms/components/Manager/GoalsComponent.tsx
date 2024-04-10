@@ -5,8 +5,9 @@ import {useState } from "react";
 import PredefinedGoals from "./PredefinedGoalsComponent";
 import SelfGoals from "./SelfGoalsComponent";
 const GoalsComponent = (props: any) => {
-
-    const[show,setShow] = useState("PredefinedGoals")
+  console.log(props,"propsGoal")
+    const[show,setShow] = useState("PredefinedGoals");
+    
   return (
     <>
       <div className={styles.container}>
@@ -22,7 +23,7 @@ const GoalsComponent = (props: any) => {
         </div>
       </div>
       <div>
-        {show == "PredefinedGoals" ? <PredefinedGoals userEmail = {props.memberEmail} curUser = {props.currentUsermail} /> : show == "SelfGoals" ? <SelfGoals/> : ""}
+        {show == "PredefinedGoals" ? <PredefinedGoals userEmail = {props.memberEmail} curUser = {props.curUser} /> : show == "SelfGoals" ? <SelfGoals/> : ""}
       </div>
     </>
   );

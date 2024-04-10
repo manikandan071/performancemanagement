@@ -172,7 +172,7 @@ const ManagerComponent = (props: any) => {
           ) : ismember == "MembersComponent" ? (
             <MembersComponent currentUser = {props.ManageContext} CurrentUserName = {props.UserName} state = {goalComponent}/>
           ) : (
-            ismember == "GoalsComponent" ? <GoalsComponent memberEmail = {memberEmail}/> : ""
+            ismember == "GoalsComponent" ? <GoalsComponent memberEmail = {memberEmail} curUser = {props.ManageContext}/> : ""
           )}
         </div>
       </section>

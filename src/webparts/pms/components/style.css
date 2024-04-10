@@ -30,3 +30,18 @@
 .p-accordion-content{
     padding: 0 !important;
 }
+
+a{
+    text-decoration: none !important;
+    color: #1976d2 !important;
+}
+.p-datatable-table th{
+    background-color: rgba(0, 128, 0, 0.618);
+    color: white;
+}
+.p-accordion .p-accordion-header .p-accordion-header-link{
+    border: none !important;
+}
+.card {
+    --bs-card-border-color : none !important
+}

@@ -15,6 +15,7 @@ import GoalsComponent from "../Manager/GoalsComponent";
 const EmployeeComponent = (props :any) => {
   const [masterData, setmasterData] = useState([{}]);
   const [show, setShow] = useState("AppraisalCycles");
+ 
   const columns = [
     {
       key: "columns1",
@@ -143,7 +144,7 @@ const EmployeeComponent = (props :any) => {
           selectionMode={SelectionMode.none}
         />
       </div> : (
-        show == "GoalsComponent" ? <GoalsComponent currentUsermail = {props.currentUserEmail}/> : ""
+        show == "GoalsComponent" ? <GoalsComponent memberEmail = {props.currentUserEmail}  curUser = {props.currentUserEmail}/> : ""
       )}
      
     </>
