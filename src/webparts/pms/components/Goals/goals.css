@@ -20,7 +20,7 @@
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
-    font-size: 27px;
+    font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .addIcon:hover{
     background-color: green;
@@ -32,7 +32,7 @@
     background-color: red;
     color: #fff;
     padding: 5px;
-    font-size: 27px;
+    font-size: 26px;
 }
 .goalsTable table thead tr th{
     background-color: #90c788;
@@ -44,15 +44,24 @@
     padding: 0px;
     margin: 0px;
 }
+.p-multiselect-panel ul{
+    padding: 0px;
+    margin: 0px;
+}
 .goalsTable table tbody tr{
     border-bottom: 1px solid #dee2e6;
 }
 .goalsTable table tbody td{
     padding: 7px;
 }
-.goalsTable table thead tr th,.goalsTable table tbody tr th{
+/* .goalsTable table thead tr th,.goalsTable table tbody tr th{
     width: 25%;
-}
+} */
 .p-confirm-popup{
     left: 78% !important;;
+}
+.roleIcon{
+    font-size: 20px;
+    margin-right: 10px;
+    color:#07078f
 }
