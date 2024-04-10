@@ -30,6 +30,7 @@ import "./goals.css";
 const Goals = () => {
   // const toast = useRef("");
   const [masterData, setMasterData] = useState<any[]>([]);
+  const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [deletedGoals, setDeletedGoals] = useState<any[]>([]);
@@ -51,15 +52,39 @@ const Goals = () => {
 
   console.log(
     usersList,
-    deletedGoals,
     categories,
     masterData,
     duplicateData,
-    categoryHandleObj,
-    isPopup
+    predefinedGoalsList
   );
 
-  const getPreDefinedGoals = () => {
+  const getPredefinedGoals = () => {
+    sp.web.lists
+      .getByTitle(`PredefinedGoals`)
+      .items.select("*,AssignTo/ID,AssignTo/Title,AssignTo/EMail,HRGoal/ID")
+      .expand("AssignTo,HRGoal")
+      .get()
+      .then((res) => {
+        console.log(res);
+        let tempArr: any = [];
+        res.forEach((obj) => {
+          tempArr.push({
+            ID: obj.ID ? obj.ID : null,
+            GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
+            GoalName: obj.GoalName ? obj.GoalName : "",
+            AssignTo: obj.AssignTo ? obj.AssignTo : {},
+            isDeleteHR: obj.isDeleteHR ? obj.isDeleteHR : false,
+            HRGoalId: obj.HRGoal ? obj.HRGoal.ID : "",
+          });
+        });
+        setPredefinedGoals([...tempArr]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getHRGoals = () => {
     sp.web.lists
       .getByTitle(`HrGoals`)
       .items.get()
@@ -109,7 +134,6 @@ const Goals = () => {
           }
           return acc;
         }, []);
-        console.log(groupedArray);
         assignedGoals.forEach((obj) => {
           let json = {
             ID: obj.ID ? obj.ID : null,
@@ -131,7 +155,7 @@ const Goals = () => {
         setCategories([...groupedArray]);
         setDuplicateData(tempaArray);
         setMasterData(tempaArray);
-        console.log(tempArr, tempaArray);
+        getPredefinedGoals();
       })
       .catch((err) => console.log(err));
   };
@@ -167,16 +191,20 @@ const Goals = () => {
             EmployeeName: string;
             UserEmail: string;
             Role: string;
+            EmployeeID: number;
           }[] = [];
           res.forEach((obj) => {
+            console.log(obj);
+
             userArr.push({
               EmployeeName: obj.Employee.Title,
               UserEmail: obj.Employee.EMail,
               Role: obj.Roles,
+              EmployeeID: obj.Employee.ID,
             });
           });
           setUsersList([...userArr]);
-          getPreDefinedGoals();
+          getHRGoals();
           //   res.filter((val,index)=>res.indexOf(val.Roles) === index)
         }
       })
@@ -290,11 +318,6 @@ const Goals = () => {
   };
 
   const addGoalFunction = (ind: number) => {
-    let result = duplicateData.filter(
-      (o) => !masterData.some((v) => v.ID === o.ID)
-    );
-    console.log(result);
-
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
     let data = tempArr[index];
@@ -328,11 +351,9 @@ const Goals = () => {
         GoalCategory: data.GoalCategory,
       },
     ]);
-    console.log(data);
   };
 
   const editCategoryFun = (ind: number) => {
-    console.log(ind);
     setCategoryHandleObj({
       ...categoryHandleObj,
       ID: ind + 1,
@@ -364,8 +385,6 @@ const Goals = () => {
         })
         .catch((err) => console.log(err));
     });
-
-    console.log(isPopup);
   };
 
   const editRowFunction = (data: any) => {
@@ -373,7 +392,6 @@ const Goals = () => {
     let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
     let tempObj = duplicateArr[index];
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
-    console.log(duplicateArr);
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
   };
@@ -389,7 +407,6 @@ const Goals = () => {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
     };
-    console.log(tempObj, addObj);
     if (tempObj.isNew) {
       sp.web.lists
         .getByTitle(`HrGoals`)
@@ -403,7 +420,6 @@ const Goals = () => {
           isDelete: false,
         })
         .then((res) => {
-          console.log(res);
           let duplicateArr = [...duplicateData];
           let index = [...duplicateArr].findIndex(
             (obj: any) => obj.ID === data.ID
@@ -414,13 +430,205 @@ const Goals = () => {
             [`${"isRowEdit"}`]: false,
             [`${"isNew"}`]: false,
           };
-          console.log(duplicateArr);
           setDuplicateData([...duplicateArr]);
           setMasterData([...duplicateArr]);
           categoryHandleFun([...duplicateArr]);
+
+          if (tempObj.AssignLevel.name === "Organization") {
+            usersList.forEach((user) => {
+              sp.web.lists
+                .getByTitle(`PredefinedGoals`)
+                .items.add({
+                  GoalName: tempObj.GoalName,
+                  GoalCategory: tempObj.GoalCategory,
+                  AssignToId: user.EmployeeID,
+                  HRGoalId: res.data.ID,
+                })
+                .then((res) => getUsersRoles())
+                .catch((err) => console.log(err));
+            });
+          } else {
+            let selectedRoles = tempObj.Role.map((item: any) => item.name);
+            const userListArray = usersList.filter((item) =>
+              selectedRoles.includes(item.Role)
+            );
+            userListArray.forEach((user) => {
+              sp.web.lists
+                .getByTitle(`PredefinedGoals`)
+                .items.add({
+                  GoalName: tempObj.GoalName,
+                  GoalCategory: tempObj.GoalCategory,
+                  AssignToId: user.EmployeeID,
+                  HRGoalId: res.data.ID,
+                })
+                .then((res) => getUsersRoles())
+                .catch((err) => console.log(err));
+            });
+          }
         })
         .catch((err) => console.log(err));
     } else {
+      let duplicateArr = [...duplicateData];
+      let masterArr = [...masterData];
+      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      let tempObj = duplicateArr[index];
+      let masterObj = masterArr[index];
+      let permissionDeleted: any = [];
+      if (tempObj.AssignLevel.name === "Organization") {
+        const allEmailIDs = new Set(
+          predefinedGoalsList.map((item) => {
+            if (item.HRGoalId === tempObj.ID) {
+              item.isDeleteHR
+                ? permissionDeleted.push(`${item.AssignTo.EMail}`)
+                : "";
+              return `${item.AssignTo.EMail}`;
+            }
+          })
+        );
+        console.log(permissionDeleted);
+
+        const getUserEmailIDs = usersList.filter(
+          (item) => !allEmailIDs.has(`${item.UserEmail}`)
+        );
+        if (getUserEmailIDs.length > 0) {
+          getUserEmailIDs.forEach((user) => {
+            sp.web.lists
+              .getByTitle(`PredefinedGoals`)
+              .items.add({
+                GoalName: tempObj.GoalName,
+                GoalCategory: tempObj.GoalCategory,
+                AssignToId: user.EmployeeID,
+                HRGoalId: tempObj.ID,
+              })
+              .then((res) => getUsersRoles())
+              .catch((err) => console.log(err));
+          });
+        } else {
+          predefinedGoalsList.forEach((goal: any) => {
+            if (goal.HRGoalId === tempObj.ID) {
+              sp.web.lists
+                .getByTitle(`PredefinedGoals`)
+                .items.getById(goal.ID)
+                .update({ isDeleteHR: false })
+                .then((res) => getUsersRoles())
+                .catch((err) => console.log(err));
+            }
+          });
+        }
+      } else {
+        let resultArray: any = [];
+        let allEmailIDs = new Set(
+          predefinedGoalsList.map((item: any) => {
+            if (item.HRGoalId === tempObj.ID && item.isDeleteHR !== true) {
+              return item.AssignTo.EMail;
+            }
+          })
+        );
+        const getUserEmailIDs = usersList.filter((item) =>
+          allEmailIDs.has(item.mailID)
+        );
+        const uniqueRoles = Array.from(
+          new Set(getUserEmailIDs.map((item) => item.Role))
+        );
+        if (masterObj.Role.length > 0) {
+          resultArray = masterObj.Role;
+        } else {
+          resultArray = uniqueRoles.map((role) => ({
+            name: role,
+            code: role,
+          }));
+        }
+
+        let commonRoles = tempObj.Role.filter((item1: any) =>
+          resultArray.some(
+            (item2: any) =>
+              item1.code === item2.code && item1.name === item2.name
+          )
+        );
+        const updateUser: any = tempObj.Role.filter(
+          (item: any) =>
+            !commonRoles.some(
+              (commonItem: any) =>
+                item.code === commonItem.code && item.name === commonItem.name
+            )
+        );
+        const removeUser: any = resultArray.filter(
+          (item: any) =>
+            !commonRoles.some(
+              (commonItem: any) =>
+                item.code === commonItem.code && item.name === commonItem.name
+            )
+        );
+
+        if (removeUser.length > 0) {
+          let selectedRoles = removeUser.map((item: any) => item.name);
+          const userListArray = usersList.filter((item) =>
+            selectedRoles.includes(item.Role)
+          );
+          let lookUpGoalsList: any = [];
+          predefinedGoalsList.filter((goals) => {
+            userListArray.forEach((user) => {
+              if (
+                goals.AssignTo.EMail === user.UserEmail &&
+                goals.HRGoalId === tempObj.ID
+              ) {
+                lookUpGoalsList.push(goals);
+              }
+            });
+          });
+          lookUpGoalsList.forEach((goal: any) => {
+            sp.web.lists
+              .getByTitle(`PredefinedGoals`)
+              .items.getById(goal.ID)
+              .update({ isDeleteHR: true })
+              .then((res) => getUsersRoles())
+              .catch((err) => console.log(err));
+          });
+        }
+        if (updateUser.length > 0 && masterObj.Role.length > 0) {
+          let selectedRoles = updateUser.map((item: any) => item.name);
+          const userListArray = usersList.filter((item) =>
+            selectedRoles.includes(item.Role)
+          );
+          const array2Emails = new Set(
+            predefinedGoalsList.map(
+              (item) => `${item.AssignTo.EMail}-${item.HRGoalId}`
+            )
+          );
+
+          const filteredArray1 = userListArray.filter(
+            (item) => !array2Emails.has(`${item.UserEmail}-${tempObj.ID}`)
+          );
+
+          filteredArray1.forEach((filter) => {
+            sp.web.lists
+              .getByTitle(`PredefinedGoals`)
+              .items.add({
+                GoalName: tempObj.GoalName,
+                GoalCategory: tempObj.GoalCategory,
+                AssignToId: filter.EmployeeID,
+                HRGoalId: tempObj.ID,
+              })
+              .then((res) => getUsersRoles())
+              .catch((err) => console.log(err));
+          });
+          userListArray.forEach((user) => {
+            predefinedGoalsList.forEach((goal: any) => {
+              if (
+                goal.AssignTo.EMail === user.UserEmail &&
+                goal.HRGoalId === tempObj.ID
+              ) {
+                sp.web.lists
+                  .getByTitle(`PredefinedGoals`)
+                  .items.getById(goal.ID)
+                  .update({ isDeleteHR: false })
+                  .then((res) => getUsersRoles())
+                  .catch((err) => console.log(err));
+              }
+            });
+          });
+        }
+      }
       sp.web.lists
         .getByTitle(`HrGoals`)
         .items.getById(tempObj.ID)
@@ -436,7 +644,6 @@ const Goals = () => {
             ...tempObj,
             [`${"isRowEdit"}`]: false,
           };
-          console.log(duplicateArr);
           setDuplicateData([...duplicateArr]);
           setMasterData([...duplicateArr]);
           categoryHandleFun([...duplicateArr]);
@@ -455,26 +662,20 @@ const Goals = () => {
     } else {
       duplicateArr = duplicateArr.filter((obj) => obj.ID !== data.ID);
     }
-    // let tempObj = duplicateArr[index];
-    console.log(tempObjMain, duplicateArr);
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
   };
 
   const goalDeleteFun = (data: any) => {
-    console.log(data);
-
     let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
     let delObj = duplicateData[index];
     setDeletedGoals([...deletedGoals, delObj]);
-    console.log(duplicateData);
     let delArray = duplicateData.filter((items) => items.ID != data.ID);
     sp.web.lists
       .getByTitle(`HrGoals`)
       .items.getById(delObj.ID)
       .update({ isDelete: true })
       .then((res) => {
-        console.log(res);
         categoryHandleFun([...delArray]);
         setDuplicateData([...delArray]);
         setMasterData([...delArray]);
@@ -483,7 +684,6 @@ const Goals = () => {
   };
 
   const onChangeHandleFun = (value: any, type: string, id: number) => {
-    console.log(value, type, id);
     let tempArr = duplicateData.map((obj) => {
       if (obj.ID == id) {
         if (type === "GoalName") {
@@ -560,7 +760,6 @@ const Goals = () => {
         //   placeholder="Select a Role"
         //   className="w-full md:w-14rem"
         // />
-
         <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
