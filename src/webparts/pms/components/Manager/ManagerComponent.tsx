@@ -17,9 +17,11 @@ import GoalsComponent from "./GoalsComponent";
 const ManagerComponent = (props: any) => {
   const [masterData, setmasterData] = useState([{}]);
   const [ismember, setisMember] = useState("ManagerComponent");
+  const[memberEmail,setMemberEmail] = useState("");
   // const currentYear = moment().format("YYYY")
-  const goalComponent = (arg :any) => {
+  const goalComponent = (arg :any,email :any) => {
     setisMember(arg);
+    setMemberEmail(email);
   }
  
   const columns = [
@@ -127,9 +129,7 @@ const ManagerComponent = (props: any) => {
   useEffect(() => {
     init();
   }, []);
-  console.log(masterData);
-
-
+ 
   return (
     <>
       <section>
@@ -172,7 +172,7 @@ const ManagerComponent = (props: any) => {
           ) : ismember == "MembersComponent" ? (
             <MembersComponent currentUser = {props.ManageContext} CurrentUserName = {props.UserName} state = {goalComponent}/>
           ) : (
-            ismember == "GoalsComponent" ? <GoalsComponent/> : ""
+            ismember == "GoalsComponent" ? <GoalsComponent memberEmail = {memberEmail} curUser = {props.ManageContext}/> : ""
           )}
         </div>
       </section>
