@@ -1,6 +1,14 @@
 .container{
-   padding:10px;
+   padding-bottom:18px;
    display: flex;
+}
+.container02{
+    display: flex;
+}
+.background{
+    background-color:whitesmoke;
+    padding: 18px;
+    border-radius: 10px;
 }
 #workbenchPageContent {
     max-width: 100%;
@@ -12,7 +20,9 @@
 }
 .AppraisalCycles{
     padding-right: 30px;
+    position: relative;
 }
+
 .addCategory{
     display: flex;
     justify-content: flex-end;

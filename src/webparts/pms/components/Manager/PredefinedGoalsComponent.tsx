@@ -11,7 +11,6 @@ import styles from "./ManagerStyle.module.scss";
 // import { GrAdd } from "react-icons/gr";
 // import { MdDelete } from "react-icons/md";
 
-
 const PredefinedGoals = (props: any) => {
   const [masterData, setMasterData] = useState<any[]>([]);
   const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
