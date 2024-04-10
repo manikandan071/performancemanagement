@@ -3,7 +3,7 @@ import styles from "./ManagerStyle.module.scss";
 import { useEffect, useState } from "react";
 import { sp } from "@pnp/sp";
 import Button from "@mui/material/Button";
-import "../../components/style.css"
+import "../../components/style.css";
 import {
   DetailsList,
   DetailsListLayoutMode,
@@ -13,17 +13,16 @@ import * as moment from "moment";
 import MembersComponent from "./MembersComponent";
 import GoalsComponent from "./GoalsComponent";
 
-
 const ManagerComponent = (props: any) => {
   const [masterData, setmasterData] = useState([{}]);
   const [ismember, setisMember] = useState("ManagerComponent");
-  const[memberEmail,setMemberEmail] = useState("");
+  const [memberEmail, setMemberEmail] = useState("");
   // const currentYear = moment().format("YYYY")
-  const goalComponent = (arg :any,email :any) => {
+  const goalComponent = (arg: any, email: any) => {
     setisMember(arg);
     setMemberEmail(email);
-  }
- 
+  };
+
   const columns = [
     {
       key: "columns1",
@@ -87,8 +86,11 @@ const ManagerComponent = (props: any) => {
       onRender: (item: any) => (
         <>
           <div>
-            <Button size="small" onClick={() => setisMember("MembersComponent")}>
-              UserList
+            <Button
+              size="small"
+              onClick={() => setisMember("MembersComponent")}
+            >
+             <i className="pi pi-user" style={{ color: 'rgba(0, 0, 0, 0.404) '}}></i>
             </Button>
           </div>
         </>
@@ -129,34 +131,69 @@ const ManagerComponent = (props: any) => {
   useEffect(() => {
     init();
   }, []);
- 
+
   return (
     <>
       <section>
         <div className={styles.container}>
-          <div className={styles.AppraisalCycles}>
-          <Button
-            size="small"
-            onClick={() => setisMember("ManagerComponent")}
+          <div
             style={{
-              color: ismember == "ManagerComponent" ? "green" : ""
+              padding: "10px",
+              backgroundColor:ismember == "ManagerComponent" ? "#5e97ec": "#cce0ff",
+              color: ismember == "ManagerComponent" ? "white" : "black",
+              borderBottom: ismember == "ManagerComponent" ? "3px solid #303072" : "",
             }}
           >
-           AppraisalCycles
-          </Button>
+            <Button
+              size="small"
+              onClick={() => setisMember("ManagerComponent")}
+              style={{
+                color: ismember == "ManagerComponent" ? "white" : "black",
+              }}
+            >
+              AppraisalCycles
+            </Button>
           </div>
-          <div className={styles.AppraisalCycles}>
-          <Button size="small" onClick={() => setisMember("MembersComponent")} style={{color : ismember == "MembersComponent" ? "green" : "", display : ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex" : "none"}}>
+          <div
+            style={{
+              padding: "10px",
+              backgroundColor:ismember == "MembersComponent"? "#5e97ec": "#cce0ff",
+              color: ismember == "MembersComponent" ? "white" : "black",
+              borderBottom: ismember == "MembersComponent" ? "3px solid #303072" : "",
+              display:ismember == "MembersComponent" || ismember == "GoalsComponent"? "flex": "none",
+            }}
+          >
+            <Button
+              size="small"
+              onClick={() => setisMember("MembersComponent")}
+              style={{
+                color: ismember == "MembersComponent" ? "white" : "black",
+                display:ismember == "MembersComponent" || ismember == "GoalsComponent"? "flex": "none",
+              }}
+            >
               EmployeeList
-          </Button>
+            </Button>
           </div>
-          <div className={styles.AppraisalCycles}>
-          <Button size="small" onClick={() => setisMember("GoalsComponent")} style={{color : ismember == "GoalsComponent" ? "green" : "" , display : ismember == "GoalsComponent" ? "" : "none" }}>
+          <div
+            style={{
+              padding: "10px",
+              backgroundColor:ismember == "GoalsComponent"  ? "#5e97ec": "#cce0ff",
+              color: ismember == "GoalsComponent" ? "white" : "black",
+              borderBottom:ismember == "GoalsComponent" ? "3px solid #303072" : "",
+              display: ismember == "GoalsComponent" ? "" : "none",
+            }}
+          >
+            <Button
+              size="small"
+              onClick={() => setisMember("GoalsComponent")}
+              style={{
+                color: ismember == "GoalsComponent" ? "white" : "black",
+                display: ismember == "GoalsComponent" ? "" : "none",
+              }}
+            >
               GoalsComponent
-          </Button>
+            </Button>
           </div>
-         
-          
         </div>
         <div>
           {ismember == "ManagerComponent" ? (
@@ -170,9 +207,18 @@ const ManagerComponent = (props: any) => {
               />
             </div>
           ) : ismember == "MembersComponent" ? (
-            <MembersComponent currentUser = {props.ManageContext} CurrentUserName = {props.UserName} state = {goalComponent}/>
+            <MembersComponent
+              currentUser={props.ManageContext}
+              CurrentUserName={props.UserName}
+              state={goalComponent}
+            />
+          ) : ismember == "GoalsComponent" ? (
+            <GoalsComponent
+              memberEmail={memberEmail}
+              curUser={props.ManageContext}
+            />
           ) : (
-            ismember == "GoalsComponent" ? <GoalsComponent memberEmail = {memberEmail} curUser = {props.ManageContext}/> : ""
+            ""
           )}
         </div>
       </section>

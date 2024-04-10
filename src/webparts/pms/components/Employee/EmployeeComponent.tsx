@@ -9,13 +9,14 @@ import {
   SelectionMode,
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
-import styles from "./EmployeeStyle.module.scss"
+import styles from "./EmployeeStyle.module.scss";
 import GoalsComponent from "../Manager/GoalsComponent";
+import { TbTargetArrow } from "react-icons/tb";
 
-const EmployeeComponent = (props :any) => {
+const EmployeeComponent = (props: any) => {
   const [masterData, setmasterData] = useState([{}]);
   const [show, setShow] = useState("AppraisalCycles");
- 
+
   const columns = [
     {
       key: "columns1",
@@ -80,7 +81,7 @@ const EmployeeComponent = (props :any) => {
         <>
           <div>
             <Button size="small" onClick={() => setShow("GoalsComponent")}>
-              Goals
+              <TbTargetArrow className="goalIcon" />
             </Button>
           </div>
         </>
@@ -124,29 +125,59 @@ const EmployeeComponent = (props :any) => {
 
   return (
     <>
-      {show == "AppraisalCycles" ?  <div>
-        <div className={styles.container}>
+      <div className={styles.container}>
+        <div style={{
+              padding: "10px",
+              backgroundColor:show == "AppraisalCycles"? "#5e97ec": "#cce0ff",
+              color: show == "AppraisalCycles" ? "white" : "black",
+              borderBottom: show == "AppraisalCycles" ? "3px solid #303072" : "",
+            }}>
           <Button
             size="small"
             onClick={() => setShow("AppraisalCycles")}
             style={{
-              color: show == "AppraisalCycles" ? "green" : "", 
+              color: show == "AppraisalCycles" ? "white" : "black",
             }}
           >
             AppraisalCycles
           </Button>
         </div>
-        <DetailsList
-          items={masterData}
-          columns={columns}
-          setKey="set"
-          layoutMode={DetailsListLayoutMode.justified}
-          selectionMode={SelectionMode.none}
+        <div  style={{
+              padding: "10px",
+              backgroundColor:show == "GoalsComponent"? "#5e97ec": "#cce0ff",
+              color: show == "GoalsComponent" ? "white" : "black",
+              borderBottom: show == "GoalsComponent" ? "3px solid #303072" : "",
+              display: show == "GoalsComponent" ? "flex": "none",
+            }}>
+          <Button
+            size="small"
+            onClick={() => setShow("GoalsComponent")}
+            style={{
+              color: show == "GoalsComponent" ? "white" : "black",
+            }}
+          >
+            Goals
+          </Button>
+        </div>
+      </div>
+      {show == "AppraisalCycles" ? (
+        <div>
+          <DetailsList
+            items={masterData}
+            columns={columns}
+            setKey="set"
+            layoutMode={DetailsListLayoutMode.justified}
+            selectionMode={SelectionMode.none}
+          />
+        </div>
+      ) : show == "GoalsComponent" ? (
+        <GoalsComponent
+          memberEmail={props.currentUserEmail}
+          curUser={props.currentUserEmail}
         />
-      </div> : (
-        show == "GoalsComponent" ? <GoalsComponent memberEmail = {props.currentUserEmail}  curUser = {props.currentUserEmail}/> : ""
+      ) : (
+        ""
       )}
-     
     </>
   );
 };

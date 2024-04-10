@@ -7,7 +7,7 @@ import {
   SelectionMode,
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
-
+import { TbTargetArrow } from "react-icons/tb";
 
 const MembersComponent = (props: any) => {
   const currentUser = props.currentUser;
@@ -83,7 +83,7 @@ const MembersComponent = (props: any) => {
               }}
               size="small"
             >
-              Goals
+              <TbTargetArrow className="goalIcon" />
             </Button>
           </div>
         </>

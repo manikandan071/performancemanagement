@@ -70,7 +70,7 @@ const NavBar = (props: any) => {
   return (
     <div
       style={{
-        backgroundColor: "green",
+        backgroundColor: "#61b061",
         height: "100vh",
         borderRadius: "0px 10px 10px 0px",
         paddingTop: "50px",
