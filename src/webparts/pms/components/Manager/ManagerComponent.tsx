@@ -10,7 +10,7 @@ import {
   SelectionMode,
 } from "@fluentui/react";
 import * as moment from "moment";
-import MembersComponent from "./MembersComponent";
+import MembersComponent from "../EmployeeLists/MembersComponent";
 import GoalsComponent from "./GoalsComponent";
 // import { Button } from 'primereact/button';
 import { PiUserListBold } from "react-icons/pi";

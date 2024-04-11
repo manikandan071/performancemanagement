@@ -81,7 +81,7 @@ const EmployeeComponent = (props: any) => {
         <>
           <div>
             <Button size="small" onClick={() => setShow("GoalsComponent")}>
-              <TbTargetArrow className="goalIcon" />
+              <TbTargetArrow className={styles.goalIcon} />
             </Button>
           </div>
         </>

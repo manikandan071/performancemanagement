@@ -8,6 +8,7 @@ import {
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
 import { TbTargetArrow } from "react-icons/tb";
+import styles from "./MembersStyle.module.scss"
 
 const MembersComponent = (props: any) => {
   const currentUser = props.currentUser;
@@ -83,7 +84,7 @@ const MembersComponent = (props: any) => {
               }}
               size="small"
             >
-              <TbTargetArrow className="goalIcon" />
+              <TbTargetArrow className={styles.goalIcon} />
             </Button>
           </div>
         </>
