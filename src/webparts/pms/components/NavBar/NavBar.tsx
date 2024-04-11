@@ -122,26 +122,23 @@ const NavBar = (props: any) => {
       <div>
         {navOptions.map((obj) => {
           return (
-            <div
-              onClick={() => {
-                setTapName(obj.option);
-                props.handleCilck(obj.option);
-                // const urlParams = new URLSearchParams(window.location.search);
-
-                // // Update or add a parameter
-                // urlParams.set("Page", obj.option);
-                // const newUrl = `${
-                //   window.location.pathname
-                // }?${urlParams.toString()}${window.location.hash}`;
-                // history.pushState(null, "", newUrl);
-              }}
-              className={
-                obj.option == tapName
-                  ? styles.seletedOptionContainer
-                  : styles.optionContainer
-              }
-            >
-              {obj.option}
+            <div>
+              <span
+                className={obj.option == tapName ? styles.sideBar : ""}
+              ></span>
+              <div
+                onClick={() => {
+                  setTapName(obj.option);
+                  props.handleCilck(obj.option);
+                }}
+                className={
+                  obj.option == tapName
+                    ? styles.seletedOptionContainer
+                    : styles.optionContainer
+                }
+              >
+                {obj.option}
+              </div>
             </div>
           );
         })}
