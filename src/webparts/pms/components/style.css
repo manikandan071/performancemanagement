@@ -33,7 +33,8 @@
 
 a{
     text-decoration: none !important;
-    color: #1976d2 !important;
+    color: white !important;
+    background-color: #dbd1f7 !important;
 }
 .p-datatable-table th{
     background-color: rgba(0, 128, 0, 0.618);

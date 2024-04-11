@@ -12,6 +12,8 @@ import {
 import * as moment from "moment";
 import MembersComponent from "./MembersComponent";
 import GoalsComponent from "./GoalsComponent";
+// import { Button } from 'primereact/button';
+import { PiUserListBold } from "react-icons/pi";
 
 const ManagerComponent = (props: any) => {
   const [masterData, setmasterData] = useState([{}]);
@@ -90,7 +92,9 @@ const ManagerComponent = (props: any) => {
               size="small"
               onClick={() => setisMember("MembersComponent")}
             >
-             <i className="pi pi-user" style={{ color: 'rgba(0, 0, 0, 0.404) '}}></i>
+              <PiUserListBold
+                style={{ color: "#00000087", fontSize: "20px" }}
+              />
             </Button>
           </div>
         </>
@@ -136,58 +140,41 @@ const ManagerComponent = (props: any) => {
     <>
       <section>
         <div className={styles.container}>
-          <div
-            style={{
-              padding: "10px",
-              backgroundColor:ismember == "ManagerComponent" ? "#5e97ec": "#cce0ff",
-              color: ismember == "ManagerComponent" ? "white" : "black",
-              borderBottom: ismember == "ManagerComponent" ? "3px solid #303072" : "",
-            }}
-          >
+          <div className={styles.sample}>
             <Button
-              size="small"
+              variant="text"
               onClick={() => setisMember("ManagerComponent")}
               style={{
                 color: ismember == "ManagerComponent" ? "white" : "black",
+                borderBottom:ismember == "ManagerComponent" ? "3px solid #303072" : "",
+                backgroundColor:ismember == "ManagerComponent"? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
               }}
             >
               AppraisalCycles
             </Button>
           </div>
-          <div
-            style={{
-              padding: "10px",
-              backgroundColor:ismember == "MembersComponent"? "#5e97ec": "#cce0ff",
-              color: ismember == "MembersComponent" ? "white" : "black",
-              borderBottom: ismember == "MembersComponent" ? "3px solid #303072" : "",
-              display:ismember == "MembersComponent" || ismember == "GoalsComponent"? "flex": "none",
-            }}
-          >
+          <div className={styles.sample}>
             <Button
-              size="small"
+              variant="text"
               onClick={() => setisMember("MembersComponent")}
               style={{
                 color: ismember == "MembersComponent" ? "white" : "black",
-                display:ismember == "MembersComponent" || ismember == "GoalsComponent"? "flex": "none",
+                borderBottom:ismember == "MembersComponent" ? "3px solid #303072" : "",
+                backgroundColor:ismember == "MembersComponent" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+                display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
               EmployeeList
             </Button>
           </div>
-          <div
-            style={{
-              padding: "10px",
-              backgroundColor:ismember == "GoalsComponent"  ? "#5e97ec": "#cce0ff",
-              color: ismember == "GoalsComponent" ? "white" : "black",
-              borderBottom:ismember == "GoalsComponent" ? "3px solid #303072" : "",
-              display: ismember == "GoalsComponent" ? "" : "none",
-            }}
-          >
+          <div className={styles.sample}>
             <Button
-              size="small"
+              variant="text"
               onClick={() => setisMember("GoalsComponent")}
               style={{
                 color: ismember == "GoalsComponent" ? "white" : "black",
+                borderBottom:ismember == "GoalsComponent" ? "3px solid #303072" : "",
+                backgroundColor:ismember == "GoalsComponent"? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
                 display: ismember == "GoalsComponent" ? "" : "none",
               }}
             >

@@ -126,34 +126,29 @@ const EmployeeComponent = (props: any) => {
   return (
     <>
       <div className={styles.container}>
-        <div style={{
-              padding: "10px",
-              backgroundColor:show == "AppraisalCycles"? "#5e97ec": "#cce0ff",
-              color: show == "AppraisalCycles" ? "white" : "black",
-              borderBottom: show == "AppraisalCycles" ? "3px solid #303072" : "",
-            }}>
+        <div className={styles.sample}>
           <Button
-            size="small"
+            variant="text"
             onClick={() => setShow("AppraisalCycles")}
             style={{
               color: show == "AppraisalCycles" ? "white" : "black",
+              borderBottom:show == "AppraisalCycles" ? "3px solid #303072" : "",
+              backgroundColor:show == "AppraisalCycles" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
             }}
           >
             AppraisalCycles
           </Button>
         </div>
-        <div  style={{
-              padding: "10px",
-              backgroundColor:show == "GoalsComponent"? "#5e97ec": "#cce0ff",
-              color: show == "GoalsComponent" ? "white" : "black",
-              borderBottom: show == "GoalsComponent" ? "3px solid #303072" : "",
-              display: show == "GoalsComponent" ? "flex": "none",
+        <div className={styles.sample} style={{
+               display: show == "GoalsComponent" ? "flex": "none",
             }}>
           <Button
-            size="small"
+            variant="text"
             onClick={() => setShow("GoalsComponent")}
             style={{
               color: show == "GoalsComponent" ? "white" : "black",
+              borderBottom:show == "GoalsComponent" ? "3px solid #303072" : "",
+              backgroundColor:show == "GoalsComponent" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
             }}
           >
             Goals
