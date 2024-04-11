@@ -2,8 +2,8 @@ import * as React from "react";
 import Button from "@mui/material/Button";
 import styles from "./ManagerStyle.module.scss";
 import {useState } from "react";
-import PredefinedGoals from "./PredefinedGoalsComponent";
-import SelfGoals from "./SelfGoalsComponent";
+import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
+import SelfGoals from "../SelfGoals/SelfGoalsComponent";
 import { PiTargetBold } from "react-icons/pi";
 import { BiTargetLock } from "react-icons/bi";
 const GoalsComponent = (props: any) => {

@@ -9,12 +9,9 @@ import { InputText } from "primereact/inputtext";
 import { HiPencil } from "react-icons/hi2";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
-// import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
-import styles from "./ManagerStyle.module.scss";
-// import { HiPencil } from "react-icons/hi2";
-// import { GrAdd } from "react-icons/gr";
-// import { MdDelete } from "react-icons/md";
+import styles from "./PreDefinedGoalsStyle.module.scss";
+
 
 const PredefinedGoals = (props: any) => {
   const [totalPDGoals, setTotalPDGoals] = useState<any[]>([]);
