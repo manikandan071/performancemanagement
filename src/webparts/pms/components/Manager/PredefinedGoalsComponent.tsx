@@ -13,13 +13,15 @@ import styles from "./ManagerStyle.module.scss";
 
 const PredefinedGoals = (props: any) => {
   const [masterData, setMasterData] = useState<any[]>([]);
+  const [duplicateData, setDuplicateData] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
     ID: null,
     newCategory: "",
     isNew: false,
     isUpdate: false,
   });
- 
+  console.log(masterData, duplicateData, categories);
 
   const getDetails = () => {
     sp.web.lists
@@ -29,12 +31,12 @@ const PredefinedGoals = (props: any) => {
       .get()
       .then((items: any) => {
         console.log(items);
-
-        const filter = items.filter(
+        const filterData = items.filter(
           (item: any) => props.userEmail == item.AssignTo.EMail
         );
+        let tempArr: any = [];
         let ID = 0;
-        const categorizedItems = filter.reduce((acc: any, obj: any) => {
+        const categorizedItems = filterData.reduce((acc: any, obj: any) => {
           let existingCategory = acc.find(
             (item: any) => item.GoalCategory === obj.GoalCategory
           );
@@ -42,17 +44,9 @@ const PredefinedGoals = (props: any) => {
           if (existingCategory) {
             existingCategory.values.push({
               GoalName: obj.GoalName,
-              GoalCategory: obj.GoalCategory,
-              // AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-              // Role: obj.Role
-              //   ? obj.Role.map((role: any) => ({
-              //       name: role,
-              //       code: role,
-              //     }))
-              //   : [{ name: "", code: "" }],
-              // ID: obj.ID,
-              // isRowEdit: false,
-              // isNew: false,
+              isRowEdit: false,
+              isNew: false,
+              ID: obj.ID,
             });
           } else {
             acc.push({
@@ -61,25 +55,29 @@ const PredefinedGoals = (props: any) => {
               values: [
                 {
                   GoalName: obj.GoalName,
-
-                  // AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-                  // Role: obj.Role
-                  //   ? obj.Role.map((role: any) => ({
-                  //       name: role,
-                  //       code: role,
-                  //     }))
-                  //   : [{ name: "", code: "" }],
-                  // ID: obj.ID,
-                  // isRowEdit: false,
-                  // isNew: false,
+                  isRowEdit: false,
+                  isNew: false,
+                  ID: obj.ID,
                 },
               ],
             });
           }
           return acc;
         }, []);
+        filterData.forEach((obj: any) => {
+          tempArr.push({
+            ID: obj.ID ? obj.ID : null,
+            GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
+            GoalName: obj.GoalName ? obj.GoalName : "",
+            AssignToId: obj.AssignTo ? obj.AssignTo.Id : "",
+            isRowEdit: false,
+            isNew: false,
+          });
+        });
+        setMasterData([...tempArr]);
+        setDuplicateData([...tempArr]);
         console.log(categorizedItems);
-        setMasterData([...categorizedItems]);
+        setCategories([...categorizedItems]);
       })
       .catch((err) => {
         console.log("err", err);
@@ -93,19 +91,25 @@ const PredefinedGoals = (props: any) => {
   useEffect(() => {
     init();
   }, []);
- 
 
   const addNewCategory = (condition: boolean) => {
-    if (categoryHandleObj.isNew) {
-      const newCategory = categoryHandleObj.newCategory;
-      if (newCategory) {
-        setMasterData(prevState => [
+    let tempArr = [...duplicateData];
+    if (condition) {
+      if (categoryHandleObj.newCategory !== "") {
+        tempArr.push({
+          GoalCategory: categoryHandleObj.newCategory,
+          GoalName: "",
+          AssignToId: props.userEmail,
+          isRowEdit: true,
+          isNew: true,
+        });
+        setDuplicateData((prevState) => [
           ...prevState,
           {
-            GoalCategory: newCategory,
+            GoalCategory: categoryHandleObj.newCategory,
             mainID: prevState.length,
-            values :[]
-          }
+            values: [],
+          },
         ]);
       }
       setCategoryHandleObj({
@@ -115,10 +119,8 @@ const PredefinedGoals = (props: any) => {
         isUpdate: false,
       });
     }
-  }
-  console.log(masterData,"masterData PreDefinedGoals"); 
+  };
 
- 
   return (
     <>
       <div className={styles.addCategory}>
@@ -176,8 +178,7 @@ const PredefinedGoals = (props: any) => {
       </div>
       <div className="card">
         <Accordion activeIndex={0}>
-          {masterData.map((items, index) => {
-            console.log(items);
+          {categories.map((items, index) => {
             return (
               <AccordionTab header={items.GoalCategory}>
                 <div>
