@@ -6,12 +6,18 @@ import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputText } from "primereact/inputtext";
+import { HiPencil } from "react-icons/hi2";
+import { IoMdCheckmark } from "react-icons/io";
+import { MdOutlineClose } from "react-icons/md";
+// import { GrAdd } from "react-icons/gr";
+import { MdDelete } from "react-icons/md";
 import styles from "./ManagerStyle.module.scss";
 // import { HiPencil } from "react-icons/hi2";
 // import { GrAdd } from "react-icons/gr";
 // import { MdDelete } from "react-icons/md";
 
 const PredefinedGoals = (props: any) => {
+  const [totalPDGoals, setTotalPDGoals] = useState<any[]>([]);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -21,7 +27,12 @@ const PredefinedGoals = (props: any) => {
     isNew: false,
     isUpdate: false,
   });
-  console.log(masterData, duplicateData, categories);
+  const [assignUserObj, setAssignUserObj] = useState<any>({
+    userID: null,
+    userName: "",
+    userEmail: "",
+  });
+  console.log(masterData, duplicateData, categories, totalPDGoals);
 
   const getDetails = () => {
     sp.web.lists
@@ -31,6 +42,7 @@ const PredefinedGoals = (props: any) => {
       .get()
       .then((items: any) => {
         console.log(items);
+        setTotalPDGoals([...items]);
         const filterData = items.filter(
           (item: any) => props.userEmail == item.AssignTo.EMail
         );
@@ -85,6 +97,22 @@ const PredefinedGoals = (props: any) => {
   };
 
   const init = () => {
+    sp.web
+      .siteUsers()
+      .then((res) => {
+        res.forEach((user) => {
+          if (user.Email === props.userEmail) {
+            console.log(user);
+            setAssignUserObj({
+              ...assignUserObj,
+              userID: user.Id,
+              userName: user.Title,
+              userEmail: user.Email,
+            });
+          }
+        });
+      })
+      .catch((err) => console.log(err));
     getDetails();
   };
 
@@ -92,33 +120,152 @@ const PredefinedGoals = (props: any) => {
     init();
   }, []);
 
+  const goalSubmitFun = (data: any) => {
+    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
+    let tempObj = duplicateData[index];
+    let addObj: any = {
+      GoalName: tempObj.GoalName,
+      GoalCategory: tempObj.GoalCategory,
+    };
+    console.log(data, addObj);
+    if (data.isNew) {
+      sp.web.lists
+        .getByTitle(`PredefinedGoals`)
+        .items.add({
+          GoalName: tempObj.GoalName,
+          GoalCategory: tempObj.GoalCategory,
+          AssignToId: assignUserObj.userID,
+        })
+        .then((res) => console.log(res))
+        .catch((err) => console.log(err));
+    }
+  };
+  const editCancelFun = (data: any) => {
+    console.log(data);
+  };
+
+  const categoryHandleFun = (data: any) => {
+    let ID = 1;
+    let groupedArray = data.reduce((acc: any, obj: any) => {
+      let existingCategory = acc.find(
+        (item: any) => item.GoalCategory === obj.GoalCategory
+      );
+      if (existingCategory) {
+        existingCategory.values.push({
+          GoalName: obj.GoalName,
+          ID: obj.ID,
+          isRowEdit: obj.isRowEdit,
+          isNew: obj.isNew,
+        });
+      } else {
+        acc.push({
+          GoalCategory: obj.GoalCategory,
+          mainID: ID++,
+          values: [
+            {
+              GoalName: obj.GoalName,
+              ID: obj.ID,
+              isRowEdit: obj.isRowEdit,
+              isNew: obj.isNew,
+            },
+          ],
+        });
+      }
+      return acc;
+    }, []);
+    console.log(groupedArray);
+    setCategories([...groupedArray]);
+  };
+
   const addNewCategory = (condition: boolean) => {
     let tempArr = [...duplicateData];
     if (condition) {
       if (categoryHandleObj.newCategory !== "") {
         tempArr.push({
+          ID: Math.max(...totalPDGoals.map((o) => o.ID)) + 1,
           GoalCategory: categoryHandleObj.newCategory,
           GoalName: "",
           AssignToId: props.userEmail,
           isRowEdit: true,
           isNew: true,
         });
-        setDuplicateData((prevState) => [
-          ...prevState,
-          {
-            GoalCategory: categoryHandleObj.newCategory,
-            mainID: prevState.length,
-            values: [],
-          },
-        ]);
+        setDuplicateData([...tempArr]);
+        categoryHandleFun([...tempArr]);
+        setCategoryHandleObj({
+          ...categoryHandleObj,
+          newCategory: "",
+          isNew: false,
+          isUpdate: false,
+        });
       }
-      setCategoryHandleObj({
-        ...categoryHandleObj,
-        newCategory: "",
-        isNew: false,
-        isUpdate: false,
-      });
     }
+  };
+  const onChangeHandleFun = (value: any, type: string, id: number) => {
+    let tempArr = duplicateData.map((obj) => {
+      if (obj.ID == id) {
+        if (type === "GoalName") {
+          obj.GoalName = value;
+          return obj;
+        }
+        if (type === "Role") {
+          obj.Role = value;
+          return obj;
+        }
+        if (type === "AssignLevel") {
+          obj.AssignLevel = value;
+          if (value.name == "Organization") {
+            obj.Role = [];
+            return obj;
+          } else {
+            return obj;
+          }
+        }
+      } else {
+        return obj;
+      }
+    });
+    categoryHandleFun([...tempArr]);
+  };
+
+  const GoalnameBodyTemplate = (rowData: any) => {
+    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return currentObj[0].isRowEdit ? (
+      <InputText
+        value={rowData.GoalName}
+        type="text"
+        onChange={(e) =>
+          onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
+        }
+      />
+    ) : (
+      <div style={{ padding: "8px 0px 8px 15px" }}>{rowData.GoalName}</div>
+    );
+  };
+  const ActionBodyTemplate = (rowData: any) => {
+    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return currentObj[0].isRowEdit ? (
+      <div>
+        <IoMdCheckmark
+          // className={styles.submitIcon}
+          onClick={() => goalSubmitFun(rowData)}
+        />
+        <MdOutlineClose
+          // className={styles.cancelIcon}
+          onClick={() => editCancelFun(rowData)}
+        />
+      </div>
+    ) : (
+      <div>
+        <HiPencil
+        // className={styles.editIcon}
+        // onClick={(e) => editRowFunction(rowData)}
+        />
+        <MdDelete
+        // className={styles.cancelIcon}
+        // onClick={() => goalDeleteFun(rowData)}
+        />
+      </div>
+    );
   };
 
   return (
@@ -183,7 +330,19 @@ const PredefinedGoals = (props: any) => {
               <AccordionTab header={items.GoalCategory}>
                 <div>
                   <DataTable value={items.values} className="p-datatable-sm">
-                    <Column field="GoalName" header="Goal Name" />
+                    <Column
+                      className="col1"
+                      field="GoalName"
+                      header="Goal Name"
+                      style={{ width: "35%" }}
+                      body={GoalnameBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col4"
+                      header="Action"
+                      style={{ width: "5%" }}
+                      body={ActionBodyTemplate}
+                    ></Column>
                   </DataTable>
                 </div>
               </AccordionTab>
