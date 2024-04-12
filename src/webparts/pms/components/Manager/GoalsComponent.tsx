@@ -26,7 +26,7 @@ const GoalsComponent = (props: any) => {
         </div>
       </div>
       <div>
-        {show == "PredefinedGoals" ? <PredefinedGoals userEmail = {props.memberEmail} curUser = {props.curUser} /> : show == "SelfGoals" ? <SelfGoals curUser = {props.curUser}  /> : ""}
+        {show == "PredefinedGoals" ? <PredefinedGoals userEmail = {props.memberEmail} curUser = {props.curUser} isManager = {props.isManager} /> : show == "SelfGoals" ? <SelfGoals curUser = {props.curUser} isManager = {props.isManager} /> : ""}
       </div>
       </div>
     </>

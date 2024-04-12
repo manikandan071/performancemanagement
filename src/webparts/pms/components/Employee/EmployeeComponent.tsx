@@ -125,7 +125,7 @@ const EmployeeComponent = (props: any) => {
 
   return (
     <>
-      <div className={styles.container}>
+      <div className={show == "GoalsComponent" ? styles.container : ""} >
         <div className={styles.sample}>
           <Button
             variant="text"
@@ -134,6 +134,7 @@ const EmployeeComponent = (props: any) => {
               color: show == "AppraisalCycles" ? "white" : "black",
               borderBottom:show == "AppraisalCycles" ? "3px solid #303072" : "",
               backgroundColor:show == "AppraisalCycles" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+              display: show == "GoalsComponent" ? "flex": "none"
             }}
           >
             AppraisalCycles
@@ -169,6 +170,7 @@ const EmployeeComponent = (props: any) => {
         <GoalsComponent
           memberEmail={props.currentUserEmail}
           curUser={props.currentUserEmail}
+          isManager = {props.isManager}
         />
       ) : (
         ""
