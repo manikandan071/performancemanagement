@@ -1,0 +1,67 @@
+.addIconSec:hover .addIconSec{
+  background-color: green;
+}
+.accordionMain a{
+    /* display: inline-block; */
+    text-decoration: none;
+}
+.accordionMain .p-accordion-content{
+    padding: 0px;
+}
+.accordionMain a .category-sec .iconSec .addIcon{
+    color: green;
+    margin-right: 10px;
+    cursor: pointer;
+        padding: 5px;
+        font-size: 27px;
+}
+.accordionMain a .category-sec .iconSec .editIcon {
+    color: red;
+    margin-right: 10px;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 26px;
+}
+.accordionMain a .category-sec .iconSec .addIcon:hover{
+    background-color: green;
+    color: #fff;
+    padding: 5px;
+    font-size: 27px;
+}
+.accordionMain a .category-sec .iconSec .editIcon:hover{
+    background-color: red;
+    color: #fff;
+    padding: 5px;
+    font-size: 26px;
+}
+.goalsTable table thead tr th{
+    background-color: #90c788;
+}
+.goalsTable table tbody .p-dropdown,.goalsTable table tbody .p-inputtext{
+    width: 100%;
+}
+.p-dropdown-panel ul{
+    padding: 0px;
+    margin: 0px;
+}
+.p-multiselect-panel ul{
+    padding: 0px;
+    margin: 0px;
+}
+.goalsTable table tbody tr{
+    border-bottom: 1px solid #dee2e6;
+}
+.goalsTable table tbody td{
+    padding: 7px;
+}
+/* .goalsTable table thead tr th,.goalsTable table tbody tr th{
+    width: 25%;
+} */
+.p-confirm-popup{
+    left: 78% !important;;
+}
+.roleIcon{
+    font-size: 20px;
+    margin-right: 10px;
+    color:#07078f
+}

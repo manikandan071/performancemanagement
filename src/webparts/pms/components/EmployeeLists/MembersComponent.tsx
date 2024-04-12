@@ -8,13 +8,13 @@ import {
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
 import { TbTargetArrow } from "react-icons/tb";
-import styles from "./MembersStyle.module.scss"
+import styles from "./MembersStyle.module.scss";
 
 const MembersComponent = (props: any) => {
   const currentUser = props.currentUser;
   const currentUserName = props.CurrentUserName;
   const [membersList, setMembersList] = useState<any[]>([]);
-  
+
   const columns = [
     {
       key: "columns1",
@@ -80,7 +80,7 @@ const MembersComponent = (props: any) => {
           <div>
             <Button
               onClick={() => {
-                props.state("GoalsComponent",item.Email);             
+                props.state("GoalsComponent", item.Email);
               }}
               size="small"
             >
