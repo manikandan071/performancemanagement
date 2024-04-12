@@ -13,6 +13,7 @@ const MainComponent = (props: any) => {
 
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
+
   console.log(UserEmail, isNavOption);
 
   const handleCilck = (item: string) => {
@@ -85,11 +86,11 @@ const MainComponent = (props: any) => {
           </div>
         ) : isNavOption === "Manager" ? (
           <div>
-            <ManagerComponent ManageContext={UserEmail} UserName={UserName} />
+            <ManagerComponent ManageContext={UserEmail} UserName={UserName} isManager = {true} />
           </div>
         ) : (
           <div>
-            <EmployeeComponent currentUserEmail={UserEmail} />
+            <EmployeeComponent currentUserEmail={UserEmail} isManager = {false}/>
           </div>
         )}
       </div>

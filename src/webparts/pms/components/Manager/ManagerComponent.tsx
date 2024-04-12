@@ -15,6 +15,7 @@ import GoalsComponent from "./GoalsComponent";
 import { PiUserListBold } from "react-icons/pi";
 
 const ManagerComponent = (props: any) => {
+  console.log("props",props)
   const [masterData, setmasterData] = useState([{}]);
   const [ismember, setisMember] = useState("ManagerComponent");
   const [memberEmail, setMemberEmail] = useState("");
@@ -203,6 +204,7 @@ const ManagerComponent = (props: any) => {
             <GoalsComponent
               memberEmail={memberEmail}
               curUser={props.ManageContext}
+              isManager = {props.isManager}
             />
           ) : (
             ""

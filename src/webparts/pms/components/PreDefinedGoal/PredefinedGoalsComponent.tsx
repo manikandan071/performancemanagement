@@ -17,6 +17,7 @@ import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 
 const PredefinedGoals = (props: any) => {
+  console.log("predefinedGoalsProps",props);
   const [totalPDGoals, setTotalPDGoals] = useState<any[]>([]);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -500,10 +501,8 @@ const PredefinedGoals = (props: any) => {
                 className="accordionMain"
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                    {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
                     <span className="CategoryTitle">{items.GoalCategory}</span>
                     <div className="font-bold iconSec">
-                      {/* <Toast ref={toast} /> */}
                       {isPopup.delIndex === index && isPopup.delPopup && (
                         <Dialog
                           header="Header"
@@ -530,7 +529,7 @@ const PredefinedGoals = (props: any) => {
                               // onClick={confirm2}
                               text
                               icon="pi pi-times"
-                              label="Delete"
+                              label="Cancel"
                             ></Button>
                           </div>
                         </Dialog>
@@ -563,7 +562,6 @@ const PredefinedGoals = (props: any) => {
                         }}
                       />
                     </div>
-                    {/* <Badge value="3" className="ml-auto" /> */}
                   </span>
                 }
               >
