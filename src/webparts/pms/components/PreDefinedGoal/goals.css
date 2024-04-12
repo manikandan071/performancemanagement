@@ -65,3 +65,17 @@
     margin-right: 10px;
     color:#07078f
 }
+.commentIcon{
+    color: #64728c;
+        margin-right: 10px;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 27px;
+}
+.filledCommentIcon{
+    color: #ff7b1d;
+        margin-right: 10px;
+        cursor: pointer;
+        padding: 5px;
+        font-size: 27px;
+}

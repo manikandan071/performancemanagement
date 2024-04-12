@@ -978,10 +978,15 @@ const Goals = () => {
                             className="mr-2"
                           ></Button>
                           <Button
-                            // onClick={confirm2}
+                            onClick={() =>
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: false,
+                              })
+                            }
                             text
                             icon="pi pi-times"
-                            label="Delete"
+                            label="cancel"
                           ></Button>
                         </div>
                       </Dialog>

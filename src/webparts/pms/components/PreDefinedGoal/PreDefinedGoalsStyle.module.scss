@@ -27,3 +27,16 @@
     font-size: 27px;
     cursor: pointer;
 }
+.dialogFooter{
+    display: flex;
+    justify-content: end;
+    margin-top: 20px;
+    .submitBtn{
+        border-radius: 25px;
+        padding: 5px 20px;
+    }
+    .cancelBtn{
+        border-radius: 25px;
+        padding: 5px 20px;
+    }
+}
