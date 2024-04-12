@@ -30,12 +30,6 @@
 .p-accordion-content{
     padding: 0 !important;
 }
-
-a{
-    text-decoration: none !important;
-    color: white !important;
-    background-color: #dbd1f7 !important;
-}
 .p-datatable-table th{
     background-color: rgba(0, 128, 0, 0.618);
     color: white;
@@ -45,6 +39,11 @@ a{
 }
 .card {
     --bs-card-border-color : none !important
+}
+.p-accordion-header a{
+    text-decoration: none !important;
+    color: rgba(0, 0, 0, 0.515) !important;
+    background-color: #73f5f3 !important;
 }
 /* .goalIcon{
     font-size: 20px ;

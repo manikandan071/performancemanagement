@@ -12,7 +12,6 @@ import {
 import * as moment from "moment";
 import MembersComponent from "../EmployeeLists/MembersComponent";
 import GoalsComponent from "./GoalsComponent";
-// import { Button } from 'primereact/button';
 import { PiUserListBold } from "react-icons/pi";
 
 const ManagerComponent = (props: any) => {
@@ -139,7 +138,7 @@ const ManagerComponent = (props: any) => {
   return (
     <>
       <section>
-        <div className={styles.container}>
+        <div className={ ismember == "MembersComponent" || ismember == "GoalsComponent" ? styles.container : ""}>
           <div className={styles.sample}>
             <Button
               variant="text"
@@ -148,6 +147,7 @@ const ManagerComponent = (props: any) => {
                 color: ismember == "ManagerComponent" ? "white" : "black",
                 borderBottom:ismember == "ManagerComponent" ? "3px solid #303072" : "",
                 backgroundColor:ismember == "ManagerComponent"? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+                display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
               AppraisalCycles
