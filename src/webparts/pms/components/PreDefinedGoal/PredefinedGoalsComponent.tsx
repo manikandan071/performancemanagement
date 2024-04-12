@@ -13,6 +13,9 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
+import { Rating } from "primereact/rating";
+import { FaCommentDots } from "react-icons/fa6";
+// import { Rating } from "@fluentui/react-components";
 import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 
@@ -28,6 +31,12 @@ const PredefinedGoals = (props: any) => {
     isNew: false,
     isUpdate: false,
   });
+  const [rowHandleObj, setRowHandleObj] = useState<any>({
+    ID: null,
+    commentType: "",
+    comment: "",
+    isPopup: false,
+  });
   const [assignUserObj, setAssignUserObj] = useState<any>({
     userID: null,
     userName: "",
@@ -37,7 +46,14 @@ const PredefinedGoals = (props: any) => {
     delPopup: false,
     delIndex: null,
   });
-  console.log(masterData, duplicateData, categories, totalPDGoals);
+  console.log(
+    masterData,
+    duplicateData,
+    categories,
+    totalPDGoals,
+    rowHandleObj,
+    props
+  );
 
   const getDetails = () => {
     sp.web.lists
@@ -64,8 +80,12 @@ const PredefinedGoals = (props: any) => {
               isRowEdit: false,
               isNew: false,
               ID: obj.ID,
-              ManagerComments: obj.ManagerComments,
-              EmployeeComments: obj.EmployeeComments,
+              ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
+              EmployeeComments: obj.EmployeeComments
+                ? obj.EmployeeComments
+                : "",
+              ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
+              EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             });
           } else {
             acc.push({
@@ -77,8 +97,14 @@ const PredefinedGoals = (props: any) => {
                   isRowEdit: false,
                   isNew: false,
                   ID: obj.ID,
-                  ManagerComments: obj.ManagerComments,
-                  EmployeeComments: obj.EmployeeComments,
+                  ManagerComments: obj.ManagerComments
+                    ? obj.ManagerComments
+                    : "",
+                  EmployeeComments: obj.EmployeeComments
+                    ? obj.EmployeeComments
+                    : "",
+                  ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
+                  EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
                 },
               ],
             });
@@ -93,6 +119,8 @@ const PredefinedGoals = (props: any) => {
             AssignToId: obj.AssignTo ? obj.AssignTo.Id : "",
             ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
             EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
+            ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
+            EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             isRowEdit: false,
             isNew: false,
           });
@@ -106,7 +134,6 @@ const PredefinedGoals = (props: any) => {
         console.log("err", err);
       });
   };
-
   const init = () => {
     sp.web
       .siteUsers()
@@ -126,11 +153,9 @@ const PredefinedGoals = (props: any) => {
       .catch((err) => console.log(err));
     getDetails();
   };
-
   useEffect(() => {
     init();
   }, []);
-
   const categoryHandleFun = (data: any) => {
     let ID = 1;
     let groupedArray = data.reduce((acc: any, obj: any) => {
@@ -143,6 +168,10 @@ const PredefinedGoals = (props: any) => {
           ID: obj.ID,
           isRowEdit: obj.isRowEdit,
           isNew: obj.isNew,
+          ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
+          EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
+          ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
+          EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
         });
       } else {
         acc.push({
@@ -154,6 +183,12 @@ const PredefinedGoals = (props: any) => {
               ID: obj.ID,
               isRowEdit: obj.isRowEdit,
               isNew: obj.isNew,
+              ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
+              EmployeeComments: obj.EmployeeComments
+                ? obj.EmployeeComments
+                : "",
+              ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
+              EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             },
           ],
         });
@@ -175,6 +210,11 @@ const PredefinedGoals = (props: any) => {
         isRowEdit: true,
         isNew: true,
         GoalCategory: data.GoalCategory,
+        AssignToId: "",
+        ManagerComments: "",
+        EmployeeComments: "",
+        ManagerRating: 0,
+        EmployeeRating: 0,
       },
     ]);
     categoryHandleFun([
@@ -185,16 +225,24 @@ const PredefinedGoals = (props: any) => {
         isRowEdit: true,
         isNew: true,
         GoalCategory: data.GoalCategory,
+        AssignToId: "",
+        ManagerComments: "",
+        EmployeeComments: "",
+        ManagerRating: 0,
+        EmployeeRating: 0,
       },
     ]);
   };
-
   const goalSubmitFun = (data: any) => {
     let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
     let tempObj = duplicateData[index];
     let addObj: any = {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
+      ManagerComments: tempObj.ManagerComments,
+      EmployeeComments: tempObj.EmployeeComments,
+      ManagerRating: tempObj.ManagerRating,
+      EmployeeRating: tempObj.EmployeeRating,
     };
     console.log(data, addObj);
     if (data.isNew) {
@@ -204,6 +252,10 @@ const PredefinedGoals = (props: any) => {
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
           AssignToId: assignUserObj.userID,
+          ManagerComments: tempObj.ManagerComments,
+          EmployeeComments: tempObj.EmployeeComments,
+          ManagerRating: tempObj.ManagerRating,
+          EmployeeRating: tempObj.EmployeeRating,
         })
         .then((res) => {
           let duplicateArr = [...duplicateData];
@@ -236,7 +288,6 @@ const PredefinedGoals = (props: any) => {
         .catch((err) => console.log(err));
     }
   };
-
   const goalDeleteFun = (data: any) => {
     let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
     let delObj = duplicateData[index];
@@ -253,7 +304,6 @@ const PredefinedGoals = (props: any) => {
       })
       .catch((err) => console.log(err));
   };
-
   const editCancelFun = (data: any) => {
     let duplicateArr = [...duplicateData];
     let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
@@ -275,7 +325,6 @@ const PredefinedGoals = (props: any) => {
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
   };
-
   const addNewCategory = (condition: boolean) => {
     let tempArr = [...duplicateData];
     let tempCategoryArr = [...categories];
@@ -285,7 +334,11 @@ const PredefinedGoals = (props: any) => {
           ID: Math.max(...totalPDGoals.map((o) => o.ID)) + 1,
           GoalCategory: categoryHandleObj.newCategory,
           GoalName: "",
-          AssignToId: props.userEmail,
+          AssignToId: "",
+          ManagerComments: "",
+          EmployeeComments: "",
+          ManagerRating: 0,
+          EmployeeRating: 0,
           isRowEdit: true,
           isNew: true,
         });
@@ -335,7 +388,6 @@ const PredefinedGoals = (props: any) => {
       }
     }
   };
-
   const editCategoryFun = (ind: number) => {
     setCategoryHandleObj({
       ...categoryHandleObj,
@@ -368,34 +420,48 @@ const PredefinedGoals = (props: any) => {
         .catch((err) => console.log(err));
     });
   };
-
   const onChangeHandleFun = (value: any, type: string, id: number) => {
+    console.log(value);
+
     let tempArr = duplicateData.map((obj) => {
       if (obj.ID == id) {
         if (type === "GoalName") {
           obj.GoalName = value;
           return obj;
         }
-        if (type === "Role") {
-          obj.Role = value;
+        if (type === "Manager") {
+          obj.ManagerComments = value;
+          setRowHandleObj({
+            ...rowHandleObj,
+            comment: value,
+          });
+
           return obj;
         }
-        if (type === "AssignLevel") {
-          obj.AssignLevel = value;
-          if (value.name == "Organization") {
-            obj.Role = [];
-            return obj;
-          } else {
-            return obj;
-          }
+        if (type === "Employee") {
+          obj.EmployeeComments = value;
+          setRowHandleObj({
+            ...rowHandleObj,
+            comment: value,
+          });
+          return obj;
+        }
+        if (type === "EmployeeRating") {
+          obj.EmployeeRating = value;
+          return obj;
+        }
+        if (type === "ManagerRating") {
+          obj.ManagerRating = value;
+          return obj;
         }
       } else {
         return obj;
       }
     });
+    console.log(tempArr);
+
     categoryHandleFun([...tempArr]);
   };
-
   const GoalnameBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
@@ -408,7 +474,104 @@ const PredefinedGoals = (props: any) => {
         }
       />
     ) : (
-      <div style={{ padding: "8px 0px 8px 15px" }}>{rowData.GoalName}</div>
+      <div
+        style={{
+          padding: "8px 0px 8px 15px",
+          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+          color: "#64728c",
+          fontSize: "15px",
+        }}
+      >
+        {rowData.GoalName}
+      </div>
+    );
+  };
+  const ManagerCommentsBodyTemplate = (rowData: any) => {
+    // let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return (
+      <FaCommentDots
+        className={
+          rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
+        }
+        onClick={() =>
+          setRowHandleObj({
+            ...rowHandleObj,
+            ID: rowData.ID,
+            commentType: "Manager",
+            comment: rowData.ManagerComments,
+            isPopup: true,
+          })
+        }
+      />
+    );
+  };
+  const ManagerRatingBodyTemplate = (rowData: any) => {
+    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return currentObj[0].isRowEdit ? (
+      <div className="card flex justify-content-center">
+        <Rating
+          value={rowData.ManagerRating}
+          onChange={(e) =>
+            onChangeHandleFun(e.target.value, "ManagerRating", rowData.ID)
+          }
+          stars={5}
+          cancel={false}
+        />
+      </div>
+    ) : (
+      <div className="card flex justify-content-center">
+        <Rating
+          value={rowData.ManagerRating}
+          // onChange={(e) => setValue(e.value)}
+          stars={5}
+          disabled
+          cancel={false}
+        />
+      </div>
+    );
+  };
+  const EmployeeCommentsBodyTemplate = (rowData: any) => {
+    // let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return (
+      <FaCommentDots
+        className={
+          rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
+        }
+        onClick={() =>
+          setRowHandleObj({
+            ...rowHandleObj,
+            ID: rowData.ID,
+            commentType: "Employee",
+            comment: rowData.EmployeeComments,
+            isPopup: true,
+          })
+        }
+      />
+    );
+  };
+  const EmployeeRatingBodyTemplate = (rowData: any) => {
+    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    return currentObj[0].isRowEdit ? (
+      <div className="card flex justify-content-center">
+        <Rating
+          value={rowData.EmployeeRating}
+          onChange={(e) =>
+            onChangeHandleFun(e.target.value, "EmployeeRating", rowData.ID)
+          }
+          stars={5}
+          cancel={false}
+        />
+      </div>
+    ) : (
+      <div className="card flex justify-content-center">
+        <Rating
+          value={rowData.EmployeeRating}
+          // onChange={(e) => setValue(e.value)}
+          stars={5}
+          disabled
+          cancel={false}
+        />
+      </div>
     );
   };
   const ActionBodyTemplate = (rowData: any) => {
@@ -566,18 +729,91 @@ const PredefinedGoals = (props: any) => {
                 }
               >
                 <div className="goalsTable">
+                  <Dialog
+                    header={rowHandleObj.commentType + " Comments"}
+                    visible={rowHandleObj.isPopup}
+                    style={{ width: "50vw" }}
+                    onHide={() =>
+                      setRowHandleObj({ ...rowHandleObj, isPopup: false })
+                    }
+                  >
+                    <div>
+                      <InputTextarea
+                        style={{ width: "80%" }}
+                        rows={4}
+                        cols={30}
+                        value={rowHandleObj.comment}
+                        onChange={(e) =>
+                          onChangeHandleFun(
+                            e.target.value,
+                            rowHandleObj.commentType,
+                            rowHandleObj.ID
+                          )
+                        }
+                      />
+                    </div>
+                    <div className={styles.dialogFooter}>
+                      <Button
+                        className={styles.submitBtn}
+                        onClick={() =>
+                          setRowHandleObj({ ...rowHandleObj, isPopup: false })
+                        }
+                        label="Submit"
+                        severity="success"
+                      />
+                      <Button
+                        className={styles.cancelBtn}
+                        onClick={() =>
+                          setRowHandleObj({ ...rowHandleObj, isPopup: false })
+                        }
+                        text
+                        label="cancel"
+                      ></Button>
+                    </div>
+                  </Dialog>
                   <DataTable value={items.values} className="p-datatable-sm">
                     <Column
                       className="col1"
                       field="GoalName"
                       header="Goal Name"
-                      style={{ width: "35%" }}
+                      style={{ width: "30%" }}
                       body={GoalnameBodyTemplate}
                     ></Column>
+
+                    <Column
+                      className="col1"
+                      field="EmployeeRating"
+                      header="Employee Rating"
+                      style={{ width: "15%" }}
+                      body={EmployeeRatingBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col1"
+                      field="EmployeeComments"
+                      header="Employee Comments"
+                      style={{ width: "15%" }}
+                      body={EmployeeCommentsBodyTemplate}
+                    ></Column>
+
+                    <Column
+                      className="col1"
+                      field="ManagerRating"
+                      header="Manager Rating"
+                      style={{ width: "15%" }}
+                      body={ManagerRatingBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col1"
+                      field="ManagerComments"
+                      header="Manager Comments"
+                      style={{ width: "15%" }}
+                      body={ManagerCommentsBodyTemplate}
+                    ></Column>
+
                     <Column
                       className="col4"
                       header="Action"
-                      style={{ width: "5%" }}
+                      style={{ width: "10%" }}
                       body={ActionBodyTemplate}
                     ></Column>
                   </DataTable>
