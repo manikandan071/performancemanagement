@@ -1,6 +1,9 @@
 import * as React from "react";
 import { sp } from "@pnp/sp/presets/all";
 import { useState, useEffect } from "react";
+import { TbTargetArrow } from "react-icons/tb";
+import { AiOutlineSolution } from "react-icons/ai";
+import { TbUserHexagon } from "react-icons/tb";
 import styles from "./NavBarStyle.module.scss";
 
 const NavBar = (props: any) => {
@@ -29,15 +32,21 @@ const NavBar = (props: any) => {
           res.forEach((obj) => {
             if (obj.Employee.EMail == mail) {
               if (obj.Roles == "HR") {
-                setNavOptions([{ option: "Goals" }, { option: "Employee" }]);
+                setNavOptions([
+                  { option: "Goals", icon: "TbTargetArrow" },
+                  { option: "Employee", icon: "TbUserHexagon" },
+                ]);
                 setTapName("Goals");
                 props.handleCilck("Goals");
               } else if (obj.Roles == "Manager") {
-                setNavOptions([{ option: "Manager" }, { option: "Employee" }]);
+                setNavOptions([
+                  { option: "Manager", icon: "AiOutlineSolution" },
+                  { option: "Employee", icon: "TbUserHexagon" },
+                ]);
                 setTapName("Manager");
                 props.handleCilck("Manager");
               } else {
-                setNavOptions([{ option: "Employee" }]);
+                setNavOptions([{ option: "Employee", icon: "TbUserHexagon" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
               }
@@ -136,8 +145,22 @@ const NavBar = (props: any) => {
                     ? styles.seletedOptionContainer
                     : styles.optionContainer
                 }
+                style={{
+                  textAlign: props.isNav ? "left" : "center",
+                  padding: props.isNav ? "" : "5px 0px 5px 0px",
+                }}
               >
-                {obj.option}
+                {props.isNav ? (
+                  obj.option
+                ) : obj.option === "Goals" ? (
+                  <TbTargetArrow />
+                ) : obj.option === "Manager" ? (
+                  <AiOutlineSolution />
+                ) : obj.option === "Employee" ? (
+                  <TbUserHexagon />
+                ) : (
+                  ""
+                )}
               </div>
             </div>
           );

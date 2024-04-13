@@ -33,7 +33,7 @@ const MainComponent = (props: any) => {
           width: isNavBar ? "15%" : "5%",
           height: "100vh",
           position: "relative",
-          transition: "all 1s",
+          transition: "all 0.5s",
         }}
       >
         {!isNavBar ? (
@@ -41,13 +41,15 @@ const MainComponent = (props: any) => {
             className="bi bi-4-circle"
             style={{
               position: "absolute",
-              left: "94%",
+              right: "-13px",
               top: "2%",
               color: "#000",
               backgroundColor: "#fff",
               borderRadius: "50px",
               fontSize: "25px",
               cursor: "pointer",
+              width: "30px",
+              height: "30px",
             }}
             onClick={() => setIsNavBar(!isNavBar)}
           />
@@ -56,13 +58,15 @@ const MainComponent = (props: any) => {
             className="bi bi-4-circle"
             style={{
               position: "absolute",
-              left: "94%",
+              right: "-13px",
               top: "2%",
               color: "#000",
               backgroundColor: "#fff",
               borderRadius: "50px",
               fontSize: "25px",
               cursor: "pointer",
+              width: "30px",
+              height: "30px",
             }}
             onClick={() => setIsNavBar(!isNavBar)}
           />
@@ -82,11 +86,15 @@ const MainComponent = (props: any) => {
           </div>
         ) : isNavOption === "Manager" ? (
           <div>
-            <ManagerComponent ManageContext={UserEmail} UserName={UserName} isManager = {true} />
+            <ManagerComponent
+              ManageContext={UserEmail}
+              UserName={UserName}
+              isManager={true}
+            />
           </div>
         ) : (
           <div>
-            <EmployeeComponent currentUserEmail={UserEmail} isManager = {false}/>
+            <EmployeeComponent currentUserEmail={UserEmail} isManager={false} />
           </div>
         )}
       </div>
