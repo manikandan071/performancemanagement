@@ -81,9 +81,7 @@ const PredefinedGoals = (props: any) => {
               isNew: false,
               ID: obj.ID,
               ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
-              EmployeeComments: obj.EmployeeComments
-                ? obj.EmployeeComments
-                : "",
+              EmployeeComments: obj.EmployeeComments? obj.EmployeeComments : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             });
@@ -97,12 +95,8 @@ const PredefinedGoals = (props: any) => {
                   isRowEdit: false,
                   isNew: false,
                   ID: obj.ID,
-                  ManagerComments: obj.ManagerComments
-                    ? obj.ManagerComments
-                    : "",
-                  EmployeeComments: obj.EmployeeComments
-                    ? obj.EmployeeComments
-                    : "",
+                  ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
+                  EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
                   ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
                   EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
                 },
@@ -184,9 +178,7 @@ const PredefinedGoals = (props: any) => {
               isRowEdit: obj.isRowEdit,
               isNew: obj.isNew,
               ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
-              EmployeeComments: obj.EmployeeComments
-                ? obj.EmployeeComments
-                : "",
+              EmployeeComments: obj.EmployeeComments? obj.EmployeeComments : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             },
@@ -779,7 +771,6 @@ const PredefinedGoals = (props: any) => {
                       style={{ width: "30%" }}
                       body={GoalnameBodyTemplate}
                     ></Column>
-
                     <Column
                       className="col1"
                       field="EmployeeRating"
@@ -794,7 +785,6 @@ const PredefinedGoals = (props: any) => {
                       style={{ width: "15%" }}
                       body={EmployeeCommentsBodyTemplate}
                     ></Column>
-
                     <Column
                       className="col1"
                       field="ManagerRating"

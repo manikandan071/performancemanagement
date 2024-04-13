@@ -26,12 +26,8 @@ const MainComponent = (props: any) => {
         display: "flex",
         width: "100%",
         position: "relative",
-        // flexWrap: "wrap",
       }}
     >
-      {/* <div style={{ width: "100%" }}>
-        <img src="../assets/images/companyLogo.jpg" alt="" />
-      </div> */}
       <div
         style={{
           width: isNavBar ? "15%" : "5%",
