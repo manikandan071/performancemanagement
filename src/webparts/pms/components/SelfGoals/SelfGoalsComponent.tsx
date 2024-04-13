@@ -48,6 +48,7 @@ const SelfGoals = (props :any) => {
       .get()
       .then((items) => {
         setTotalSFGoals([...items]);
+        console.log("items",items);
         const filterData = items.filter((item) => {
           return item.Employee.EMail == props.curUser
         })
