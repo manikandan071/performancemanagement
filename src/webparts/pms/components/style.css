@@ -31,8 +31,10 @@
     padding: 0 !important;
 }
 .p-datatable-table th{
-    background-color: rgba(0, 128, 0, 0.618);
-    color: white;
+    background-color: #fcfcfc !important;
+    color: #000000ad;
+    font-size: 16px;
+    font-weight: 650;
 }
 .p-accordion .p-accordion-header .p-accordion-header-link{
     border: none !important;
@@ -43,7 +45,7 @@
 .p-accordion-header a{
     text-decoration: none !important;
     color: rgba(0, 0, 0, 0.515) !important;
-    background-color: #73f5f3 !important;
+    background-color: #a6a2ce8f !important;
 }
 /* .goalIcon{
     font-size: 20px ;
