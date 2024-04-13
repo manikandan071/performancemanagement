@@ -689,7 +689,7 @@ const PredefinedGoals = (props: any) => {
                               className="mr-2"
                             ></Button>
                             <Button
-                              // onClick={confirm2}
+                              onClick={() => setIsPopup({ ...isPopup, delIndex: null, delPopup: false })}
                               text
                               icon="pi pi-times"
                               label="Cancel"
