@@ -85,7 +85,9 @@ const PredefinedGoals = (props: any) => {
               isNew: false,
               ID: obj.ID,
               ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
-              EmployeeComments: obj.EmployeeComments? obj.EmployeeComments : "",
+              EmployeeComments: obj.EmployeeComments
+                ? obj.EmployeeComments
+                : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             });
@@ -99,8 +101,12 @@ const PredefinedGoals = (props: any) => {
                   isRowEdit: false,
                   isNew: false,
                   ID: obj.ID,
-                  ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
-                  EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
+                  ManagerComments: obj.ManagerComments
+                    ? obj.ManagerComments
+                    : "",
+                  EmployeeComments: obj.EmployeeComments
+                    ? obj.EmployeeComments
+                    : "",
                   ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
                   EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
                 },
@@ -182,7 +188,9 @@ const PredefinedGoals = (props: any) => {
               isRowEdit: obj.isRowEdit,
               isNew: obj.isNew,
               ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
-              EmployeeComments: obj.EmployeeComments? obj.EmployeeComments : "",
+              EmployeeComments: obj.EmployeeComments
+                ? obj.EmployeeComments
+                : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
             },
@@ -465,6 +473,7 @@ const PredefinedGoals = (props: any) => {
         value={rowData.GoalName}
         rows={2}
         cols={30}
+        disabled={!props.isManager}
         onChange={(e) =>
           onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
         }
@@ -593,10 +602,12 @@ const PredefinedGoals = (props: any) => {
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
         />
-        <MdDelete
-          className={styles.cancelIcon}
-          onClick={() => goalDeleteFun(rowData)}
-        />
+        {props.isManager ? (
+          <MdDelete
+            className={styles.cancelIcon}
+            onClick={() => goalDeleteFun(rowData)}
+          />
+        ) : null}
       </div>
     );
   };
@@ -647,13 +658,15 @@ const PredefinedGoals = (props: any) => {
               }}
             />
           </div>
-        ) : (
+        ) : props.isManager ? (
           <Button
             label="New Category"
             onClick={(e) =>
               setCategoryHandleObj({ ...categoryHandleObj, isNew: true })
             }
           />
+        ) : (
+          <></>
         )}
       </div>
       <div className="card">
@@ -665,66 +678,68 @@ const PredefinedGoals = (props: any) => {
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                     <span className="CategoryTitle">{items.GoalCategory}</span>
-                    <div className="font-bold iconSec">
-                      {isPopup.delIndex === index && isPopup.delPopup && (
-                        <Dialog
-                          header="Header"
-                          visible={isPopup.delPopup}
-                          style={{ width: "25%" }}
-                          onClick={(e) => e.stopPropagation()}
-                          onHide={() =>
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: false,
-                              delIndex: null,
-                            })
-                          }
-                        >
-                          <div>
-                            <p>Do you want to delete this category?</p>
-                            <Button
-                              onClick={() => deleteCategoryFun()}
-                              icon="pi pi-check"
-                              label="Confirm"
-                              className="mr-2"
-                            ></Button>
-                            <Button
-                              // onClick={confirm2}
-                              text
-                              icon="pi pi-times"
-                              label="Cancel"
-                            ></Button>
-                          </div>
-                        </Dialog>
-                      )}
-                      {items.values.filter((val: any) => val.isNew).length ===
-                      0 ? (
-                        <GrAdd
-                          className="addIcon"
-                          onClick={() => addGoalFunction(index)}
+                    {props.isManager ? (
+                      <div className="font-bold iconSec">
+                        {isPopup.delIndex === index && isPopup.delPopup && (
+                          <Dialog
+                            header="Header"
+                            visible={isPopup.delPopup}
+                            style={{ width: "25%" }}
+                            onClick={(e) => e.stopPropagation()}
+                            onHide={() =>
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: false,
+                                delIndex: null,
+                              })
+                            }
+                          >
+                            <div>
+                              <p>Do you want to delete this category?</p>
+                              <Button
+                                onClick={() => deleteCategoryFun()}
+                                icon="pi pi-check"
+                                label="Confirm"
+                                className="mr-2"
+                              ></Button>
+                              <Button
+                                // onClick={confirm2}
+                                text
+                                icon="pi pi-times"
+                                label="Cancel"
+                              ></Button>
+                            </div>
+                          </Dialog>
+                        )}
+                        {items.values.filter((val: any) => val.isNew).length ===
+                        0 ? (
+                          <GrAdd
+                            className="addIcon"
+                            onClick={() => addGoalFunction(index)}
+                          />
+                        ) : null}
+                        <HiPencil
+                          className="editIcon"
+                          onClick={(event) => {
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              editCategoryFun(index);
+                          }}
                         />
-                      ) : null}
-                      <HiPencil
-                        className="editIcon"
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            editCategoryFun(index);
-                        }}
-                      />
-                      <MdDelete
-                        className={styles.cancelIcon}
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: true,
-                              delIndex: index,
-                            });
-                        }}
-                      />
-                    </div>
+                        <MdDelete
+                          className={styles.cancelIcon}
+                          onClick={(event) => {
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: true,
+                                delIndex: index,
+                              });
+                          }}
+                        />
+                      </div>
+                    ) : null}
                   </span>
                 }
               >
