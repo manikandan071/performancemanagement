@@ -20,7 +20,7 @@ import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 
 const PredefinedGoals = (props: any) => {
-  console.log("predefinedGoalsProps",props);
+  console.log("predefinedGoalsProps", props);
   const [totalPDGoals, setTotalPDGoals] = useState<any[]>([]);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -36,6 +36,7 @@ const PredefinedGoals = (props: any) => {
     commentType: "",
     comment: "",
     isPopup: false,
+    isEdit: false,
   });
   const [assignUserObj, setAssignUserObj] = useState<any>({
     userID: null,
@@ -65,7 +66,10 @@ const PredefinedGoals = (props: any) => {
         console.log(items);
         setTotalPDGoals([...items]);
         const filterData = items.filter(
-          (item: any) => props.userEmail == item.AssignTo.EMail
+          (item: any) =>
+            props.userEmail == item.AssignTo.EMail &&
+            !item.isDelete &&
+            !item.isDeleteHR
         );
         let tempArr: any = [];
         let ID = 1;
@@ -500,6 +504,7 @@ const PredefinedGoals = (props: any) => {
             commentType: "Manager",
             comment: rowData.ManagerComments,
             isPopup: true,
+            isEdit: rowData.isRowEdit,
           })
         }
       />
@@ -514,6 +519,7 @@ const PredefinedGoals = (props: any) => {
           onChange={(e) =>
             onChangeHandleFun(e.target.value, "ManagerRating", rowData.ID)
           }
+          disabled={!props.isManager}
           stars={5}
           cancel={false}
         />
@@ -544,6 +550,7 @@ const PredefinedGoals = (props: any) => {
             commentType: "Employee",
             comment: rowData.EmployeeComments,
             isPopup: true,
+            isEdit: rowData.isRowEdit,
           })
         }
       />
@@ -558,6 +565,7 @@ const PredefinedGoals = (props: any) => {
           onChange={(e) =>
             onChangeHandleFun(e.target.value, "EmployeeRating", rowData.ID)
           }
+          disabled={props.isManager}
           stars={5}
           cancel={false}
         />
@@ -743,6 +751,17 @@ const PredefinedGoals = (props: any) => {
                         rows={4}
                         cols={30}
                         value={rowHandleObj.comment}
+                        disabled={
+                          props.isManager &&
+                          rowHandleObj.commentType === "Manager" &&
+                          rowHandleObj.isEdit
+                            ? false
+                            : !props.isManager &&
+                              rowHandleObj.commentType === "Employee" &&
+                              rowHandleObj.isEdit
+                            ? false
+                            : true
+                        }
                         onChange={(e) =>
                           onChangeHandleFun(
                             e.target.value,
@@ -757,6 +776,17 @@ const PredefinedGoals = (props: any) => {
                         className={styles.submitBtn}
                         onClick={() =>
                           setRowHandleObj({ ...rowHandleObj, isPopup: false })
+                        }
+                        hidden={
+                          props.isManager &&
+                          rowHandleObj.commentType === "Manager" &&
+                          rowHandleObj.isEdit
+                            ? false
+                            : !props.isManager &&
+                              rowHandleObj.commentType === "Employee" &&
+                              rowHandleObj.isEdit
+                            ? false
+                            : true
                         }
                         label="Submit"
                         severity="success"
