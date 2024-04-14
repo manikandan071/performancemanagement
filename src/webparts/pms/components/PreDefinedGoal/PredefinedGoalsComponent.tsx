@@ -37,6 +37,7 @@ const PredefinedGoals = (props: any) => {
     comment: "",
     isPopup: false,
     isEdit: false,
+    files: [],
   });
   const [assignUserObj, setAssignUserObj] = useState<any>({
     userID: null,
@@ -59,8 +60,15 @@ const PredefinedGoals = (props: any) => {
   const getDetails = () => {
     sp.web.lists
       .getByTitle("PredefinedGoals")
-      .items.select("*", "AssignTo/EMail", "AssignTo/Id", "AssignTo/Title")
-      .expand("AssignTo")
+      .items.select(
+        "*",
+        "AssignTo/EMail",
+        "AssignTo/Id",
+        "AssignTo/Title",
+        "Attachments",
+        "AttachmentFiles"
+      )
+      .expand("AssignTo,AttachmentFiles")
       .get()
       .then((items: any) => {
         console.log(items);
@@ -90,6 +98,14 @@ const PredefinedGoals = (props: any) => {
                 : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
+              AttachmentFiles: obj.AttachmentFiles
+                ? obj.AttachmentFiles.map((file: any) => {
+                    return {
+                      FileName: file.FileName,
+                      ServerRelativeUrl: file.ServerRelativeUrl,
+                    };
+                  })
+                : [],
             });
           } else {
             acc.push({
@@ -109,6 +125,14 @@ const PredefinedGoals = (props: any) => {
                     : "",
                   ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
                   EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
+                  AttachmentFiles: obj.AttachmentFiles
+                    ? obj.AttachmentFiles.map((file: any) => {
+                        return {
+                          FileName: file.FileName,
+                          ServerRelativeUrl: file.ServerRelativeUrl,
+                        };
+                      })
+                    : [],
                 },
               ],
             });
@@ -125,6 +149,14 @@ const PredefinedGoals = (props: any) => {
             EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
             ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
             EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
+            AttachmentFiles: obj.AttachmentFiles
+              ? obj.AttachmentFiles.map((file: any) => {
+                  return {
+                    FileName: file.FileName,
+                    ServerRelativeUrl: file.ServerRelativeUrl,
+                  };
+                })
+              : [],
             isRowEdit: false,
             isNew: false,
           });
@@ -552,6 +584,7 @@ const PredefinedGoals = (props: any) => {
             comment: rowData.EmployeeComments,
             isPopup: true,
             isEdit: rowData.isRowEdit,
+            files: rowData.AttachmentFiles,
           })
         }
       />
@@ -611,6 +644,15 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
+
+  // const FileFunction = () => {
+  //   let files = duplicateData.filter((obj) => obj.ID == rowHandleObj.ID);
+  //   if (files.length > 0) {
+  //     files.forEach((file) => {
+  //       return <span>{file.FileName}</span>;
+  //     });
+  //   }
+  // };
 
   return (
     <>
@@ -777,6 +819,20 @@ const PredefinedGoals = (props: any) => {
                           )
                         }
                       />
+                    </div>
+                    <div>
+                      {rowHandleObj.files.map((file: any) => {
+                        return (
+                          <div style={{ marginTop: "20px" }}>
+                            <a
+                              className="filename"
+                              href={file.ServerRelativeUrl}
+                            >
+                              {file.FileName}
+                            </a>
+                          </div>
+                        );
+                      })}
                     </div>
                     <div className={styles.dialogFooter}>
                       <Button
