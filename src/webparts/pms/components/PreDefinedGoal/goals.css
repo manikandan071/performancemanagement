@@ -12,8 +12,8 @@
     color: green;
     margin-right: 10px;
     cursor: pointer;
-        padding: 5px;
-        font-size: 27px;
+    padding: 5px;
+    font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .editIcon {
     color: red;
@@ -22,14 +22,26 @@
     padding: 5px;
     font-size: 26px;
 }
+.accordionMain a .category-sec .iconSec .deleteIcon {
+    color: red;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 26px;
+}
 .accordionMain a .category-sec .iconSec .addIcon:hover{
-    background-color: green;
+    background-color: rgba(0, 128, 0, 0.559);
     color: #fff;
     padding: 5px;
-    font-size: 27px;
+    font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .editIcon:hover{
     background-color: red;
+    color: #fff;
+    padding: 5px;
+    font-size: 26px;
+}
+.accordionMain a .category-sec .iconSec .deleteIcon:hover {
+    background-color: red !important;
     color: #fff;
     padding: 5px;
     font-size: 26px;

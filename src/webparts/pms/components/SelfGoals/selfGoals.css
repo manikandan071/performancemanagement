@@ -1,0 +1,38 @@
+.addIcon{
+    color: green;
+    margin-right: 10px;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 26px;
+}
+.editIcon {
+    color: red;
+    margin-right: 10px;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 26px;
+}
+.deleteIcon {
+    color: red;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 26px;
+}
+.addIcon:hover{
+    background-color: rgba(0, 128, 0, 0.559);
+    color: #fff;
+    padding: 5px;
+    font-size: 26px;
+}
+.editIcon:hover{
+    background-color: red;
+    color: #fff;
+    padding: 5px;
+    font-size: 26px;
+}
+.deleteIcon:hover {
+    background-color: red !important;
+    color: #fff;
+    padding: 5px;
+    font-size: 26px;
+}

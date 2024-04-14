@@ -517,6 +517,7 @@ const PredefinedGoals = (props: any) => {
           fontFamily: "Roboto, Arial, Helvetica, sans-serif",
           color: "#64728c",
           fontSize: "15px",
+          width : "100%"
         }}
       >
         {rowData.GoalName}
@@ -745,7 +746,13 @@ const PredefinedGoals = (props: any) => {
                                 className="mr-2"
                               ></Button>
                               <Button
-                                // onClick={confirm2}
+                                onClick={() =>
+                                  setIsPopup({
+                                    ...isPopup,
+                                    delIndex: null,
+                                    delPopup: false,
+                                  })
+                                }
                                 text
                                 icon="pi pi-times"
                                 label="Cancel"
@@ -769,7 +776,7 @@ const PredefinedGoals = (props: any) => {
                           }}
                         />
                         <MdDelete
-                          className={styles.cancelIcon}
+                         className="deleteIcon"
                           onClick={(event) => {
                             event.preventDefault(),
                               event.stopPropagation(),
@@ -900,7 +907,6 @@ const PredefinedGoals = (props: any) => {
                       style={{ width: "15%" }}
                       body={ManagerCommentsBodyTemplate}
                     ></Column>
-
                     <Column
                       className="col4"
                       header="Action"

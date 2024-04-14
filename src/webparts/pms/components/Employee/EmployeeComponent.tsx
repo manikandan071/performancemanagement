@@ -133,7 +133,7 @@ const EmployeeComponent = (props: any) => {
             style={{
               color: show == "AppraisalCycles" ? "white" : "black",
               borderBottom:show == "AppraisalCycles" ? "3px solid #303072" : "",
-              backgroundColor:show == "AppraisalCycles" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+              backgroundColor:show == "AppraisalCycles" ? "#a6a2ce8f": "#f5f5f5",
               display: show == "GoalsComponent" ? "flex": "none"
             }}
           >
@@ -149,7 +149,7 @@ const EmployeeComponent = (props: any) => {
             style={{
               color: show == "GoalsComponent" ? "white" : "black",
               borderBottom:show == "GoalsComponent" ? "3px solid #303072" : "",
-              backgroundColor:show == "GoalsComponent" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+              backgroundColor:show == "GoalsComponent" ? "#a6a2ce8f": "#f5f5f5",
             }}
           >
             Goals

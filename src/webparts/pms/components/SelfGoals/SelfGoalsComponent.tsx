@@ -15,6 +15,7 @@ import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
+import "./selfGoals.css"
 import styles from "./SelfGoalsStyle.module.scss";
 
 const SelfGoals = (props: any) => {
@@ -376,7 +377,17 @@ const SelfGoals = (props: any) => {
         disabled={props.isManager ? true : false}
       />
     ) : (
-      <div style={{ padding: "8px 0px 8px 15px" }}>{rowData.GoalName}</div>
+      <div
+        style={{
+          padding: "8px 0px 8px 15px",
+          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+          color: "#64728c",
+          fontSize: "15px",
+          width : "100%"
+        }}
+      >
+        {rowData.GoalName}
+      </div>
     );
   };
 
@@ -494,13 +505,14 @@ const SelfGoals = (props: any) => {
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
         />
-        {props.isManager ? "" : (
-            <MdDelete
+        {props.isManager ? (
+          ""
+        ) : (
+          <MdDelete
             className={styles.cancelIcon}
             onClick={() => goalDeleteFun(rowData)}
           />
         )}
-       
       </div>
     );
   };
@@ -663,73 +675,75 @@ const SelfGoals = (props: any) => {
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                     <span className="CategoryTitle">{items.GoalCategory}</span>
-                    {props.isManager ? "" : (
+                    {props.isManager ? (
+                      ""
+                    ) : (
                       <div className="font-bold iconSec">
-                      {isPopup.delIndex === index && isPopup.delPopup && (
-                        <Dialog
-                          header="Header"
-                          visible={isPopup.delPopup}
-                          style={{ width: "25%" }}
-                          onClick={(e) => e.stopPropagation()}
-                          onHide={() =>
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: false,
-                              delIndex: null,
-                            })
-                          }
-                        >
-                          <div>
-                            <p>Do you want to delete this category?</p>
-                            <Button
-                              onClick={() => deleteCategoryFun()}
-                              icon="pi pi-check"
-                              label="Confirm"
-                              className="mr-2"
-                            ></Button>
-                            <Button
-                              onClick={() =>
-                                setIsPopup({
-                                  ...isPopup,
-                                  delIndex: null,
-                                  delPopup: false,
-                                })
-                              }
-                              text
-                              icon="pi pi-times"
-                              label="Cancel"
-                            ></Button>
-                          </div>
-                        </Dialog>
-                      )}
-                      {items.values.filter((val: any) => val.isNew).length ===
-                      0 ? (
-                        <GrAdd
-                          className={styles.addIcon}
-                          onClick={() => addGoalFunction(index)}
+                        {isPopup.delIndex === index && isPopup.delPopup && (
+                          <Dialog
+                            header="Header"
+                            visible={isPopup.delPopup}
+                            style={{ width: "25%" }}
+                            onClick={(e) => e.stopPropagation()}
+                            onHide={() =>
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: false,
+                                delIndex: null,
+                              })
+                            }
+                          >
+                            <div>
+                              <p>Do you want to delete this category?</p>
+                              <Button
+                                onClick={() => deleteCategoryFun()}
+                                icon="pi pi-check"
+                                label="Confirm"
+                                className="mr-2"
+                              ></Button>
+                              <Button
+                                onClick={() =>
+                                  setIsPopup({
+                                    ...isPopup,
+                                    delIndex: null,
+                                    delPopup: false,
+                                  })
+                                }
+                                text
+                                icon="pi pi-times"
+                                label="Cancel"
+                              ></Button>
+                            </div>
+                          </Dialog>
+                        )}
+                        {items.values.filter((val: any) => val.isNew).length ===
+                        0 ? (
+                          <GrAdd
+                            className="addIcon"
+                            onClick={() => addGoalFunction(index)}
+                          />
+                        ) : null}
+                        <HiPencil
+                          className="editIcon"
+                          onClick={(event) => {
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              editCategoryFun(index);
+                          }}
                         />
-                      ) : null}
-                      <HiPencil
-                        className={styles.editIcon}
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            editCategoryFun(index);
-                        }}
-                      />
-                      <MdDelete
-                        className={styles.cancelIcon}
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: true,
-                              delIndex: index,
-                            });
-                        }}
-                      />
-                    </div>
+                        <MdDelete
+                          className="deleteIcon"
+                          onClick={(event) => {
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: true,
+                                delIndex: index,
+                              });
+                          }}
+                        />
+                      </div>
                     )}
                   </span>
                 }

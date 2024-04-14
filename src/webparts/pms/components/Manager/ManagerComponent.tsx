@@ -93,7 +93,7 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("MembersComponent")}
             >
               <PiUserListBold
-                style={{ color: "#00000087", fontSize: "20px" }}
+                style={{ color: "#ff7b1d ", fontSize: "20px" }}
               />
             </Button>
           </div>
@@ -147,7 +147,7 @@ const ManagerComponent = (props: any) => {
               style={{
                 color: ismember == "ManagerComponent" ? "white" : "black",
                 borderBottom:ismember == "ManagerComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "ManagerComponent"? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+                backgroundColor:ismember == "ManagerComponent"? "#a6a2ce8f": "#f5f5f5",
                 display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
@@ -161,7 +161,7 @@ const ManagerComponent = (props: any) => {
               style={{
                 color: ismember == "MembersComponent" ? "white" : "black",
                 borderBottom:ismember == "MembersComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "MembersComponent" ? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+                backgroundColor:ismember == "MembersComponent" ? "#a6a2ce8f": "#f5f5f5",
                 display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
@@ -175,7 +175,7 @@ const ManagerComponent = (props: any) => {
               style={{
                 color: ismember == "GoalsComponent" ? "white" : "black",
                 borderBottom:ismember == "GoalsComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "GoalsComponent"? "rgba(0, 128, 0, 0.379)": "#f5f5f5",
+                backgroundColor:ismember == "GoalsComponent"? "#a6a2ce8f": "#f5f5f5",
                 display: ismember == "GoalsComponent" ? "" : "none",
               }}
             >
