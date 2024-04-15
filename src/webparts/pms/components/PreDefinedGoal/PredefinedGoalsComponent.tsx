@@ -511,6 +511,7 @@ const PredefinedGoals = (props: any) => {
         }
       />
     ) : (
+      // rowData.GoalName
       <div
         style={{
           padding: "8px 0px 8px 15px",
@@ -776,7 +777,7 @@ const PredefinedGoals = (props: any) => {
                           }}
                         />
                         <MdDelete
-                         className="deleteIcon"
+                          className="deleteIcon"
                           onClick={(event) => {
                             event.preventDefault(),
                               event.stopPropagation(),
