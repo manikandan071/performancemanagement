@@ -15,7 +15,7 @@ import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
-import "./selfGoals.css"
+import "./selfGoals.css";
 import styles from "./SelfGoalsStyle.module.scss";
 
 const SelfGoals = (props: any) => {
@@ -383,7 +383,7 @@ const SelfGoals = (props: any) => {
           fontFamily: "Roboto, Arial, Helvetica, sans-serif",
           color: "#64728c",
           fontSize: "15px",
-          width : "100%"
+          width: "100%",
         }}
       >
         {rowData.GoalName}
@@ -862,6 +862,20 @@ const SelfGoals = (props: any) => {
           })}
         </Accordion>
       </div>
+      {categories.length > 0 ? (
+        <div></div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: "17px",
+            fontWeight: "600",
+          }}
+        >
+          No Data Found
+        </div>
+      )}
     </>
   );
 };
