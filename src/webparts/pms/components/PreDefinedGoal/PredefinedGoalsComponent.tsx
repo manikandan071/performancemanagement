@@ -15,6 +15,7 @@ import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
+import { FileUpload } from "primereact/fileupload";
 // import { Rating } from "@fluentui/react-components";
 import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
@@ -103,6 +104,7 @@ const PredefinedGoals = (props: any) => {
                     return {
                       FileName: file.FileName,
                       ServerRelativeUrl: file.ServerRelativeUrl,
+                      isStatus: "uploaded",
                     };
                   })
                 : [],
@@ -130,6 +132,7 @@ const PredefinedGoals = (props: any) => {
                         return {
                           FileName: file.FileName,
                           ServerRelativeUrl: file.ServerRelativeUrl,
+                          isStatus: "uploaded",
                         };
                       })
                     : [],
@@ -154,6 +157,7 @@ const PredefinedGoals = (props: any) => {
                   return {
                     FileName: file.FileName,
                     ServerRelativeUrl: file.ServerRelativeUrl,
+                    isStatus: "uploaded",
                   };
                 })
               : [],
@@ -208,6 +212,7 @@ const PredefinedGoals = (props: any) => {
           EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
           ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
           EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
+          AttachmentFiles: obj.AttachmentFiles,
         });
       } else {
         acc.push({
@@ -225,6 +230,7 @@ const PredefinedGoals = (props: any) => {
                 : "",
               ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
               EmployeeRating: obj.EmployeeRating ? obj.EmployeeRating : 0,
+              AttachmentFiles: obj.AttachmentFiles,
             },
           ],
         });
@@ -312,14 +318,91 @@ const PredefinedGoals = (props: any) => {
         .items.getById(tempObj.ID)
         .update(addObj)
         .then((res) => {
-          let duplicateArr = [...duplicateData];
-          duplicateArr[index] = {
-            ...tempObj,
-            [`${"isRowEdit"}`]: false,
-          };
-          setDuplicateData([...duplicateArr]);
-          setMasterData([...duplicateArr]);
-          categoryHandleFun([...duplicateArr]);
+          let newFiles = tempObj.AttachmentFiles.filter(
+            (fill: any) => fill.isStatus === "new"
+          ).map((file: any) => {
+            return {
+              name: file.FileName,
+              content: file.content,
+            };
+          });
+
+          let deleteFiles = tempObj.AttachmentFiles.filter(
+            (fill: any) => fill.isStatus === "delete"
+          ).map((file: any) => {
+            return {
+              name: file.FileName,
+              content: file.content,
+            };
+          });
+
+          if (deleteFiles.length > 0) {
+            deleteFiles.forEach((del: any, ind: number) => {
+              res.item.attachmentFiles
+                .getByName(deleteFiles[ind].name)
+                .delete()
+                .then((delRes) => {
+                  let duplicateArr = [...duplicateData];
+                  tempObj.AttachmentFiles = tempObj.AttachmentFiles.filter(
+                    (file: any) => file.isStatus !== "delete"
+                  );
+                  duplicateArr[index] = {
+                    ...tempObj,
+                    [`${"isRowEdit"}`]: false,
+                  };
+                  setDuplicateData([...duplicateArr]);
+                  setMasterData([...duplicateArr]);
+                  categoryHandleFun([...duplicateArr]);
+                  if (ind === deleteFiles.length - 1 && newFiles.length > 0) {
+                    res.item.attachmentFiles
+                      .addMultiple(newFiles)
+                      .then((res) => {
+                        console.log(res);
+                        tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
+                          (file: any) => {
+                            if (file.isStatus === "new") {
+                              file.isStatus = "existing";
+                              return file;
+                            }
+                          }
+                        );
+                        setDuplicateData([...duplicateArr]);
+                        setMasterData([...duplicateArr]);
+                        categoryHandleFun([...duplicateArr]);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+                  }
+                })
+                .catch((err) => console.log(err));
+            });
+          } else {
+            res.item.attachmentFiles
+              .addMultiple(newFiles)
+              .then((res) => {
+                console.log(res);
+                let duplicateArr = [...duplicateData];
+                tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
+                  (file: any) => {
+                    if (file.isStatus === "new") {
+                      file.isStatus = "existing";
+                      return file;
+                    }
+                  }
+                );
+                duplicateArr[index] = {
+                  ...tempObj,
+                  [`${"isRowEdit"}`]: false,
+                };
+                setDuplicateData([...duplicateArr]);
+                setMasterData([...duplicateArr]);
+                categoryHandleFun([...duplicateArr]);
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          }
         })
         .catch((err) => console.log(err));
     }
@@ -354,12 +437,22 @@ const PredefinedGoals = (props: any) => {
     categoryHandleFun([...duplicateArr]);
   };
   const editRowFunction = (data: any) => {
+    console.log(data);
     let duplicateArr = [...duplicateData];
     let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
     let tempObj = duplicateArr[index];
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
+    // setRowHandleObj({
+    //   ...rowHandleObj,
+    //   ID: tempObj.ID,
+    //   commentType: "Employee",
+    //   comment: tempObj.EmployeeComments,
+    //   isPopup: false,
+    //   isEdit: tempObj.isRowEdit,
+    //   files: tempObj.AttachmentFiles,
+    // });
   };
   const addNewCategory = (condition: boolean) => {
     let tempArr = [...duplicateData];
@@ -375,6 +468,7 @@ const PredefinedGoals = (props: any) => {
           EmployeeComments: "",
           ManagerRating: 0,
           EmployeeRating: 0,
+          AttachmentFiles: [],
           isRowEdit: true,
           isNew: true,
         });
@@ -518,7 +612,7 @@ const PredefinedGoals = (props: any) => {
           fontFamily: "Roboto, Arial, Helvetica, sans-serif",
           color: "#64728c",
           fontSize: "15px",
-          width : "100%"
+          width: "100%",
         }}
       >
         {rowData.GoalName}
@@ -646,15 +740,35 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
+  const fileUploadFunction = (file: any) => {
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj: any) => obj.ID === rowHandleObj.ID
+    );
+    let tempObj = duplicateArr[index];
+    tempObj.AttachmentFiles.push({
+      FileName: file[0].name,
+      content: file[0],
+      ServerRelativeUrl: file[0].objectURL,
+      isStatus: "new",
+    });
+    duplicateArr[index] = { ...tempObj };
+    setDuplicateData([...duplicateArr]);
+    categoryHandleFun([...duplicateArr]);
+  };
 
-  // const FileFunction = () => {
-  //   let files = duplicateData.filter((obj) => obj.ID == rowHandleObj.ID);
-  //   if (files.length > 0) {
-  //     files.forEach((file) => {
-  //       return <span>{file.FileName}</span>;
-  //     });
-  //   }
-  // };
+  const fileDeleteFunction = (ind: number) => {
+    console.log(ind);
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj: any) => obj.ID === rowHandleObj.ID
+    );
+    let tempObj = duplicateArr[index];
+    tempObj.AttachmentFiles[ind].isStatus = "delete";
+    duplicateArr[index] = { ...tempObj };
+    setDuplicateData([...duplicateArr]);
+    categoryHandleFun([...duplicateArr]);
+  };
 
   return (
     <>
@@ -828,19 +942,51 @@ const PredefinedGoals = (props: any) => {
                         }
                       />
                     </div>
+
                     <div>
-                      {rowHandleObj.files.map((file: any) => {
-                        return (
-                          <div style={{ marginTop: "20px" }}>
-                            <a
-                              className="filename"
-                              href={file.ServerRelativeUrl}
-                            >
-                              {file.FileName}
-                            </a>
-                          </div>
-                        );
-                      })}
+                      {rowHandleObj.isPopup &&
+                      rowHandleObj.commentType === "Employee"
+                        ? rowHandleObj.files.map((file: any, index: number) => {
+                            return (
+                              file.isStatus !== "delete" && (
+                                <div style={{ marginTop: "20px" }}>
+                                  <a
+                                    className="filename"
+                                    href={file.ServerRelativeUrl}
+                                  >
+                                    {file.FileName}
+                                  </a>
+                                  {!props.isManager &&
+                                  rowHandleObj.commentType === "Employee" &&
+                                  rowHandleObj.isEdit ? (
+                                    <MdOutlineClose
+                                      className={styles.cancelIcon}
+                                      onClick={() => fileDeleteFunction(index)}
+                                    />
+                                  ) : null}
+                                </div>
+                              )
+                            );
+                          })
+                        : null}
+                    </div>
+                    <div style={{ marginTop: "10px" }}>
+                      {!props.isManager &&
+                      rowHandleObj.commentType === "Employee" &&
+                      rowHandleObj.isEdit ? (
+                        <FileUpload
+                          mode="basic"
+                          name="demo[]"
+                          auto
+                          chooseLabel="Add File"
+                          // url="/api/upload"
+                          // accept="image/*"
+                          maxFileSize={1000000}
+                          // onUpload={(e) => console.log(e)}
+                          onSelect={(e) => fileUploadFunction(e.files)}
+                          // onUpload={onUpload}
+                        />
+                      ) : null}
                     </div>
                     <div className={styles.dialogFooter}>
                       <Button
@@ -921,6 +1067,20 @@ const PredefinedGoals = (props: any) => {
           })}
         </Accordion>
       </div>
+      {categories.length > 0 ? (
+        <></>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: "17px",
+            fontWeight: "600",
+          }}
+        >
+          No Data Found
+        </div>
+      )}
     </>
   );
 };
