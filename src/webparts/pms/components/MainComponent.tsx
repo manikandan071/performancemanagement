@@ -34,6 +34,7 @@ const MainComponent = (props: any) => {
           height: "100vh",
           position: "relative",
           transition: "all 0.5s",
+          marginTop: "20px",
         }}
       >
         {!isNavBar ? (
@@ -79,7 +80,9 @@ const MainComponent = (props: any) => {
         />
       </div>
 
-      <div style={{ width: isNavBar ? "85%" : "95%", marginLeft: "20px" }}>
+      <div
+        style={{ width: isNavBar ? "85%" : "95%", margin: "20px 0px 0px 20px" }}
+      >
         {isNavOption === "Goals" ? (
           <div>
             <Goals />

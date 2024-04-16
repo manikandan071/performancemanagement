@@ -5,16 +5,16 @@
    margin: 0px 0px 18px 0px;
    padding: 15px;
    border-radius: 10px;
-   border: 1px solid #8776e487;
+//    border: 1px solid #8776e487;
 }
 .container02{
     display: flex;
 }
 .background{
-    background-color:whitesmoke;
+    background-color:#f2f2fb;
     padding: 18px;
     border-radius: 10px;
-    border: 1px solid #8776e487;
+    // border: 1px solid #8776e487;
 }
 #workbenchPageContent {
     max-width: 100%;
@@ -38,6 +38,6 @@
     padding-right: 10px;
 }
 .sample :hover{
-    background-color: #a6a2ce8f !important;
+    background-color: rgb(97, 176, 97) !important;
     color : white !important;
 }

@@ -5,12 +5,54 @@ import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
+  IDetailsListStyles,
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
 import { TbTargetArrow } from "react-icons/tb";
 import styles from "./MembersStyle.module.scss";
 
 const MembersComponent = (props: any) => {
+  const gridStyles: Partial<IDetailsListStyles> = {
+    root: {
+      selectors: {
+        "& [role=grid]": {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "start",
+          ".ms-DetailsRow-cell": {
+            display: "flex",
+            alignItems: "center",
+            height: 50,
+            minHeight: 50,
+            padding: "5px 10px",
+            margin: "auto",
+          },
+          ".ms-DetailsHeader-cell": {
+            color: "#fff",
+            backgroundColor: "#61b061",
+            hover: {
+              backgroundColor: "#61b061",
+            },
+          },
+          ".ms-DetailsHeader-cellTitle": {
+            padding: "0px 8px 0px 10px",
+          },
+        },
+        ".ms-FocusZone": {
+          padding: "0px",
+        },
+      },
+    },
+    headerWrapper: {
+      flex: "0 0 auto",
+    },
+    contentWrapper: {
+      flex: "1 1 auto",
+      overflowY: "auto",
+      overflowX: "hidden",
+    },
+  };
+
   const currentUser = props.currentUser;
   const currentUserName = props.CurrentUserName;
   const [membersList, setMembersList] = useState<any[]>([]);
@@ -149,6 +191,7 @@ const MembersComponent = (props: any) => {
         <DetailsList
           items={membersList}
           columns={columns}
+          styles={gridStyles}
           setKey="set"
           layoutMode={DetailsListLayoutMode.justified}
           selectionMode={SelectionMode.none}
