@@ -51,13 +51,6 @@ const NavBar = (props: any) => {
                 props.handleCilck("Employee");
               }
             }
-            // if (obj.Roles === "Hr") {
-            //   let navArr = [{ option: "Goals" }, { option: "Employee" }];
-            //   setNavOptions([...navArr]);
-            // } else if (obj.Roles === "Manager") {
-            //   let navArr = [{ option: "Goals" }, { option: "Employee" }];
-            //   setNavOptions([...navArr]);
-            // }
           });
         }
       })
