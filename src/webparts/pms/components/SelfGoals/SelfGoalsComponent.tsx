@@ -61,7 +61,7 @@ const SelfGoals = (props: any) => {
         setTotalSFGoals([...items]);
         console.log("items", items);
         const filterData = items.filter((item) => {
-          return item.Employee.EMail == props.curUser && !item.isDelete;
+          return item.Employee.EMail == props.userEmail && !item.isDelete;
         });
         const tempArr: any = [];
         let ID = 0;
@@ -555,15 +555,6 @@ const SelfGoals = (props: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       <div className="card flex justify-content-center">
-        <Rating
-          value={rowData.EmployeeRating}
-          onChange={(e) =>
-            onChangeHandleFun(e.target.value, "EmployeeRating", rowData.ID)
-          }
-          disabled={props.isManager}
-          stars={5}
-          cancel={false}
-        />
          <div className="rating-container" onMouseOut={handleMouseOut}>
          {ratingValues.map((value :any, index) => (
         <div>
@@ -583,12 +574,6 @@ const SelfGoals = (props: any) => {
       </div>
     ) : (
       <div className="card flex justify-content-center">
-        <Rating
-          value={rowData.EmployeeRating}
-          stars={5}
-          disabled
-          cancel={false}
-        />
          <div className="rating-container" onMouseOut={handleMouseOut}>
          {ratingValues.map((value, index) => (
         <div>
@@ -596,7 +581,7 @@ const SelfGoals = (props: any) => {
           key={index}
           href="#"
           className={`rating-star ${value <= rowData.EmployeeRating ? 'active' : ''} ${![1,2,3,4,5].includes(value)? 'noPadding' : ''}`}
-          // onMouseOver={() => handleMouseOver(value)}
+          onMouseOver={() => handleMouseOver(value)}
           onClick={() => handleClick(value)}
         >
           <span></span>

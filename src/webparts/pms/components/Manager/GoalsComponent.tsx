@@ -65,7 +65,7 @@ const GoalsComponent = (props: any) => {
               isManager={props.isManager}
             />
           ) : show == "SelfGoals" ? (
-            <SelfGoals curUser={props.curUser} isManager={props.isManager} />
+            <SelfGoals  userEmail = {props.memberEmail} curUser={props.curUser} isManager={props.isManager} />
           ) : (
             ""
           )}
