@@ -46,6 +46,8 @@ const SelfGoals = (props: any) => {
     isPopup: false,
     isEdit: false,
   });
+  const [rating, setRating] = useState(0);
+  const [fixedRating, setFixedRating] = useState(null);
 
   console.log(masterData, duplicateData, categories);
 
@@ -351,7 +353,7 @@ const SelfGoals = (props: any) => {
           return obj;
         }
         if (type === "EmployeeRating") {
-          obj.EmployeeRating = value;
+          obj.EmployeeRating = (value+1)/2;
           return obj;
         }
         if (type === "ManagerRating") {
@@ -517,7 +519,39 @@ const SelfGoals = (props: any) => {
     );
   };
 
+  
+
+  const handleMouseOver = (value :any) => {
+    if (fixedRating === null) {
+      setRating(value);
+    }
+    else if(fixedRating !== null){
+      setRating(value);
+    }
+  };
+
+  const handleMouseOut = () => {
+    if (fixedRating === null) {
+      setRating(0);
+    }
+  };
+
+  const handleClick = (value :any) => {
+    if (fixedRating === null) {
+      setFixedRating(value);
+      setRating(value);
+    }
+    else if(fixedRating !== null){
+      setFixedRating(value);
+    }
+    
+  };
+
+  console.log(rating)
+
   const EmployeeRatingBodyTemplate = (rowData: any) => {
+    // const number = 4.5;
+    const ratingValues = [0.5,1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       <div className="card flex justify-content-center">
@@ -530,6 +564,22 @@ const SelfGoals = (props: any) => {
           stars={5}
           cancel={false}
         />
+         <div className="rating-container" onMouseOut={handleMouseOut}>
+         {ratingValues.map((value :any, index) => (
+        <div>
+        <a
+          key={index}
+          href="#"
+          className={`rating-star ${value <= rowData.EmployeeRating ? 'active' : ''} ${value <= rating ? 'active' : ''} ${![1,2,3,4,5].includes(value)? 'noPadding' : ''}`}
+          onMouseOver={() => handleMouseOver(value)}
+          onClick={() => {onChangeHandleFun(index, "EmployeeRating", rowData.ID)}}
+        >
+          <span></span>
+        </a>
+        </div>
+      ))}
+    </div>
+      <span className="rating-value">{rowData.EmployeeRating}</span>
       </div>
     ) : (
       <div className="card flex justify-content-center">
@@ -539,6 +589,23 @@ const SelfGoals = (props: any) => {
           disabled
           cancel={false}
         />
+         <div className="rating-container" onMouseOut={handleMouseOut}>
+         {ratingValues.map((value, index) => (
+        <div>
+        <a
+          key={index}
+          href="#"
+          className={`rating-star ${value <= rowData.EmployeeRating ? 'active' : ''} ${![1,2,3,4,5].includes(value)? 'noPadding' : ''}`}
+          // onMouseOver={() => handleMouseOver(value)}
+          onClick={() => handleClick(value)}
+        >
+          <span></span>
+        </a>
+        </div>
+      ))}
+    </div>
+    
+    <span className="rating-value">{rowData.EmployeeRating}</span>
       </div>
     );
   };

@@ -13,40 +13,40 @@
     padding: 0px;
 }
 .accordionMain a .category-sec .iconSec .addIcon{
-    color: green;
+    color: #114504;
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .editIcon {
-    color: red;
+    color: #114504;
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .deleteIcon {
-    color: red;
+    color: #cf2121;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .addIcon:hover{
-    background-color: rgba(0, 128, 0, 0.559);
-    color: #fff;
+    background-color: #114504;
+    color: white;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .editIcon:hover{
-    background-color: red;
-    color: #fff;
+    background-color: #114504;
+    color: white;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain a .category-sec .iconSec .deleteIcon:hover {
-    background-color: red !important;
-    color: #fff;
+    background-color: #cf2121 !important;
+    color: white;
     padding: 5px;
     font-size: 26px;
 }

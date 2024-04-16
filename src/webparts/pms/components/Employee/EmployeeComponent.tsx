@@ -174,6 +174,7 @@ const EmployeeComponent = (props: any) => {
             onClick={() => setShow("AppraisalCycles")}
             style={{
               color: show == "AppraisalCycles" ? "white" : "black",
+
               borderBottom: show == "AppraisalCycles" ? "2px solid black" : "",
               backgroundColor:
                 show == "AppraisalCycles" ? "rgb(97, 176, 97)" : "#f5f5f5",

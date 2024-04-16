@@ -687,6 +687,7 @@ const PredefinedGoals = (props: any) => {
         }
       />
     ) : (
+      // rowData.GoalName
       <div
         style={{
           fontFamily: "Roboto, Arial, Helvetica, sans-serif",

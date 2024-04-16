@@ -234,6 +234,7 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("GoalsComponent")}
               style={{
                 color: ismember == "GoalsComponent" ? "white" : "black",
+
                 borderBottom:
                   ismember == "GoalsComponent" ? "2px solid black" : "",
                 backgroundColor:
@@ -241,7 +242,7 @@ const ManagerComponent = (props: any) => {
                 display: ismember == "GoalsComponent" ? "" : "none",
               }}
             >
-              GoalsComponent
+              Goals
             </Button>
           </div>
         </div>
