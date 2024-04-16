@@ -19,7 +19,7 @@ import "./selfGoals.css";
 import styles from "./SelfGoalsStyle.module.scss";
 
 const SelfGoals = (props: any) => {
-  console.log("SelfGoalsProps", props);
+  const [activeIndex, setActiveIndex] = useState<any>(0);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
@@ -735,7 +735,10 @@ const SelfGoals = (props: any) => {
         </div>
       )}
       <div className="card">
-        <Accordion activeIndex={0}>
+        <Accordion
+          activeIndex={activeIndex}
+          onTabChange={(e) => setActiveIndex(e.index)}
+        >
           {categories.map((items, index) => {
             return (
               <AccordionTab
@@ -787,7 +790,14 @@ const SelfGoals = (props: any) => {
                         0 ? (
                           <GrAdd
                             className="addIcon"
-                            onClick={() => addGoalFunction(index)}
+                            onClick={(event) => {
+                              if (activeIndex === index) {
+                                event.stopPropagation();
+                              } else {
+                                setActiveIndex(index);
+                              }
+                              addGoalFunction(index);
+                            }}
                           />
                         ) : null}
                         <HiPencil

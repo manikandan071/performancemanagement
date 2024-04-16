@@ -7,6 +7,7 @@ import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
+  IDetailsListStyles,
 } from "@fluentui/react";
 import Button from "@mui/material/Button";
 import styles from "./EmployeeStyle.module.scss";
@@ -14,6 +15,47 @@ import GoalsComponent from "../Manager/GoalsComponent";
 import { TbTargetArrow } from "react-icons/tb";
 
 const EmployeeComponent = (props: any) => {
+  const gridStyles: Partial<IDetailsListStyles> = {
+    root: {
+      selectors: {
+        "& [role=grid]": {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "start",
+          ".ms-DetailsRow-cell": {
+            display: "flex",
+            alignItems: "center",
+            height: 50,
+            minHeight: 50,
+            padding: "5px 10px",
+            margin: "auto",
+          },
+          ".ms-DetailsHeader-cell": {
+            color: "#fff",
+            backgroundColor: "#61b061",
+            hover: {
+              backgroundColor: "#61b061",
+            },
+          },
+          ".ms-DetailsHeader-cellTitle": {
+            padding: "0px 8px 0px 10px",
+          },
+        },
+        ".ms-FocusZone": {
+          padding: "0px",
+        },
+      },
+    },
+    headerWrapper: {
+      flex: "0 0 auto",
+    },
+    contentWrapper: {
+      flex: "1 1 auto",
+      overflowY: "auto",
+      overflowX: "hidden",
+    },
+  };
+
   const [masterData, setmasterData] = useState([{}]);
   const [show, setShow] = useState("AppraisalCycles");
 
@@ -125,31 +167,37 @@ const EmployeeComponent = (props: any) => {
 
   return (
     <>
-      <div className={show == "GoalsComponent" ? styles.container : ""} >
+      <div className={show == "GoalsComponent" ? styles.container : ""}>
         <div className={styles.sample}>
           <Button
             variant="text"
             onClick={() => setShow("AppraisalCycles")}
             style={{
               color: show == "AppraisalCycles" ? "white" : "black",
-              borderBottom:show == "AppraisalCycles" ? "2px solid black" : "",
-              backgroundColor:show == "AppraisalCycles" ? "rgb(97, 176, 97)": "#f5f5f5",
-              display: show == "GoalsComponent" ? "flex": "none"
+
+              borderBottom: show == "AppraisalCycles" ? "2px solid black" : "",
+              backgroundColor:
+                show == "AppraisalCycles" ? "rgb(97, 176, 97)" : "#f5f5f5",
+              display: show == "GoalsComponent" ? "flex" : "none",
             }}
           >
             AppraisalCycles
           </Button>
         </div>
-        <div className={styles.sample} style={{
-               display: show == "GoalsComponent" ? "flex": "none",
-            }}>
+        <div
+          className={styles.sample}
+          style={{
+            display: show == "GoalsComponent" ? "flex" : "none",
+          }}
+        >
           <Button
             variant="text"
             onClick={() => setShow("GoalsComponent")}
             style={{
               color: show == "GoalsComponent" ? "white" : "black",
-              borderBottom:show == "GoalsComponent" ? "2px solid black" : "",
-              backgroundColor:show == "GoalsComponent" ? "rgb(97, 176, 97)": "#f5f5f5",
+              borderBottom: show == "GoalsComponent" ? "2px solid black" : "",
+              backgroundColor:
+                show == "GoalsComponent" ? "rgb(97, 176, 97)" : "#f5f5f5",
             }}
           >
             Goals
@@ -161,6 +209,7 @@ const EmployeeComponent = (props: any) => {
           <DetailsList
             items={masterData}
             columns={columns}
+            styles={gridStyles}
             setKey="set"
             layoutMode={DetailsListLayoutMode.justified}
             selectionMode={SelectionMode.none}
@@ -170,7 +219,7 @@ const EmployeeComponent = (props: any) => {
         <GoalsComponent
           memberEmail={props.currentUserEmail}
           curUser={props.currentUserEmail}
-          isManager = {props.isManager}
+          isManager={props.isManager}
         />
       ) : (
         ""

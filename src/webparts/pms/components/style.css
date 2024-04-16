@@ -10,18 +10,6 @@
 .css-1knaqv7-MuiButtonBase-root-MuiButton-root {
     padding: 0 !important;
 }
-.ms-DetailsHeader {
-    background-color: rgba(0, 128, 0, 0.618) !important;
-}
-.root-93 {
-    color: white !important;
-}
-.root-77{
-    padding-top: 0 !important;
-}
-.root-93:hover {
-    background:transparent !important
-}
 .heading{
     color: green;
     padding: 7PX;
@@ -29,6 +17,7 @@
 }
 .p-accordion-content{
     padding: 0 !important;
+    border: none;
 }
 .p-datatable-table th{
     background-color: #fcfcfc !important;
@@ -44,10 +33,18 @@
 }
 .p-accordion-header a{
     text-decoration: none !important;
-    color: white !important;
-    background-color: rgba(97, 176, 97, 0.807) !important;
+
+    /* color: rgba(0, 0, 0, 0.515) !important;
+    background-color: #a6a2ce8f !important; */
 }
 /* .goalIcon{
     font-size: 20px ;
     color: rgba(0, 0, 0, 0.404) ;
 } */
+
+.headerRow-49{
+    display: none!important;
+}
+.commandBarWrapper{
+    display: none!important;
+}
