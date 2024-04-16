@@ -1,7 +1,7 @@
 .addIconSec:hover .addIconSec{
   background-color: green;
 }
-.accordionMain a{
+.accordionMain .p-accordion-header-link{
     /* display: inline-block; */
     text-decoration: none;
     background-color: #fff;
@@ -12,39 +12,39 @@
 .accordionMain .p-accordion-content{
     padding: 0px;
 }
-.accordionMain a .category-sec .iconSec .addIcon{
+.accordionMain .p-accordion-header-link .category-sec .iconSec .addIcon{
     color: #114504;
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
-.accordionMain a .category-sec .iconSec .editIcon {
+.accordionMain .p-accordion-header-link .category-sec .iconSec .editIcon {
     color: #114504;
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
-.accordionMain a .category-sec .iconSec .deleteIcon {
+.accordionMain .p-accordion-header-link .category-sec .iconSec .deleteIcon {
     color: #cf2121;
     cursor: pointer;
     padding: 5px;
     font-size: 26px;
 }
-.accordionMain a .category-sec .iconSec .addIcon:hover{
+.accordionMain .p-accordion-header-link .category-sec .iconSec .addIcon:hover{
     background-color: #114504;
     color: white;
     padding: 5px;
     font-size: 26px;
 }
-.accordionMain a .category-sec .iconSec .editIcon:hover{
+.accordionMain .p-accordion-header-link .category-sec .iconSec .editIcon:hover{
     background-color: #114504;
     color: white;
     padding: 5px;
     font-size: 26px;
 }
-.accordionMain a .category-sec .iconSec .deleteIcon:hover {
+.accordionMain .p-accordion-header-link .category-sec .iconSec .deleteIcon:hover {
     background-color: #cf2121 !important;
     color: white;
     padding: 5px;
@@ -192,4 +192,38 @@ table tbody .p-dropdown,table tbody .p-inputtext{
     color: #fff;
         font-size: 19px;
         font-weight: 600;
+}
+
+.rating-container {
+    display: flex;
+    margin-top: 10px;
+}
+
+.rating-star {
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 40px;
+    display: flex;
+    width: 20px;
+    height: 7px;
+    background: #e3e3e3;
+    margin-right: 3px;
+}
+
+.rating-star.active {
+    background: #f88400;
+}
+
+.rating-value {
+    font-weight: bold;
+    color: #333;
+    font-size: 13px;
+}
+
+.noPadding {
+    margin: 0px !important;
+}
+.disabled{
+    pointer-events: none;
+        cursor: default;
 }

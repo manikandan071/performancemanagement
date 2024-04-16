@@ -14,9 +14,10 @@ const NavBar = (props: any) => {
   //     { option: "Employee" },
   //   ];
   const [currentUser, setCurrentUSer] = useState("");
+  const [employeeList, setEmployeeList] = useState<any[]>([]);
   const [tapName, setTapName] = useState("");
   const [navOptions, setNavOptions] = useState<any[]>([]);
-  console.log(currentUser);
+  console.log(employeeList, currentUser);
 
   const getUserRole = (mail: string) => {
     sp.web.lists
@@ -29,24 +30,26 @@ const NavBar = (props: any) => {
       .then((res) => {
         console.log(res);
         if (res.length > 0) {
+          let teamMembers: any = [];
           res.forEach((obj) => {
             if (obj.Employee.EMail == mail) {
               if (obj.Roles == "HR") {
-                setNavOptions([
-                  { option: "Goals", icon: "TbTargetArrow" },
-                  { option: "Employee", icon: "TbUserHexagon" },
-                ]);
+                setNavOptions([{ option: "Goals" }, { option: "Employee" }]);
                 setTapName("Goals");
                 props.handleCilck("Goals");
               } else if (obj.Roles == "Manager") {
-                setNavOptions([
-                  { option: "Manager", icon: "AiOutlineSolution" },
-                  { option: "Employee", icon: "TbUserHexagon" },
-                ]);
-                setTapName("Manager");
-                props.handleCilck("Manager");
+                setNavOptions([{ option: "Manager" }, { option: "Employee" }]);
+                setTapName("Employee");
+                props.handleCilck("Employee");
+                obj.Members.forEach((user: any) => {
+                  teamMembers.push({
+                    userID: user.ID,
+                    userEmail: user.EMail,
+                    userName: user.Title,
+                  });
+                });
               } else {
-                setNavOptions([{ option: "Employee", icon: "TbUserHexagon" }]);
+                setNavOptions([{ option: "Employee" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
               }
@@ -59,6 +62,8 @@ const NavBar = (props: any) => {
             //   setNavOptions([...navArr]);
             // }
           });
+          setEmployeeList([...teamMembers]);
+          console.log(teamMembers);
         }
       })
       .catch((err) => {
