@@ -8,6 +8,7 @@ import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
+  IDetailsListStyles,
 } from "@fluentui/react";
 import * as moment from "moment";
 import MembersComponent from "../EmployeeLists/MembersComponent";
@@ -15,7 +16,48 @@ import GoalsComponent from "./GoalsComponent";
 import { PiUserListBold } from "react-icons/pi";
 
 const ManagerComponent = (props: any) => {
-  console.log("props",props)
+  const gridStyles: Partial<IDetailsListStyles> = {
+    root: {
+      selectors: {
+        "& [role=grid]": {
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "start",
+          ".ms-DetailsRow-cell": {
+            display: "flex",
+            alignItems: "center",
+            height: 50,
+            minHeight: 50,
+            padding: "5px 10px",
+            margin: "auto",
+          },
+          ".ms-DetailsHeader-cell": {
+            color: "#fff",
+            backgroundColor: "#61b061",
+            hover: {
+              backgroundColor: "#61b061",
+            },
+          },
+          ".ms-DetailsHeader-cellTitle": {
+            padding: "0px 8px 0px 10px",
+          },
+        },
+        ".ms-FocusZone": {
+          padding: "0px",
+        },
+      },
+    },
+    headerWrapper: {
+      flex: "0 0 auto",
+    },
+    contentWrapper: {
+      flex: "1 1 auto",
+      overflowY: "auto",
+      overflowX: "hidden",
+    },
+  };
+
+  console.log("props", props);
   const [masterData, setmasterData] = useState([{}]);
   const [ismember, setisMember] = useState("ManagerComponent");
   const [memberEmail, setMemberEmail] = useState("");
@@ -92,9 +134,7 @@ const ManagerComponent = (props: any) => {
               size="small"
               onClick={() => setisMember("MembersComponent")}
             >
-              <PiUserListBold
-                style={{ color: "#ff7b1d ", fontSize: "20px" }}
-              />
+              <PiUserListBold style={{ color: "#ff7b1d ", fontSize: "20px" }} />
             </Button>
           </div>
         </>
@@ -139,16 +179,29 @@ const ManagerComponent = (props: any) => {
   return (
     <>
       <section>
-        <div className={ ismember == "MembersComponent" || ismember == "GoalsComponent" ? styles.container : ""}>
+        <div
+          className={
+            ismember == "MembersComponent" || ismember == "GoalsComponent"
+              ? styles.container
+              : ""
+          }
+        >
           <div className={styles.sample}>
             <Button
               variant="text"
               onClick={() => setisMember("ManagerComponent")}
               style={{
                 color: ismember == "ManagerComponent" ? "white" : "black",
-                borderBottom:ismember == "ManagerComponent" ? "2px solid black" : "",
-                backgroundColor:ismember == "ManagerComponent"? "rgb(97, 176, 97)": "#f5f5f5",
-                display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
+                borderBottom:
+                  ismember == "ManagerComponent" ? "2px solid black" : "",
+                backgroundColor:
+                  ismember == "ManagerComponent"
+                    ? "rgb(97, 176, 97)"
+                    : "#f5f5f5",
+                display:
+                  ismember == "MembersComponent" || ismember == "GoalsComponent"
+                    ? "flex"
+                    : "none",
               }}
             >
               AppraisalCycles
@@ -160,9 +213,16 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("MembersComponent")}
               style={{
                 color: ismember == "MembersComponent" ? "white" : "black",
-                borderBottom:ismember == "MembersComponent" ? "2px solid black" : "",
-                backgroundColor:ismember == "MembersComponent" ? "rgb(97, 176, 97)": "#f5f5f5",
-                display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
+                borderBottom:
+                  ismember == "MembersComponent" ? "2px solid black" : "",
+                backgroundColor:
+                  ismember == "MembersComponent"
+                    ? "rgb(97, 176, 97)"
+                    : "#f5f5f5",
+                display:
+                  ismember == "MembersComponent" || ismember == "GoalsComponent"
+                    ? "flex"
+                    : "none",
               }}
             >
               EmployeeList
@@ -174,8 +234,11 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("GoalsComponent")}
               style={{
                 color: ismember == "GoalsComponent" ? "white" : "black",
-                borderBottom:ismember == "GoalsComponent" ? "2px solid black" : "",
-                backgroundColor:ismember == "GoalsComponent"? "rgb(97, 176, 97)": "#f5f5f5",
+
+                borderBottom:
+                  ismember == "GoalsComponent" ? "2px solid black" : "",
+                backgroundColor:
+                  ismember == "GoalsComponent" ? "rgb(97, 176, 97)" : "#f5f5f5",
                 display: ismember == "GoalsComponent" ? "" : "none",
               }}
             >
@@ -189,6 +252,7 @@ const ManagerComponent = (props: any) => {
               <DetailsList
                 items={masterData}
                 columns={columns}
+                styles={gridStyles}
                 setKey="set"
                 layoutMode={DetailsListLayoutMode.justified}
                 selectionMode={SelectionMode.none}
@@ -204,7 +268,7 @@ const ManagerComponent = (props: any) => {
             <GoalsComponent
               memberEmail={memberEmail}
               curUser={props.ManageContext}
-              isManager = {props.isManager}
+              isManager={props.isManager}
             />
           ) : (
             ""
