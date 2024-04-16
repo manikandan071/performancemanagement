@@ -44,8 +44,8 @@
 }
 .p-accordion-header a{
     text-decoration: none !important;
-    color: rgba(0, 0, 0, 0.515) !important;
-    background-color: #a6a2ce8f !important;
+    color: white !important;
+    background-color: rgba(97, 176, 97, 0.807) !important;
 }
 /* .goalIcon{
     font-size: 20px ;

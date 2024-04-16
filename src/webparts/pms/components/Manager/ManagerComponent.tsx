@@ -146,8 +146,8 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("ManagerComponent")}
               style={{
                 color: ismember == "ManagerComponent" ? "white" : "black",
-                borderBottom:ismember == "ManagerComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "ManagerComponent"? "#a6a2ce8f": "#f5f5f5",
+                borderBottom:ismember == "ManagerComponent" ? "2px solid black" : "",
+                backgroundColor:ismember == "ManagerComponent"? "rgb(97, 176, 97)": "#f5f5f5",
                 display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
@@ -160,8 +160,8 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("MembersComponent")}
               style={{
                 color: ismember == "MembersComponent" ? "white" : "black",
-                borderBottom:ismember == "MembersComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "MembersComponent" ? "#a6a2ce8f": "#f5f5f5",
+                borderBottom:ismember == "MembersComponent" ? "2px solid black" : "",
+                backgroundColor:ismember == "MembersComponent" ? "rgb(97, 176, 97)": "#f5f5f5",
                 display:ismember == "MembersComponent" || ismember == "GoalsComponent" ? "flex": "none",
               }}
             >
@@ -174,12 +174,12 @@ const ManagerComponent = (props: any) => {
               onClick={() => setisMember("GoalsComponent")}
               style={{
                 color: ismember == "GoalsComponent" ? "white" : "black",
-                borderBottom:ismember == "GoalsComponent" ? "3px solid #303072" : "",
-                backgroundColor:ismember == "GoalsComponent"? "#a6a2ce8f": "#f5f5f5",
+                borderBottom:ismember == "GoalsComponent" ? "2px solid black" : "",
+                backgroundColor:ismember == "GoalsComponent"? "rgb(97, 176, 97)": "#f5f5f5",
                 display: ismember == "GoalsComponent" ? "" : "none",
               }}
             >
-              GoalsComponent
+              Goals
             </Button>
           </div>
         </div>

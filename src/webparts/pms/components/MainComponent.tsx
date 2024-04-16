@@ -6,6 +6,8 @@ import { RxCaretRight } from "react-icons/rx";
 import Goals from "./Goals/GoalsComponent";
 import ManagerComponent from "./Manager/ManagerComponent";
 import EmployeeComponent from "./Employee/EmployeeComponent";
+// import image from "../components/Employee/welcomeDark.png";
+// let logo = require("../assets/images/welcome-dark.png")
 
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
@@ -21,6 +23,8 @@ const MainComponent = (props: any) => {
   };
 
   return (
+    <>
+     {/* <img src={image} alt="React Logo"></img>  */}
     <div
       style={{
         display: "flex",
@@ -99,6 +103,7 @@ const MainComponent = (props: any) => {
         )}
       </div>
     </div>
+    </>
   );
 };
 export default MainComponent;

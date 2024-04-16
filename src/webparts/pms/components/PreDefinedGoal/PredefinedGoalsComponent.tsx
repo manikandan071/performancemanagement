@@ -818,6 +818,7 @@ const PredefinedGoals = (props: any) => {
           </div>
         ) : props.isManager ? (
           <Button
+            className="categoryBtn"
             label="New Category"
             onClick={(e) =>
               setCategoryHandleObj({ ...categoryHandleObj, isNew: true })

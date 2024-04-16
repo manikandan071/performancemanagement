@@ -132,8 +132,8 @@ const EmployeeComponent = (props: any) => {
             onClick={() => setShow("AppraisalCycles")}
             style={{
               color: show == "AppraisalCycles" ? "white" : "black",
-              borderBottom:show == "AppraisalCycles" ? "3px solid #303072" : "",
-              backgroundColor:show == "AppraisalCycles" ? "#a6a2ce8f": "#f5f5f5",
+              borderBottom:show == "AppraisalCycles" ? "2px solid black" : "",
+              backgroundColor:show == "AppraisalCycles" ? "rgb(97, 176, 97)": "#f5f5f5",
               display: show == "GoalsComponent" ? "flex": "none"
             }}
           >
@@ -148,8 +148,8 @@ const EmployeeComponent = (props: any) => {
             onClick={() => setShow("GoalsComponent")}
             style={{
               color: show == "GoalsComponent" ? "white" : "black",
-              borderBottom:show == "GoalsComponent" ? "3px solid #303072" : "",
-              backgroundColor:show == "GoalsComponent" ? "#a6a2ce8f": "#f5f5f5",
+              borderBottom:show == "GoalsComponent" ? "2px solid black" : "",
+              backgroundColor:show == "GoalsComponent" ? "rgb(97, 176, 97)": "#f5f5f5",
             }}
           >
             Goals
