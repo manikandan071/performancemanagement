@@ -20,6 +20,9 @@ import { FileUpload } from "primereact/fileupload";
 import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 import Loader from "../Loader/Loader";
+// const [rating, setRating] = useState(0);
+// const [fixedRating, setFixedRating] = useState(null);
+
 
 const PredefinedGoals = (props: any) => {
   console.log("predefinedGoalsProps", props);
@@ -1154,12 +1157,8 @@ const PredefinedGoals = (props: any) => {
                               name="demo[]"
                               auto
                               chooseLabel="Add File"
-                              // url="/api/upload"
-                              // accept="image/*"
                               maxFileSize={1000000}
-                              // onUpload={(e) => console.log(e)}
                               onSelect={(e) => fileUploadFunction(e.files)}
-                              // onUpload={onUpload}
                             />
                           ) : null}
                         </div>
@@ -1217,13 +1216,6 @@ const PredefinedGoals = (props: any) => {
                           style={{ width: "15%" }}
                           body={EmployeeRatingBodyTemplate}
                         ></Column>
-                        {/* <Column
-                          className="col1"
-                          field="EmployeeComments"
-                          header="Employee Comments"
-                          style={{ width: "15%" }}
-                          body={EmployeeCommentsBodyTemplate}
-                        ></Column> */}
                         <Column
                           className="col1"
                           field="ManagerRating"
@@ -1231,13 +1223,6 @@ const PredefinedGoals = (props: any) => {
                           style={{ width: "15%" }}
                           body={ManagerRatingBodyTemplate}
                         ></Column>
-                        {/* <Column
-                          className="col1"
-                          field="ManagerComments"
-                          header="Manager Comments"
-                          style={{ width: "15%" }}
-                          body={ManagerCommentsBodyTemplate}
-                        ></Column> */}
                         <Column
                           className="col4"
                           header="Action"
@@ -1270,13 +1255,6 @@ const PredefinedGoals = (props: any) => {
                 style={{ width: "15%" }}
                 body={EmployeeRatingBodyTemplate}
               ></Column>
-              {/* <Column
-                className="col1"
-                field="EmployeeComments"
-                header="Employee Comments"
-                style={{ width: "15%" }}
-                body={EmployeeCommentsBodyTemplate}
-              ></Column> */}
               <Column
                 className="col1"
                 field="ManagerRating"
@@ -1284,13 +1262,6 @@ const PredefinedGoals = (props: any) => {
                 style={{ width: "15%" }}
                 body={ManagerRatingBodyTemplate}
               ></Column>
-              {/* <Column
-                className="col1"
-                field="ManagerComments"
-                header="Manager Comments"
-                style={{ width: "15%" }}
-                body={ManagerCommentsBodyTemplate}
-              ></Column> */}
               <Column
                 className="col4"
                 header="Action"

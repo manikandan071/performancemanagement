@@ -65,19 +65,12 @@ const GoalsComponent = (props: any) => {
               isManager={props.isManager}
             />
           ) : show == "SelfGoals" ? (
-            <SelfGoals curUser={props.curUser} isManager={props.isManager} />
+            <SelfGoals  userEmail = {props.memberEmail} curUser={props.curUser} isManager={props.isManager} />
           ) : (
             ""
           )}
         </div>
       </div>
-<<<<<<< HEAD
-      <div>
-        {show == "PredefinedGoals" ? <PredefinedGoals userEmail = {props.memberEmail} curUser = {props.curUser} isManager = {props.isManager} /> : show == "SelfGoals" ? <SelfGoals memberEmail = {props.memberEmail} curUser = {props.curUser} isManager = {props.isManager} /> : ""}
-      </div>
-      </div>
-=======
->>>>>>> be3e9825619f0fa43b19f32b59e5ba9b1b4b2d23
     </>
   );
 };
