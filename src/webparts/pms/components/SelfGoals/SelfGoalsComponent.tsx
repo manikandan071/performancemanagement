@@ -61,7 +61,7 @@ const SelfGoals = (props: any) => {
         setTotalSFGoals([...items]);
         console.log("items", items);
         const filterData = items.filter((item) => {
-          return item.Employee.EMail == props.curUser && !item.isDelete;
+          return item.Employee.EMail == props.memberEmail && !item.isDelete;
         });
         const tempArr: any = [];
         let ID = 0;
