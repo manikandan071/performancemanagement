@@ -3,133 +3,20 @@ import { useEffect, useState } from "react";
 import { sp } from "@pnp/sp";
 import * as moment from "moment";
 import "../../components/style.css";
-import {
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
-  IDetailsListStyles,
-} from "@fluentui/react";
-import Button from "@mui/material/Button";
 import styles from "./EmployeeStyle.module.scss";
-import GoalsComponent from "../Manager/GoalsComponent";
-import { TbTargetArrow } from "react-icons/tb";
+import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
+import SelfGoals from "../SelfGoals/SelfGoalsComponent";
+import { PiTargetBold } from "react-icons/pi";
+import { BiTargetLock } from "react-icons/bi";
+import Button from "@mui/material/Button";
+// import GoalsComponent from "../Manager/GoalsComponent";
+// import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
 
 const EmployeeComponent = (props: any) => {
-  const gridStyles: Partial<IDetailsListStyles> = {
-    root: {
-      selectors: {
-        "& [role=grid]": {
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "start",
-          ".ms-DetailsRow-cell": {
-            display: "flex",
-            alignItems: "center",
-            height: 50,
-            minHeight: 50,
-            padding: "5px 10px",
-            margin: "auto",
-          },
-          ".ms-DetailsHeader-cell": {
-            color: "#fff",
-            backgroundColor: "#61b061",
-            hover: {
-              backgroundColor: "#61b061",
-            },
-          },
-          ".ms-DetailsHeader-cellTitle": {
-            padding: "0px 8px 0px 10px",
-          },
-        },
-        ".ms-FocusZone": {
-          padding: "0px",
-        },
-      },
-    },
-    headerWrapper: {
-      flex: "0 0 auto",
-    },
-    contentWrapper: {
-      flex: "1 1 auto",
-      overflowY: "auto",
-      overflowX: "hidden",
-    },
-  };
+  console.log(props);
 
   const [masterData, setmasterData] = useState([{}]);
-  const [show, setShow] = useState("AppraisalCycles");
-
-  const columns = [
-    {
-      key: "columns1",
-      name: "Year",
-      fieldName: "Year",
-      minWidth: 150,
-      maxWidth: 190,
-      isMultiline: true,
-      onRender: (item: any) => (
-        <>
-          <div>{item.Year}</div>
-        </>
-      ),
-    },
-    {
-      key: "columns2",
-      name: "CycleCategory",
-      fieldName: "cycleCategory",
-      minWidth: 150,
-      maxWidth: 190,
-      isMultiline: true,
-      onRender: (item: any) => (
-        <>
-          <div>{item.cycleCategory}</div>
-        </>
-      ),
-    },
-    {
-      key: "columns3",
-      name: "StartDate",
-      fieldName: "startDate",
-      minWidth: 150,
-      maxWidth: 190,
-      isMultiline: true,
-      onRender: (item: any) => (
-        <>
-          <div>{item.startDate}</div>
-        </>
-      ),
-    },
-    {
-      key: "columns4",
-      name: "EndDate",
-      fieldName: "endDate",
-      minWidth: 150,
-      maxWidth: 190,
-      isMultiline: true,
-      onRender: (item: any) => (
-        <>
-          <div>{item.endDate}</div>
-        </>
-      ),
-    },
-    {
-      key: "columns4",
-      name: "Action",
-      fieldName: "Action",
-      minWidth: 150,
-      maxWidth: 190,
-      isMultiline: true,
-      onRender: (item: any) => (
-        <>
-          <div>
-            <Button size="small" onClick={() => setShow("GoalsComponent")}>
-              <TbTargetArrow className={styles.goalIcon} />
-            </Button>
-          </div>
-        </>
-      ),
-    },
-  ];
+  const [show, setShow] = useState("PredefinedGoals");
   const getDetails = () => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
@@ -167,63 +54,65 @@ const EmployeeComponent = (props: any) => {
 
   return (
     <>
-      <div className={show == "GoalsComponent" ? styles.container : ""}>
-        <div className={styles.sample}>
-          <Button
-            variant="text"
-            onClick={() => setShow("AppraisalCycles")}
-            style={{
-              color: show == "AppraisalCycles" ? "white" : "black",
-
-              borderBottom: show == "AppraisalCycles" ? "2px solid black" : "",
-              backgroundColor:
-                show == "AppraisalCycles" ? "rgb(97, 176, 97)" : "#f5f5f5",
-              display: show == "GoalsComponent" ? "flex" : "none",
-            }}
+      <div className={styles.background}>
+        <div className={styles.container02}>
+          <div
+            className={styles.AppraisalCycles}
+            style={{ paddingBottom: "10px" }}
           >
-            AppraisalCycles
-          </Button>
+            <Button
+              onClick={() => setShow("PredefinedGoals")}
+              size="small"
+              style={{
+                color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
+                borderBottom:
+                  show == "PredefinedGoals" ? "2px solid green" : "",
+              }}
+            >
+              <PiTargetBold
+                style={{
+                  paddingRight: "5px",
+                  fontSize: "22px",
+                  color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
+                }}
+              />
+              PREDEFINEDGOALS
+            </Button>
+          </div>
+          <div>
+            <Button
+              onClick={() => setShow("SelfGoals")}
+              size="small"
+              style={{
+                color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
+                borderBottom: show == "SelfGoals" ? "2px solid green" : "",
+              }}
+            >
+              <BiTargetLock
+                style={{
+                  paddingRight: "5px",
+                  fontSize: "22px",
+                  color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
+                }}
+              />
+              SELFGOALS
+            </Button>
+          </div>
         </div>
-        <div
-          className={styles.sample}
-          style={{
-            display: show == "GoalsComponent" ? "flex" : "none",
-          }}
-        >
-          <Button
-            variant="text"
-            onClick={() => setShow("GoalsComponent")}
-            style={{
-              color: show == "GoalsComponent" ? "white" : "black",
-              borderBottom: show == "GoalsComponent" ? "2px solid black" : "",
-              backgroundColor:
-                show == "GoalsComponent" ? "rgb(97, 176, 97)" : "#f5f5f5",
-            }}
-          >
-            Goals
-          </Button>
+        <div>
+          {show == "PredefinedGoals" ? (
+            <PredefinedGoals
+              userEmail={props.currentUserEmail}
+              curUser={props.currentUserEmail}
+              isManager={props.isManager}
+            />
+          ) : show == "SelfGoals" ? (
+            <SelfGoals curUser={props.curUser} isManager={props.isManager} />
+          ) : (
+            ""
+          )}
         </div>
       </div>
-      {show == "AppraisalCycles" ? (
-        <div>
-          <DetailsList
-            items={masterData}
-            columns={columns}
-            styles={gridStyles}
-            setKey="set"
-            layoutMode={DetailsListLayoutMode.justified}
-            selectionMode={SelectionMode.none}
-          />
-        </div>
-      ) : show == "GoalsComponent" ? (
-        <GoalsComponent
-          memberEmail={props.currentUserEmail}
-          curUser={props.currentUserEmail}
-          isManager={props.isManager}
-        />
-      ) : (
-        ""
-      )}
     </>
   );
 };

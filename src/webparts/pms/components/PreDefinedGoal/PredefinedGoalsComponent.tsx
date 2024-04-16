@@ -13,13 +13,14 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
-import { Rating } from "primereact/rating";
+// import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
 // import { Rating } from "@fluentui/react-components";
 import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 import Loader from "../Loader/Loader";
+// import { SentimentNeutralTwoTone } from "@mui/icons-material";
 
 const PredefinedGoals = (props: any) => {
   console.log("predefinedGoalsProps", props);
@@ -52,13 +53,15 @@ const PredefinedGoals = (props: any) => {
     delPopup: false,
     delIndex: null,
   });
+  const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
   console.log(
     masterData,
     duplicateData,
     categories,
     managerGoals,
     rowHandleObj,
-    props
+    props,
+    rating
   );
 
   const getDetails = () => {
@@ -523,20 +526,16 @@ const PredefinedGoals = (props: any) => {
   const editRowFunction = (data: any) => {
     console.log(data);
     let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
-    duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
-    setDuplicateData([...duplicateArr]);
-    categoryHandleFun([...duplicateArr]);
-    // setRowHandleObj({
-    //   ...rowHandleObj,
-    //   ID: tempObj.ID,
-    //   commentType: "Employee",
-    //   comment: tempObj.EmployeeComments,
-    //   isPopup: false,
-    //   isEdit: tempObj.isRowEdit,
-    //   files: tempObj.AttachmentFiles,
-    // });
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      alert("Please save or cancel the current row before editing another row");
+    } else {
+      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      let tempObj = duplicateArr[index];
+      duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
+      setDuplicateData([...duplicateArr]);
+      categoryHandleFun([...duplicateArr]);
+    }
   };
   const addNewCategory = (condition: boolean) => {
     let tempArr = [...duplicateData];
@@ -660,11 +659,11 @@ const PredefinedGoals = (props: any) => {
           return obj;
         }
         if (type === "EmployeeRating") {
-          obj.EmployeeRating = value;
+          obj.EmployeeRating = (value + 1) / 2;
           return obj;
         }
         if (type === "ManagerRating") {
-          obj.ManagerRating = value;
+          obj.ManagerRating = (value + 1) / 2;
           return obj;
         }
       } else {
@@ -674,6 +673,35 @@ const PredefinedGoals = (props: any) => {
     console.log(tempArr);
     categoryHandleFun([...tempArr]);
   };
+
+  const handleMouseOver = (value: any, type: string) => {
+    if (type === "manger") {
+      setRating({ ...rating, MangerRating: value });
+    } else {
+      setRating({ ...rating, EmployeeRating: value });
+    }
+    // if (fixedRating === null) {
+    //   setRating(value);
+    // } else if (fixedRating !== null) {
+    // setRating(value);
+    // }
+  };
+
+  // const handleMouseOut = () => {
+  //   if (fixedRating === null) {
+  //     setRating(0);
+  //   }
+  // };
+
+  // const handleClick = (value: any) => {
+  //   if (fixedRating === null) {
+  //     setFixedRating(value);
+  //     setRating(value);
+  //   } else if (fixedRating !== null) {
+  //     setFixedRating(value);
+  //   }
+  // };
+
   const GoalnameBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
@@ -722,9 +750,10 @@ const PredefinedGoals = (props: any) => {
   // };
   const ManagerRatingBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+    const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
     return currentObj[0].isRowEdit ? (
       <div className="d-flex">
-        <Rating
+        {/* <Rating
           style={{ marginRight: "20px" }}
           value={rowData.ManagerRating}
           onChange={(e) =>
@@ -733,7 +762,33 @@ const PredefinedGoals = (props: any) => {
           disabled={!props.isManager}
           stars={5}
           cancel={false}
-        />
+        /> */}
+        <div
+          onMouseOut={() =>
+            setRating({ ...rating, MangerRating: rowData.ManagerRating })
+          }
+        >
+          <div className="rating-container">
+            {ratingValues.map((value: any, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.ManagerRating ? "active" : ""
+                } ${value <= rating.MangerRating ? "active" : ""} ${
+                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
+                } ${!props.isManager ? "disabled" : "show"}`}
+                onMouseOver={() => handleMouseOver(value, "manger")}
+                onClick={() => {
+                  onChangeHandleFun(index, "ManagerRating", rowData.ID);
+                }}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.ManagerRating}</span>
+        </div>
         <FaCommentDots
           className={
             rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
@@ -752,14 +807,32 @@ const PredefinedGoals = (props: any) => {
       </div>
     ) : (
       <div className="d-flex">
-        <Rating
+        {/* <Rating
           style={{ marginRight: "20px" }}
           value={rowData.ManagerRating}
           // onChange={(e) => setValue(e.value)}
           stars={5}
           disabled
           cancel={false}
-        />
+        /> */}
+        <div>
+          <div className="rating-container">
+            {ratingValues.map((value, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.ManagerRating ? "active" : ""
+                } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
+                // onMouseOver={() => handleMouseOver(value)}
+                // onClick={() => handleClick(value)}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.ManagerRating}</span>
+        </div>
         <FaCommentDots
           className={
             rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
@@ -800,10 +873,12 @@ const PredefinedGoals = (props: any) => {
   //   );
   // };
   const EmployeeRatingBodyTemplate = (rowData: any) => {
+    const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
       <div className=" d-flex">
-        <Rating
+        {/* <Rating
           style={{ marginRight: "20px" }}
           value={rowData.EmployeeRating}
           onChange={(e) =>
@@ -812,7 +887,33 @@ const PredefinedGoals = (props: any) => {
           disabled={props.isManager}
           stars={5}
           cancel={false}
-        />
+        /> */}
+        <div
+          onMouseOut={() =>
+            setRating({ ...rating, EmployeeRating: rowData.EmployeeRating })
+          }
+        >
+          <div className="rating-container">
+            {ratingValues.map((value: any, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.EmployeeRating ? "active" : ""
+                } ${value <= rating.EmployeeRating ? "active" : ""} ${
+                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
+                } ${props.isManager ? "disabled" : "show"}`}
+                onMouseOver={() => handleMouseOver(value, "Employee")}
+                onClick={() => {
+                  onChangeHandleFun(index, "EmployeeRating", rowData.ID);
+                }}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.EmployeeRating}</span>
+        </div>
         <FaCommentDots
           className={
             rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
@@ -832,14 +933,32 @@ const PredefinedGoals = (props: any) => {
       </div>
     ) : (
       <div className=" d-flex">
-        <Rating
+        {/* <Rating
           style={{ marginRight: "20px" }}
           value={rowData.EmployeeRating}
-          // onChange={(e) => setValue(e.value)}
+          onChange={(e) => setValue(e.value)}
           stars={5}
           disabled
           cancel={false}
-        />
+        /> */}
+        <div>
+          <div className="rating-container">
+            {ratingValues.map((value, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.EmployeeRating ? "active" : ""
+                } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
+                // onMouseOver={() => handleMouseOver(value)}
+                // onClick={() => handleClick(value)}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.EmployeeRating}</span>
+        </div>
         <FaCommentDots
           className={
             rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
@@ -859,6 +978,7 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
+
   const ActionBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
@@ -969,11 +1089,6 @@ const PredefinedGoals = (props: any) => {
               </div>
             ) : props.isManager ? (
               <div>
-                <Button
-                  style={{ marginRight: "10px" }}
-                  label="New Goal"
-                  onClick={(e) => addGoalFunction(categories.length)}
-                />
                 <Button
                   label="New Category"
                   onClick={(e) =>

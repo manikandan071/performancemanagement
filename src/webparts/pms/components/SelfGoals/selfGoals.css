@@ -54,7 +54,7 @@
   display: flex;
   width: 20px;
   height: 7px;
-  background: #999;
+  background: #e3e3e3;
   margin-right: 3px;  
 }
 .selected{
@@ -64,7 +64,7 @@
   background: #ffc107;
 }
 .rating-value {
-  margin-left: 10px;
+  /* margin-left: 10px; */
   font-weight: bold;
   color: #333;
   font-size: 13px;
