@@ -99,14 +99,14 @@ const MainComponent = (props: any) => {
               <Goals />
             </div>
           ) : isNavOption === "Manager" ? (
-            <div>
+            <div style={{ position: "relative" }}>
               <ManagerComponent
                 EmployeeEmail={employeeEmail}
                 isManager={true}
               />
             </div>
           ) : (
-            <div>
+            <div style={{ position: "relative" }}>
               <EmployeeComponent EmployeeEmail={UserEmail} isManager={false} />
             </div>
           )}

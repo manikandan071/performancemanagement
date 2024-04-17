@@ -9,6 +9,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
 import { HiPencil } from "react-icons/hi2";
+import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
@@ -993,7 +994,7 @@ const PredefinedGoals = (props: any) => {
       </div>
     ) : (
       <div>
-        <HiPencil
+        <MdEditDocument
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
         />
@@ -1021,6 +1022,7 @@ const PredefinedGoals = (props: any) => {
     duplicateArr[index] = { ...tempObj };
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
+    setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
   };
 
   const fileDeleteFunction = (ind: number) => {
@@ -1034,6 +1036,7 @@ const PredefinedGoals = (props: any) => {
     duplicateArr[index] = { ...tempObj };
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
+    setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
   };
 
   return (
