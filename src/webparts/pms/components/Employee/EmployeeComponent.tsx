@@ -102,8 +102,7 @@ const EmployeeComponent = (props: any) => {
         <div>
           {show == "PredefinedGoals" ? (
             <PredefinedGoals
-              userEmail={props.currentUserEmail}
-              curUser={props.currentUserEmail}
+              EmployeeEmail={props.EmployeeEmail}
               isManager={props.isManager}
             />
           ) : show == "SelfGoals" ? (
