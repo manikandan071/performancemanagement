@@ -79,7 +79,7 @@ const PredefinedGoals = (props: any) => {
       .then((items: any) => {
         const filterData = items.filter(
           (item: any) =>
-            props.userEmail == item.AssignTo.EMail &&
+            props.EmployeeEmail == item.AssignTo.EMail &&
             !item.isDelete &&
             !item.isDeleteHR
         );
@@ -220,7 +220,7 @@ const PredefinedGoals = (props: any) => {
       .siteUsers()
       .then((res) => {
         res.forEach((user) => {
-          if (user.Email === props.userEmail) {
+          if (user.Email === props.EmployeeEmail) {
             console.log(user);
             setAssignUserObj({
               ...assignUserObj,
@@ -237,7 +237,7 @@ const PredefinedGoals = (props: any) => {
   useEffect(() => {
     setIsLoader(true);
     init();
-  }, []);
+  }, [props]);
   const categoryHandleFun = (data: any) => {
     let managerGoals: any = [];
     let preDefinedGoals = data.filter((pre: any) => {
@@ -1380,9 +1380,11 @@ const PredefinedGoals = (props: any) => {
                 body={ActionBodyTemplate}
               ></Column>
             </DataTable>
-            <div className="addMaganerGoal">
-              <GrAdd onClick={(e) => addGoalFunction(categories.length)} />
-            </div>
+            {props.isManager ? (
+              <div className="addMaganerGoal">
+                <GrAdd onClick={(e) => addGoalFunction(categories.length)} />
+              </div>
+            ) : null}
           </div>
           {managerGoals.length > 0 ? (
             <></>

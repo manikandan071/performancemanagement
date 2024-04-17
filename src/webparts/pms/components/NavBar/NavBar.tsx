@@ -1,22 +1,18 @@
 import * as React from "react";
 import { sp } from "@pnp/sp/presets/all";
 import { useState, useEffect } from "react";
-import { TbTargetArrow } from "react-icons/tb";
-import { AiOutlineSolution } from "react-icons/ai";
-import { TbUserHexagon } from "react-icons/tb";
+// import { TbTargetArrow } from "react-icons/tb";
+// import { AiOutlineSolution } from "react-icons/ai";
+// import { TbUserHexagon } from "react-icons/tb";
 import styles from "./NavBarStyle.module.scss";
 
 const NavBar = (props: any) => {
   console.log(props);
-  //   let navOptions = [
-  //     { option: "Goals" },
-  //     { option: "Manager" },
-  //     { option: "Employee" },
-  //   ];
   const [currentUser, setCurrentUSer] = useState("");
+  const [isShowEmployee, setIsShowEmployee] = useState(false);
   const [employeeList, setEmployeeList] = useState<any[]>([]);
   const [tapName, setTapName] = useState("");
-  const [navOptions, setNavOptions] = useState<any[]>([]);
+
   console.log(employeeList, currentUser);
 
   const getUserRole = (mail: string) => {
@@ -34,11 +30,11 @@ const NavBar = (props: any) => {
           res.forEach((obj) => {
             if (obj.Employee.EMail == mail) {
               if (obj.Roles == "HR") {
-                setNavOptions([{ option: "Goals" }, { option: "Employee" }]);
+                // setNavOptions([{ option: "Goals" }, { option: "Employee" }]);
                 setTapName("Goals");
                 props.handleCilck("Goals");
               } else if (obj.Roles == "Manager") {
-                setNavOptions([{ option: "Manager" }, { option: "Employee" }]);
+                // setNavOptions([{ option: "Manager" }, { option: "Employee" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
                 obj.Members.forEach((user: any) => {
@@ -49,7 +45,7 @@ const NavBar = (props: any) => {
                   });
                 });
               } else {
-                setNavOptions([{ option: "Employee" }]);
+                // setNavOptions([{ option: "Employee" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
               }
@@ -133,7 +129,7 @@ const NavBar = (props: any) => {
         {/* <span>{props.prop.context.pageContext.user.displayName}</span> */}
       </div>
 
-      <div>
+      {/* <div>
         {navOptions.map((obj) => {
           return (
             <div>
@@ -170,6 +166,63 @@ const NavBar = (props: any) => {
             </div>
           );
         })}
+      </div> */}
+      <div>
+        <div
+          className={
+            "Goals" == tapName
+              ? styles.seletedOptionContainer
+              : styles.optionContainer
+          }
+          onClick={() => {
+            setTapName("Goals");
+            props.handleCilck("Goals");
+          }}
+        >
+          Goals
+        </div>
+        <div
+          className={styles.optionContainer}
+          onClick={() => setIsShowEmployee(!isShowEmployee)}
+        >
+          Manager
+        </div>
+        {isShowEmployee ? (
+          <ul>
+            {employeeList.map((emp) => {
+              return (
+                <li
+                  className={
+                    emp.userName == tapName
+                      ? styles.seletedOptionContainer
+                      : styles.optionContainer
+                  }
+                  onClick={() => {
+                    setTapName(emp.userName);
+                    props.handleCilck("Manager");
+                    props.getEmployeeEmail(emp.userEmail);
+                  }}
+                >
+                  {emp.userName}
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
+
+        <div
+          className={
+            "Employee" == tapName
+              ? styles.seletedOptionContainer
+              : styles.optionContainer
+          }
+          onClick={() => {
+            setTapName("Employee");
+            props.handleCilck("Employee");
+          }}
+        >
+          Employee
+        </div>
       </div>
     </div>
   );
