@@ -1,10 +1,13 @@
 import * as React from "react";
 import { sp } from "@pnp/sp/presets/all";
 import { useState, useEffect } from "react";
-// import { TbTargetArrow } from "react-icons/tb";
-// import { AiOutlineSolution } from "react-icons/ai";
-// import { TbUserHexagon } from "react-icons/tb";
+import { TbTargetArrow } from "react-icons/tb";
 import styles from "./NavBarStyle.module.scss";
+import { FaChevronRight } from "react-icons/fa";
+import { FaChevronDown } from "react-icons/fa";
+import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
+import { FaUsersGear } from "react-icons/fa6";
+import { RiUserShared2Fill } from "react-icons/ri";
 
 const NavBar = (props: any) => {
   console.log(props);
@@ -12,6 +15,7 @@ const NavBar = (props: any) => {
   const [isShowEmployee, setIsShowEmployee] = useState(false);
   const [employeeList, setEmployeeList] = useState<any[]>([]);
   const [tapName, setTapName] = useState("");
+  const [tapMembersList, setTabMembersList] = useState("");
 
   console.log(employeeList, currentUser);
 
@@ -30,11 +34,9 @@ const NavBar = (props: any) => {
           res.forEach((obj) => {
             if (obj.Employee.EMail == mail) {
               if (obj.Roles == "HR") {
-                // setNavOptions([{ option: "Goals" }, { option: "Employee" }]);
                 setTapName("Goals");
                 props.handleCilck("Goals");
               } else if (obj.Roles == "Manager") {
-                // setNavOptions([{ option: "Manager" }, { option: "Employee" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
                 obj.Members.forEach((user: any) => {
@@ -45,7 +47,6 @@ const NavBar = (props: any) => {
                   });
                 });
               } else {
-                // setNavOptions([{ option: "Employee" }]);
                 setTapName("Employee");
                 props.handleCilck("Employee");
               }
@@ -119,47 +120,7 @@ const NavBar = (props: any) => {
             {props.context.context.pageContext.user.displayName}
           </span>
         ) : null}
-        {/* <span>{props.prop.context.pageContext.user.displayName}</span> */}
       </div>
-
-      {/* <div>
-        {navOptions.map((obj) => {
-          return (
-            <div>
-              <span
-                className={obj.option == tapName ? styles.sideBar : ""}
-              ></span>
-              <div
-                onClick={() => {
-                  setTapName(obj.option);
-                  props.handleCilck(obj.option);
-                }}
-                className={
-                  obj.option == tapName
-                    ? styles.seletedOptionContainer
-                    : styles.optionContainer
-                }
-                style={{
-                  textAlign: props.isNav ? "left" : "center",
-                  padding: props.isNav ? "" : "5px 0px 5px 0px",
-                }}
-              >
-                {props.isNav ? (
-                  obj.option
-                ) : obj.option === "Goals" ? (
-                  <TbTargetArrow />
-                ) : obj.option === "Manager" ? (
-                  <AiOutlineSolution />
-                ) : obj.option === "Employee" ? (
-                  <TbUserHexagon />
-                ) : (
-                  ""
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div> */}
       <div>
         <div
           className={
@@ -168,36 +129,77 @@ const NavBar = (props: any) => {
               : styles.optionContainer
           }
           onClick={() => {
+            setIsShowEmployee(false);
             setTapName("Goals");
             props.handleCilck("Goals");
+            setTabMembersList("");
           }}
         >
-          Goals
+          {props.isNav ? <> <span className={styles.goalIcon}><TbTargetArrow /></span> Goals</> : <TbTargetArrow />}
         </div>
         <div
-          className={styles.optionContainer}
+          className={
+            "Manager" == tapName
+              ? styles.seletedOptionContainer
+              : styles.optionContainer
+          }
           onClick={() => setIsShowEmployee(!isShowEmployee)}
         >
-          Manager
+          {props.isNav ? (
+            <>
+             <span className={styles.goalIcon}><FaUsersGear /></span> Manager
+              <span>
+                {isShowEmployee ? (
+                  <FaChevronDown className={styles.DrpIcons} />
+                ) : (
+                  <FaChevronRight className={styles.DrpIcons} />
+                )}
+              </span>
+            </>
+          ) : (
+            <>
+              <FaUsersGear />
+              <span>
+                {isShowEmployee ? (
+                  <FaChevronDown className={styles.DrpIcons} />
+                ) : (
+                  <FaChevronRight className={styles.DrpIcons} />
+                )}
+              </span>
+            </>
+          )}
         </div>
         {isShowEmployee ? (
-          <ul>
+          <ul className={props.isNav ? styles.ul : styles.ul02}>
             {employeeList.map((emp) => {
               return (
-                <li
-                  className={
-                    emp.userName == tapName
-                      ? styles.seletedOptionContainer
-                      : styles.optionContainer
-                  }
-                  onClick={() => {
-                    setTapName(emp.userName);
-                    props.handleCilck("Manager");
-                    props.getEmployeeEmail(emp.userEmail);
-                  }}
-                >
-                  {emp.userName}
-                </li>
+                <>
+                  <li
+                    className={
+                      emp.userName == tapMembersList
+                        ? styles.seletedMembersContainer
+                        : styles.optionMembersContainer
+                    }
+                    onClick={() => {
+                      setTabMembersList(emp.userName);
+                      setTapName("Manager");
+                      props.handleCilck("Manager");
+                      props.getEmployeeEmail(emp.userEmail);
+                    }}
+                  >
+                    {props.isNav ? (
+                      emp.userName
+                    ) : (
+                      <Persona
+                        showOverflowTooltip
+                        size={PersonaSize.size24}
+                        presence={PersonaPresence.none}
+                        showInitialsUntilImageLoads={true}
+                        imageUrl={`/_layouts/15/userphoto.aspx?size=S&username=${emp.userEmail}`}
+                      />
+                    )}
+                  </li>
+                </>
               );
             })}
           </ul>
@@ -210,11 +212,13 @@ const NavBar = (props: any) => {
               : styles.optionContainer
           }
           onClick={() => {
+            setTabMembersList("");
             setTapName("Employee");
+            setIsShowEmployee(false);
             props.handleCilck("Employee");
           }}
         >
-          Employee
+          {props.isNav ? <> <span className={styles.goalIcon}><RiUserShared2Fill /></span>  Employee</>: <RiUserShared2Fill />}
         </div>
       </div>
     </div>
