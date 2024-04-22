@@ -51,13 +51,15 @@ const Goals = () => {
     isUpdate: false,
   });
   const [activeIndex, setActiveIndex] = useState<any>(null);
+  const [appraisalCycle, setAppraisalCycle] = useState(null);
 
   console.log(
     usersList,
     categories,
     masterData,
     duplicateData,
-    predefinedGoalsList
+    predefinedGoalsList,
+    appraisalCycle
   );
 
   const getPredefinedGoals = () => {
@@ -211,6 +213,26 @@ const Goals = () => {
         }
       })
       .catch((err) => console.log(err));
+  };
+
+  const getCycleYear = () => {
+    sp.web.lists
+      .getByTitle("AppraisalCycles")
+      .items.get()
+      .then((res) => {
+        console.log(res);
+        res.forEach((obj) => {
+          if (
+            new Date() >= new Date(obj.startDate) &&
+            new Date() <= new Date(obj.endDate)
+          ) {
+            setAppraisalCycle(obj.ID);
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const categoryHandleFun = (data: any) => {
@@ -470,6 +492,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
+                  AppraisalCycleLookupId: appraisalCycle,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -488,6 +511,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
+                  AppraisalCycleLookupId: appraisalCycle,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -528,6 +552,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: user.EmployeeID,
                 HRGoalId: tempObj.ID,
+                AppraisalCycleLookupId: appraisalCycle,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -674,6 +699,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: filter.EmployeeID,
                 HRGoalId: tempObj.ID,
+                AppraisalCycleLookupId: appraisalCycle,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -916,6 +942,7 @@ const Goals = () => {
 
   useEffect(() => {
     getUsersRoles();
+    getCycleYear();
   }, []);
 
   return (
