@@ -1,16 +1,23 @@
 .addIconSec:hover .addIconSec{
   background-color: green;
 }
+.p-accordion .p-accordion-header .p-accordion-header-link {
+    border: none !important;
+}
+.card {
+    --bs-card-border-color: none !important
+}
 .accordionMain .p-accordion-header-link{
     /* display: inline-block; */
     text-decoration: none;
     background-color: #fff;
-    padding: 10px;
+    padding: 15px 15px;
     color: #61b061;
     font-size: 14px;
 }
 .accordionMain .p-accordion-content{
     padding: 0px;
+    border: none;
 }
 .accordionMain .p-accordion-header-link .category-sec .iconSec .addIcon{
     color: #114504;
@@ -33,13 +40,13 @@
     font-size: 26px;
 }
 .accordionMain .p-accordion-header-link .category-sec .iconSec .addIcon:hover{
-    background-color: #114504;
+    background-color: #2f6024;
     color: white;
     padding: 5px;
     font-size: 26px;
 }
 .accordionMain .p-accordion-header-link .category-sec .iconSec .editIcon:hover{
-    background-color: #114504;
+    background-color: #2f6024;
     color: white;
     padding: 5px;
     font-size: 26px;
@@ -50,48 +57,48 @@
     padding: 5px;
     font-size: 26px;
 }
-/* .goalsTable table thead tr th{
-    background-color: #90c788;
-} */
 
 .preDefinedTable table tbody{
     border-bottom: 1px solid #e3e3e3;
     border-top: 1px solid #e3e3e3;
-    display: table-caption;
+    /* display: table-caption; */
     padding: 10px 0px;
 }
-table thead tr th{
+.preDefinedTable table thead tr th{
     padding: 20px 8px 20px 20px;
 }
-table tbody tr td{
-    padding: 8px 8px 8px 20px;
+.preDefinedTable table tbody tr td{
+    padding: 8px 20px 8px 20px;
     border-right: 1px solid #e3e3e3;
 }
-table tbody .p-dropdown,table tbody .p-inputtext{
+.preDefinedTable table tbody .p-inputtext{
     width: 100%;
     font-size: 13px;
     color: #626262;
     font-family: Roboto,
-            Arial,
-            Helvetica,
-            sans-serif;
-        font-size: 12px;
-        padding: 5px;
+    Arial,
+    Helvetica,
+    sans-serif;
+    padding: 5px;
 }
-/* .p-dropdown-panel ul{
-    padding: 0px;
-    margin: 0px;
+.managerGoalTable table tbody .p-inputtext{
+    width: 100%;
+    font-size: 13px;
+    color: #626262;
+    font-family: Roboto,
+    Arial,
+    Helvetica,
+    sans-serif;
+    font-size: 12px;
+    padding: 5px;
 }
-.p-multiselect-panel ul{
-    padding: 0px;
-    margin: 0px;
+.managerGoalTable table thead tr th{
+    padding: 20px 8px 20px 20px;
 }
-.goalsTable table tbody tr{
-    border-bottom: none;
+.managerGoalTable table tbody tr td{
+    padding: 8px 20px 8px 20px;
+    border-right: 1px solid #e3e3e3;
 }
-.goalsTable table tbody td{
-    padding: 7px;
-} */
 .p-column-title{
     color:#626262;
     font-family:Roboto,
@@ -100,9 +107,6 @@ table tbody .p-dropdown,table tbody .p-inputtext{
         sans-serif;
         font-size:12px;
 }
-/* .goalsTable table thead tr th,.goalsTable table tbody tr th{
-    width: 25%;
-} */
 .p-confirm-popup{
     left: 78% !important;;
 }
@@ -113,23 +117,95 @@ table tbody .p-dropdown,table tbody .p-inputtext{
 }
 .commentIcon{
     color: #64728c;
-        margin-right: 10px;
+        margin: 0px 10px;
         cursor: pointer;
         padding: 5px;
         font-size: 27px;
 }
 .filledCommentIcon{
     color: #ff7b1d;
-        margin-right: 10px;
+        margin: 0px 10px;
         cursor: pointer;
         padding: 5px;
         font-size: 27px;
 }
-.filename{
-    text-decoration: none;
-    background-color: #3fd57f;
-    color: #fff;
+.reviewDialog .p-inputtextarea{
+    width: 100%;
+        font-size: 14px;
+        color: #626262;
+        font-family: Roboto,
+            Arial,
+            Helvetica,
+            sans-serif;
+        font-size: 14px;
+        padding: 6px;
+}
+.fileBtn .p-button{
+    padding: 3px 10px;
+}
+.fileBtn .p-button svg{
+   display: none;
+}
+.fileBtn .p-button span{
+        font-size: 15px;
+        font-family: Roboto,
+            Arial,
+            Helvetica,
+            sans-serif;
+        display: flex;
+}
+.reviewDialog .fileSec{
     padding: 5px 10px;
+    margin-top: 5px;
+    border-radius: 5px;
+    background-color: #f2f2fb;    
+}
+.reviewDialog .fileBox{
+    padding: 10px 10px 10px 0px;
+    display: flex;
+    justify-content: space-between;    
+}
+.reviewDialog .uploadedFiles{
+    color: #626262;
+        font-size: 14px;
+        font-family: Roboto,
+            Arial,
+            Helvetica,
+            sans-serif;
+            display: flex;
+            margin-top: 10px;
+                        font-weight: 600;
+}
+.reviewDialog .fileBox:hover{
+box-shadow: rgb(101 94 168 / 20%) 0px 10px 50px;
+border-radius: 10px;
+}
+.reviewDialog .fileBox .cancelIcon{
+    cursor: pointer;
+    background-color: #e4eafc;
+    color: #6d738e;
+    width: 20px;
+    height: 20px;
+    padding: 3px;
+    border-radius: 50px;
+}
+.reviewDialog .filename{
+    text-decoration: none;
+    /* background-color: #3fd57f; */
+    color: #626262;
+    padding: 0px 10px;
+    font-size: 13px;
+    font-family: Roboto,
+            Arial,
+            Helvetica,
+            sans-serif;
+}
+.reviewDialog .filename svg{
+    margin-right: 6px;
+    color: #812d2d;
+}
+.reviewDialog .p-dialog-content{
+    padding: 20px 40px;
 }
 
 .p-datatable-emptymessage{
@@ -176,8 +252,10 @@ table tbody .p-dropdown,table tbody .p-inputtext{
     background-color: #66ce70;
     color: #fff;
     font-size: 18px;
+    cursor: pointer;
 }
 .addMaganerGoal:hover{
+    cursor: pointer;
     position: absolute;
     display: flex;
     top:-23px;

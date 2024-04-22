@@ -6,8 +6,10 @@ import styles from "./NavBarStyle.module.scss";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
-import { FaUsersGear } from "react-icons/fa6";
-import { RiUserShared2Fill } from "react-icons/ri";
+// import { FaUsersGear } from "react-icons/fa6";
+import { RiTeamFill } from "react-icons/ri";
+// import { RiUserShared2Fill } from "react-icons/ri";
+import { PiUserCircleGearBold } from "react-icons/pi";
 
 const NavBar = (props: any) => {
   console.log(props);
@@ -135,7 +137,16 @@ const NavBar = (props: any) => {
             setTabMembersList("");
           }}
         >
-          {props.isNav ? <> <span className={styles.goalIcon}><TbTargetArrow /></span> Goals</> : <TbTargetArrow />}
+          {props.isNav ? (
+            <div className={styles.optionIcon}>
+              <TbTargetArrow />
+              <span style={{ margin: "8px 0px 5px 10px" }}>Goals</span>
+            </div>
+          ) : (
+            <div className={styles.onlyIcon}>
+              <TbTargetArrow />
+            </div>
+          )}
         </div>
         <div
           className={
@@ -146,27 +157,24 @@ const NavBar = (props: any) => {
           onClick={() => setIsShowEmployee(!isShowEmployee)}
         >
           {props.isNav ? (
-            <>
-             <span className={styles.goalIcon}><FaUsersGear /></span> Manager
-              <span>
-                {isShowEmployee ? (
-                  <FaChevronDown className={styles.DrpIcons} />
-                ) : (
-                  <FaChevronRight className={styles.DrpIcons} />
-                )}
-              </span>
-            </>
+            <div className={styles.optionIcon}>
+              <RiTeamFill />
+              <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
+              {isShowEmployee ? (
+                <FaChevronDown className={styles.DrpIcons} />
+              ) : (
+                <FaChevronRight className={styles.DrpIcons} />
+              )}
+            </div>
           ) : (
-            <>
-              <FaUsersGear />
-              <span>
-                {isShowEmployee ? (
-                  <FaChevronDown className={styles.DrpIcons} />
-                ) : (
-                  <FaChevronRight className={styles.DrpIcons} />
-                )}
-              </span>
-            </>
+            <div className={styles.onlyIcon}>
+              <RiTeamFill />
+              {isShowEmployee ? (
+                <FaChevronDown className={styles.DrpIcons} />
+              ) : (
+                <FaChevronRight className={styles.DrpIcons} />
+              )}
+            </div>
           )}
         </div>
         {isShowEmployee ? (
@@ -188,7 +196,16 @@ const NavBar = (props: any) => {
                     }}
                   >
                     {props.isNav ? (
-                      emp.userName
+                      <div style={{ display: "flex" }}>
+                        <Persona
+                          showOverflowTooltip
+                          size={PersonaSize.size24}
+                          presence={PersonaPresence.none}
+                          showInitialsUntilImageLoads={true}
+                          imageUrl={`/_layouts/15/userphoto.aspx?size=S&username=${emp.userEmail}`}
+                        />
+                        <span>{emp.userName}</span>
+                      </div>
                     ) : (
                       <Persona
                         showOverflowTooltip
@@ -218,7 +235,16 @@ const NavBar = (props: any) => {
             props.handleCilck("Employee");
           }}
         >
-          {props.isNav ? <> <span className={styles.goalIcon}><RiUserShared2Fill /></span>  Employee</>: <RiUserShared2Fill />}
+          {props.isNav ? (
+            <div className={styles.optionIcon}>
+              <PiUserCircleGearBold />
+              <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
+            </div>
+          ) : (
+            <div className={styles.onlyIcon}>
+              <PiUserCircleGearBold />
+            </div>
+          )}
         </div>
       </div>
     </div>

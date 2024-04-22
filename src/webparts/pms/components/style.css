@@ -10,38 +10,6 @@
 .css-1knaqv7-MuiButtonBase-root-MuiButton-root {
     padding: 0 !important;
 }
-.heading{
-    color: green;
-    padding: 7PX;
-    font-size: 0.8125rem !important;
-}
-.p-accordion-content{
-    padding: 0 !important;
-    border: none;
-}
-.p-datatable-table th{
-    background-color: #fcfcfc !important;
-    color: #000000ad;
-    font-size: 16px;
-    font-weight: 650;
-}
-.p-accordion .p-accordion-header .p-accordion-header-link{
-    border: none !important;
-}
-.card {
-    --bs-card-border-color : none !important
-}
-.p-accordion-header a{
-    text-decoration: none !important;
-
-    /* color: rgba(0, 0, 0, 0.515) !important;
-    background-color: #a6a2ce8f !important; */
-}
-/* .goalIcon{
-    font-size: 20px ;
-    color: rgba(0, 0, 0, 0.404) ;
-} */
-
 .headerRow-49{
     display: none!important;
 }

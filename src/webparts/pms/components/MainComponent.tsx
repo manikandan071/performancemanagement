@@ -81,7 +81,6 @@ const MainComponent = (props: any) => {
           )}
           <NavBar
             isNav={isNavBar}
-            //   tab={isNavOption}
             handleCilck={handleCilck}
             getEmployeeEmail={getEmployeeEmail}
             context={props}
