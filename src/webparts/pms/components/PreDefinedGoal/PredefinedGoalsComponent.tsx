@@ -76,9 +76,7 @@ const PredefinedGoals = (props: any) => {
         "AttachmentFiles"
       )
       .expand("AssignTo,AttachmentFiles")
-      .filter(
-        `AssignTo/EMail eq '${props.EmployeeEmail}' and AppraisalCycleLookupId eq  '${appraisalCycleID}'`
-      )
+      .filter(`AppraisalCycleLookupId eq  '${appraisalCycleID}'`)
       .get()
       .then((items: any) => {
         console.log(items);
@@ -211,8 +209,8 @@ const PredefinedGoals = (props: any) => {
         });
         setDuplicateData([...tempArr]);
         setManagerGoals([...managerGoals]);
-        setMasterData([...tempArr]);
         setCategories([...categorizedItems]);
+        setMasterData([...tempArr]);
         setIsLoader(false);
       })
       .catch((err) => {
@@ -240,7 +238,7 @@ const PredefinedGoals = (props: any) => {
   useEffect(() => {
     setIsLoader(true);
     init();
-  }, []);
+  }, [props]);
 
   const categoryHandleFun = (data: any) => {
     let managerGoals: any = [];
@@ -702,16 +700,29 @@ const PredefinedGoals = (props: any) => {
   };
   const GoalnameBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
-    return index && duplicateData[index].isRowEdit ? (
-      <InputTextarea
-        value={rowData.GoalName}
-        rows={2}
-        cols={30}
-        disabled={!props.isManager}
-        onChange={(e) =>
-          onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
-        }
-      />
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <InputTextarea
+          value={rowData.GoalName}
+          rows={2}
+          cols={30}
+          disabled={!props.isManager}
+          onChange={(e) =>
+            onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
+          }
+        />
+      ) : (
+        <div
+          style={{
+            fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+            color: "#64728c",
+            fontSize: "13px",
+            width: "100%",
+          }}
+        >
+          {rowData.GoalName}
+        </div>
+      )
     ) : (
       <div
         style={{
@@ -729,51 +740,92 @@ const PredefinedGoals = (props: any) => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
-    return index && duplicateData[index].isRowEdit ? (
-      <div className=" d-flex">
-        <div
-          onMouseOut={() =>
-            setRating({ ...rating, EmployeeRating: rowData.EmployeeRating })
-          }
-        >
-          <div className="rating-container">
-            {ratingValues.map((value: any, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`rating-star ${
-                  value <= rowData.EmployeeRating ? "active" : ""
-                } ${value <= rating.EmployeeRating ? "active" : ""} ${
-                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                } ${props.isManager ? "disabled" : "show"}`}
-                onMouseOver={() => handleMouseOver(value, "Employee")}
-                onClick={() => {
-                  onChangeHandleFun(index, "EmployeeRating", rowData.ID);
-                }}
-              >
-                <span></span>
-              </a>
-            ))}
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <div className=" d-flex">
+          <div
+            onMouseOut={() =>
+              setRating({ ...rating, EmployeeRating: rowData.EmployeeRating })
+            }
+          >
+            <div className="rating-container">
+              {ratingValues.map((value: any, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className={`rating-star ${
+                    value <= rowData.EmployeeRating ? "active" : ""
+                  } ${value <= rating.EmployeeRating ? "active" : ""} ${
+                    ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
+                  } ${props.isManager ? "disabled" : "show"}`}
+                  onMouseOver={() => handleMouseOver(value, "Employee")}
+                  onClick={() => {
+                    onChangeHandleFun(index, "EmployeeRating", rowData.ID);
+                  }}
+                >
+                  <span></span>
+                </a>
+              ))}
+            </div>
+            <span className="rating-value">{rowData.EmployeeRating}</span>
           </div>
-          <span className="rating-value">{rowData.EmployeeRating}</span>
+          <FaCommentDots
+            className={
+              rowData.EmployeeComments == ""
+                ? "commentIcon"
+                : "filledCommentIcon"
+            }
+            onClick={() =>
+              setRowHandleObj({
+                ...rowHandleObj,
+                ID: rowData.ID,
+                commentType: "Employee",
+                comment: rowData.EmployeeComments,
+                isPopup: true,
+                isEdit: rowData.isRowEdit,
+                files: rowData.AttachmentFiles,
+              })
+            }
+          />
         </div>
-        <FaCommentDots
-          className={
-            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
-          }
-          onClick={() =>
-            setRowHandleObj({
-              ...rowHandleObj,
-              ID: rowData.ID,
-              commentType: "Employee",
-              comment: rowData.EmployeeComments,
-              isPopup: true,
-              isEdit: rowData.isRowEdit,
-              files: rowData.AttachmentFiles,
-            })
-          }
-        />
-      </div>
+      ) : (
+        <div className=" d-flex">
+          <div>
+            <div className="rating-container">
+              {ratingValues.map((value, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className={`rating-star ${
+                    value <= rowData.EmployeeRating ? "active" : ""
+                  } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
+                >
+                  <span></span>
+                </a>
+              ))}
+            </div>
+            <span className="rating-value">{rowData.EmployeeRating}</span>
+          </div>
+          <FaCommentDots
+            className={
+              rowData.EmployeeComments == ""
+                ? "commentIcon"
+                : "filledCommentIcon"
+            }
+            onClick={() =>
+              setRowHandleObj({
+                ...rowHandleObj,
+                ID: rowData.ID,
+                commentType: "Employee",
+                comment: rowData.EmployeeComments,
+                isPopup: true,
+                isEdit: rowData.isRowEdit,
+                files: rowData.AttachmentFiles,
+              })
+            }
+          />
+        </div>
+      )
     ) : (
       <div className=" d-flex">
         <div>
@@ -814,50 +866,100 @@ const PredefinedGoals = (props: any) => {
   const ManagerRatingBodyTemplate = (rowData: any) => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
-    return index && duplicateData[index].isRowEdit ? (
-      <div className="d-flex">
-        <div
-          onMouseOut={() =>
-            setRating({ ...rating, MangerRating: rowData.ManagerRating })
-          }
-        >
-          <div className="rating-container">
-            {ratingValues.map((value: any, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`rating-star ${
-                  value <= rowData.ManagerRating ? "active" : ""
-                } ${value <= rating.MangerRating ? "active" : ""} ${
-                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                } ${!props.isManager ? "disabled" : "show"}`}
-                onMouseOver={() => handleMouseOver(value, "manger")}
-                onClick={() => {
-                  onChangeHandleFun(index, "ManagerRating", rowData.ID);
-                }}
-              >
-                <span></span>
-              </a>
-            ))}
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <div className="d-flex">
+          <div
+            onMouseOut={() =>
+              setRating({ ...rating, MangerRating: rowData.ManagerRating })
+            }
+          >
+            <div className="rating-container">
+              {ratingValues.map((value: any, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className={`rating-star ${
+                    value <= rowData.ManagerRating ? "active" : ""
+                  } ${value <= rating.MangerRating ? "active" : ""} ${
+                    ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
+                  } ${!props.isManager ? "disabled" : "show"}`}
+                  onMouseOver={() => handleMouseOver(value, "manger")}
+                  onClick={() => {
+                    onChangeHandleFun(index, "ManagerRating", rowData.ID);
+                  }}
+                >
+                  <span></span>
+                </a>
+              ))}
+            </div>
+            <span className="rating-value">{rowData.ManagerRating}</span>
           </div>
-          <span className="rating-value">{rowData.ManagerRating}</span>
+          <FaCommentDots
+            className={
+              rowData.ManagerComments == ""
+                ? "commentIcon"
+                : "filledCommentIcon"
+            }
+            onClick={() =>
+              setRowHandleObj({
+                ...rowHandleObj,
+                ID: rowData.ID,
+                commentType: "Manager",
+                comment: rowData.ManagerComments,
+                isPopup: true,
+                isEdit: rowData.isRowEdit,
+              })
+            }
+          />
         </div>
-        <FaCommentDots
-          className={
-            rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
-          }
-          onClick={() =>
-            setRowHandleObj({
-              ...rowHandleObj,
-              ID: rowData.ID,
-              commentType: "Manager",
-              comment: rowData.ManagerComments,
-              isPopup: true,
-              isEdit: rowData.isRowEdit,
-            })
-          }
-        />
-      </div>
+      ) : (
+        <div className="d-flex">
+          {/* <Rating
+          style={{ marginRight: "20px" }}
+          value={rowData.ManagerRating}
+          // onChange={(e) => setValue(e.value)}
+          stars={5}
+          disabled
+          cancel={false}
+        /> */}
+          <div>
+            <div className="rating-container">
+              {ratingValues.map((value, index) => (
+                <a
+                  key={index}
+                  href="#"
+                  className={`rating-star ${
+                    value <= rowData.ManagerRating ? "active" : ""
+                  } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
+                  // onMouseOver={() => handleMouseOver(value)}
+                  // onClick={() => handleClick(value)}
+                >
+                  <span></span>
+                </a>
+              ))}
+            </div>
+            <span className="rating-value">{rowData.ManagerRating}</span>
+          </div>
+          <FaCommentDots
+            className={
+              rowData.ManagerComments == ""
+                ? "commentIcon"
+                : "filledCommentIcon"
+            }
+            onClick={() =>
+              setRowHandleObj({
+                ...rowHandleObj,
+                ID: rowData.ID,
+                commentType: "Manager",
+                comment: rowData.ManagerComments,
+                isPopup: true,
+                isEdit: rowData.isRowEdit,
+              })
+            }
+          />
+        </div>
+      )
     ) : (
       <div className="d-flex">
         {/* <Rating
@@ -907,19 +1009,34 @@ const PredefinedGoals = (props: any) => {
   const ActionBodyTemplate = (rowData: any) => {
     console.log(duplicateData, rowData);
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
-    console.log(duplicateData[index]);
+    console.log(index, duplicateData[index]);
 
-    return index && duplicateData[index].isRowEdit ? (
-      <div>
-        <IoMdCheckmark
-          className={styles.submitIcon}
-          onClick={() => goalSubmitFun(rowData)}
-        />
-        <MdOutlineClose
-          className={styles.cancelIcon}
-          onClick={() => editCancelFun(rowData)}
-        />
-      </div>
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <div>
+          <IoMdCheckmark
+            className={styles.submitIcon}
+            onClick={() => goalSubmitFun(rowData)}
+          />
+          <MdOutlineClose
+            className={styles.cancelIcon}
+            onClick={() => editCancelFun(rowData)}
+          />
+        </div>
+      ) : (
+        <div>
+          <MdEditDocument
+            className={styles.editIcon}
+            onClick={(e) => editRowFunction(rowData)}
+          />
+          {props.isManager ? (
+            <MdDelete
+              className={styles.cancelIcon}
+              onClick={() => goalDeleteFun(rowData)}
+            />
+          ) : null}
+        </div>
+      )
     ) : (
       <div>
         <MdEditDocument
