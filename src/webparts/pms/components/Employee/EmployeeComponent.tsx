@@ -10,6 +10,7 @@ import { PiTargetBold } from "react-icons/pi";
 import { BiTargetLock } from "react-icons/bi";
 import Button from "@mui/material/Button";
 import { Dropdown } from "primereact/dropdown";
+import "./Employee.css"
 // import GoalsComponent from "../Manager/GoalsComponent";
 // import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
 
@@ -109,56 +110,60 @@ const EmployeeComponent = (props: any) => {
     <>
       <div className={styles.background}>
         <div className={styles.container02}>
-          <div
-            className={styles.AppraisalCycles}
-            style={{ paddingBottom: "10px" }}
-          >
-            <Button
-              onClick={() => setShow("PredefinedGoals")}
-              size="small"
-              style={{
-                color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
-                borderBottom:
-                  show == "PredefinedGoals" ? "2px solid green" : "",
-              }}
+          <div className="Goals">
+            <div
+              className={styles.AppraisalCycles}
+              style={{ paddingBottom: "10px" }}
             >
-              <PiTargetBold
+              <Button
+                onClick={() => setShow("PredefinedGoals")}
+                size="small"
                 style={{
-                  paddingRight: "5px",
-                  fontSize: "22px",
                   color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
+                  borderBottom:
+                    show == "PredefinedGoals" ? "2px solid green" : "",
                 }}
-              />
-              PREDEFINEDGOALS
-            </Button>
-          </div>
-          <div>
-            <Button
-              onClick={() => setShow("SelfGoals")}
-              size="small"
-              style={{
-                color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
-                borderBottom: show == "SelfGoals" ? "2px solid green" : "",
-              }}
-            >
-              <BiTargetLock
+              >
+                <PiTargetBold
+                  style={{
+                    paddingRight: "5px",
+                    fontSize: "22px",
+                    color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
+                  }}
+                />
+                PREDEFINEDGOALS
+              </Button>
+            </div>
+            <div>
+              <Button
+                onClick={() => setShow("SelfGoals")}
+                size="small"
                 style={{
-                  paddingRight: "5px",
-                  fontSize: "22px",
                   color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
+                  borderBottom: show == "SelfGoals" ? "2px solid green" : "",
                 }}
-              />
-              SELFGOALS
-            </Button>
+              >
+                <BiTargetLock
+                  style={{
+                    paddingRight: "5px",
+                    fontSize: "22px",
+                    color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
+                  }}
+                />
+                SELFGOALS
+              </Button>
+            </div>
           </div>
-          <Dropdown
-            value={selectCycle}
-            onChange={(e) => onChangeHandleFun(e.value)}
-            options={cyclesList}
-            optionLabel="name"
-            placeholder="Select appraisal Cycle"
-            className="w-full md:w-20rem"
-          />
+          <div className="DrpYear">
+            <Dropdown
+              value={selectCycle}
+              onChange={(e) => onChangeHandleFun(e.value)}
+              options={cyclesList}
+              optionLabel="name"
+              placeholder="Select appraisal Cycle"
+              className="w-full md:w-20rem"
+            />
+          </div>
         </div>
         <div>
           {show == "PredefinedGoals" ? (

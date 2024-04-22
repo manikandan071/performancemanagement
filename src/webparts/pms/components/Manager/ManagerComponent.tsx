@@ -10,6 +10,7 @@ import { PiTargetBold } from "react-icons/pi";
 import { BiTargetLock } from "react-icons/bi";
 import Button from "@mui/material/Button";
 import { Dropdown } from "primereact/dropdown";
+import "./Manager.css"
 
 const ManagerComponent = (props: any) => {
   const [masterData, setmasterData] = useState<any[]>([]);
@@ -100,6 +101,7 @@ const ManagerComponent = (props: any) => {
     <>
       <div className={styles.background}>
         <div className={styles.container02}>
+          <div className="Goals">
           <div
             className={styles.AppraisalCycles}
             style={{ paddingBottom: "10px" }}
@@ -142,14 +144,17 @@ const ManagerComponent = (props: any) => {
               SELFGOALS
             </Button>
           </div>
-          <Dropdown
-            value={selectCycle}
-            onChange={(e) => onChangeHandleFun(e.value)}
-            options={cyclesList}
-            optionLabel="name"
-            placeholder="Select appraisal Cycle"
-            className="w-full md:w-20rem"
-          />
+          </div>
+          <div className="DrpYear">
+            <Dropdown
+              value={selectCycle}
+              onChange={(e) => onChangeHandleFun(e.value)}
+              options={cyclesList}
+              optionLabel="name"
+              placeholder="Select appraisal Cycle"
+              className="w-full md:w-20rem"
+            />
+          </div>
         </div>
         <div>
           {show == "PredefinedGoals" ? (
