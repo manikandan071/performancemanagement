@@ -15,17 +15,17 @@ import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { FaFileCircleCheck } from "react-icons/fa6";
-// import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
-// import { Rating } from "@fluentui/react-components";
 import styles from "./PreDefinedGoalsStyle.module.scss";
 import "./goals.css";
 import Loader from "../Loader/Loader";
 
 const PredefinedGoals = (props: any) => {
-  console.log("predefinedGoalsProps", props);
+  console.log(props);
+
   let appraisalCycleID = props.appraisalCycle.currentCycle;
+
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<any>(null);
   const [managerGoals, setManagerGoals] = useState<any[]>([]);
@@ -56,6 +56,7 @@ const PredefinedGoals = (props: any) => {
     delIndex: null,
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
+
   console.log(
     masterData,
     duplicateData,
@@ -76,11 +77,9 @@ const PredefinedGoals = (props: any) => {
         "AttachmentFiles"
       )
       .expand("AssignTo,AttachmentFiles")
-      .filter(`AppraisalCycleLookupId eq  '${appraisalCycleID}'`)
+      .filter(`AppraisalCycleLookupId eq '${appraisalCycleID}'`)
       .get()
       .then((items: any) => {
-        console.log(items);
-
         const filterData = items.filter(
           (item: any) =>
             props.EmployeeEmail == item.AssignTo.EMail &&
@@ -112,7 +111,6 @@ const PredefinedGoals = (props: any) => {
                 : [],
               isRowEdit: false,
               isNew: false,
-              // isManagerGoal: true,
             });
             return false;
           } else {
@@ -204,7 +202,6 @@ const PredefinedGoals = (props: any) => {
               : [],
             isRowEdit: false,
             isNew: false,
-            // isManagerGoal: obj.GoalCategory === "ManagerGoal" ? true : false,
           });
         });
         setDuplicateData([...tempArr]);
@@ -256,14 +253,12 @@ const PredefinedGoals = (props: any) => {
           AttachmentFiles: pre.AttachmentFiles ? pre.AttachmentFiles : [],
           isRowEdit: pre.isRowEdit,
           isNew: pre.isNew,
-          // isManagerGoal: pre.isManagerGoal,
         });
         return false;
       } else {
         return true;
       }
     });
-
     let ID = 1;
     let groupedArray = preDefinedGoals.reduce((acc: any, obj: any) => {
       let existingCategory = acc.find(
@@ -399,7 +394,6 @@ const PredefinedGoals = (props: any) => {
         .items.getById(tempObj.ID)
         .update(updateObj)
         .then((res) => {
-          let duplicateArr = [...duplicateData];
           duplicateArr[index] = {
             ...tempObj,
             [`${"isRowEdit"}`]: false,
@@ -915,14 +909,6 @@ const PredefinedGoals = (props: any) => {
         </div>
       ) : (
         <div className="d-flex">
-          {/* <Rating
-          style={{ marginRight: "20px" }}
-          value={rowData.ManagerRating}
-          // onChange={(e) => setValue(e.value)}
-          stars={5}
-          disabled
-          cancel={false}
-        /> */}
           <div>
             <div className="rating-container">
               {ratingValues.map((value, index) => (
@@ -932,8 +918,6 @@ const PredefinedGoals = (props: any) => {
                   className={`rating-star ${
                     value <= rowData.ManagerRating ? "active" : ""
                   } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
-                  // onMouseOver={() => handleMouseOver(value)}
-                  // onClick={() => handleClick(value)}
                 >
                   <span></span>
                 </a>
@@ -962,14 +946,6 @@ const PredefinedGoals = (props: any) => {
       )
     ) : (
       <div className="d-flex">
-        {/* <Rating
-          style={{ marginRight: "20px" }}
-          value={rowData.ManagerRating}
-          // onChange={(e) => setValue(e.value)}
-          stars={5}
-          disabled
-          cancel={false}
-        /> */}
         <div>
           <div className="rating-container">
             {ratingValues.map((value, index) => (
@@ -979,8 +955,6 @@ const PredefinedGoals = (props: any) => {
                 className={`rating-star ${
                   value <= rowData.ManagerRating ? "active" : ""
                 } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
-                // onMouseOver={() => handleMouseOver(value)}
-                // onClick={() => handleClick(value)}
               >
                 <span></span>
               </a>
@@ -1007,10 +981,7 @@ const PredefinedGoals = (props: any) => {
     );
   };
   const ActionBodyTemplate = (rowData: any) => {
-    console.log(duplicateData, rowData);
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
-    console.log(index, duplicateData[index]);
-
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div>
@@ -1052,25 +1023,7 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  // const fileUploadFunction = (file: any) => {
-  //   let duplicateArr = [...duplicateData];
-  //   let index = [...duplicateArr].findIndex(
-  //     (obj: any) => obj.ID === rowHandleObj.ID
-  //   );
-  //   let tempObj = duplicateArr[index];
-  //   file.forEach((items: any) => {
-  //     tempObj.AttachmentFiles.push({
-  //       FileName: items.name,
-  //       content: items,
-  //       ServerRelativeUrl: items.objectURL,
-  //       isStatus: "new",
-  //     });
-  //   });
-  //   duplicateArr[index] = { ...tempObj };
-  //   setDuplicateData([...duplicateArr]);
-  //   categoryHandleFun([...duplicateArr]);
-  //   setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
-  // };
+
   const fileDeleteFunction = (ind: number) => {
     let duplicateArr = duplicateData;
     let index = duplicateArr.findIndex(
@@ -1511,7 +1464,7 @@ const PredefinedGoals = (props: any) => {
                 body={ActionBodyTemplate}
               ></Column>
             </DataTable>
-            {props.isManager ? (
+            {props.isManager && props.appraisalCycle.isCurrentCycle ? (
               <div className="addMaganerGoal">
                 <GrAdd onClick={(e) => addGoalFunction(categories.length)} />
               </div>
