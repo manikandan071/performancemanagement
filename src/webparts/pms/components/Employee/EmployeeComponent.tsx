@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { sp } from "@pnp/sp";
-import * as moment from "moment";
+// import * as moment from "moment";
 import "../../components/style.css";
 import styles from "./EmployeeStyle.module.scss";
 import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
@@ -9,34 +9,60 @@ import SelfGoals from "../SelfGoals/SelfGoalsComponent";
 import { PiTargetBold } from "react-icons/pi";
 import { BiTargetLock } from "react-icons/bi";
 import Button from "@mui/material/Button";
+import { Dropdown } from "primereact/dropdown";
 // import GoalsComponent from "../Manager/GoalsComponent";
 // import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
 
 const EmployeeComponent = (props: any) => {
   console.log(props);
 
-  const [masterData, setmasterData] = useState([{}]);
+  const [masterData, setmasterData] = useState<any[]>([]);
+  const [cyclesList, setCycleList] = useState<any[]>([]);
   const [show, setShow] = useState("PredefinedGoals");
+  const [appraisalCycle, setAppraisalCycle] = useState({
+    isCurrentCycle: false,
+    currentCycle: null,
+  });
+  const [selectCycle, setSelectCycle] = useState<any>([]);
+  console.log(masterData, appraisalCycle, selectCycle);
+
   const getDetails = () => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
       .items.get()
       .then((items) => {
-        items.forEach((AppraisalCyclesValues) => {
-          setmasterData([
-            {
-              ID: AppraisalCyclesValues.ID,
-              Year: AppraisalCyclesValues.Title,
-              cycleCategory: AppraisalCyclesValues.cycleCategory,
-              startDate: moment(AppraisalCyclesValues.startDate).format(
-                "DD/MM/YYYY"
-              ),
-              endDate: moment(AppraisalCyclesValues.endDate).format(
-                "DD/MM/YYYY"
-              ),
-            },
-          ]);
+        let tempArr: any = [];
+        let cycleYearList: any = [];
+        items.forEach((res) => {
+          tempArr.push({
+            ID: res.ID,
+            Year: res.Title,
+            cycleCategory: res.cycleCategory,
+            startDate: res.startDate,
+            endDate: res.endDate,
+          });
+          cycleYearList.push({
+            code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+            name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+          });
+          if (
+            new Date() >= new Date(res.startDate) &&
+            new Date() <= new Date(res.endDate)
+          ) {
+            console.log(res.ID);
+            setAppraisalCycle({
+              ...appraisalCycle,
+              isCurrentCycle: true,
+              currentCycle: res.ID,
+            });
+            setSelectCycle({
+              code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+              name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+            });
+          }
         });
+        setmasterData([...tempArr]);
+        setCycleList([...cycleYearList]);
       })
       .catch((err: any) => {
         console.log(err);
@@ -51,6 +77,33 @@ const EmployeeComponent = (props: any) => {
     init();
   }, []);
   console.log(masterData);
+
+  const onChangeHandleFun = (value: any) => {
+    setSelectCycle(value);
+    let splitCycle = value.name.split("-");
+    masterData.forEach((data) => {
+      if (data.Year == splitCycle[0] && data.cycleCategory == splitCycle[1]) {
+        if (
+          new Date() >= new Date(data.startDate) &&
+          new Date() <= new Date(data.endDate)
+        ) {
+          console.log(data.ID);
+          setAppraisalCycle({
+            ...appraisalCycle,
+            isCurrentCycle: true,
+            currentCycle: data.ID,
+          });
+        } else {
+          console.log(data.ID);
+          setAppraisalCycle({
+            ...appraisalCycle,
+            isCurrentCycle: false,
+            currentCycle: data.ID,
+          });
+        }
+      }
+    });
+  };
 
   return (
     <>
@@ -98,15 +151,28 @@ const EmployeeComponent = (props: any) => {
               SELFGOALS
             </Button>
           </div>
+          <Dropdown
+            value={selectCycle}
+            onChange={(e) => onChangeHandleFun(e.value)}
+            options={cyclesList}
+            optionLabel="name"
+            placeholder="Select appraisal Cycle"
+            className="w-full md:w-20rem"
+          />
         </div>
         <div>
           {show == "PredefinedGoals" ? (
             <PredefinedGoals
               EmployeeEmail={props.EmployeeEmail}
               isManager={props.isManager}
+              appraisalCycle={appraisalCycle}
             />
           ) : show == "SelfGoals" ? (
-            <SelfGoals curUser={props.curUser} isManager={props.isManager} />
+            <SelfGoals
+              EmployeeEmail={props.EmployeeEmail}
+              isManager={!props.isManager}
+              appraisalCycle={appraisalCycle}
+            />
           ) : (
             ""
           )}

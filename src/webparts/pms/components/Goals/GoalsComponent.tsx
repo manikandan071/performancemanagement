@@ -11,6 +11,7 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
 import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
+import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "primereact/resources/primereact.min.css";
@@ -49,6 +50,7 @@ const Goals = () => {
     isNew: false,
     isUpdate: false,
   });
+  const [activeIndex, setActiveIndex] = useState<any>(null);
 
   console.log(
     usersList,
@@ -790,15 +792,25 @@ const Goals = () => {
   const GoalnameBodyTemplate = (rowData: any) => {
     let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
     return currentObj[0].isRowEdit ? (
-      <InputText
+      <InputTextarea
         value={rowData.GoalName}
-        type="text"
+        rows={2}
+        cols={30}
         onChange={(e) =>
           onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
         }
       />
     ) : (
-      <div style={{ padding: "8px 0px 8px 15px" }}>{rowData.GoalName}</div>
+      <div
+        style={{
+          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+          color: "#64728c",
+          fontSize: "13px",
+          width: "100%",
+        }}
+      >
+        {rowData.GoalName}
+      </div>
     );
   };
 
@@ -814,7 +826,14 @@ const Goals = () => {
         className="w-full md:w-14rem"
       />
     ) : (
-      <div style={{ paddingLeft: "15px" }}>
+      <div
+        style={{
+          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+          color: "#64728c",
+          fontSize: "13px",
+          width: "100%",
+        }}
+      >
         {rowData.AssignLevel.name === "Organization" ? (
           <GiOrganigram className="roleIcon" />
         ) : (
@@ -851,9 +870,19 @@ const Goals = () => {
         <div></div>
       )
     ) : (
-      <div style={{ paddingLeft: "15px" }}>
+      <div>
         {rowData.Role.map((role: any) => (
-          <p style={{ margin: "0px" }}>{role.name}</p>
+          <p
+            style={{
+              fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+              color: "#64728c",
+              fontSize: "13px",
+              width: "100%",
+              margin: "0px",
+            }}
+          >
+            {role.name}
+          </p>
         ))}
       </div>
     );
@@ -890,7 +919,7 @@ const Goals = () => {
   }, []);
 
   return (
-    <div className="">
+    <div className={styles.background}>
       <div className={styles.addCategory}>
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
@@ -914,6 +943,7 @@ const Goals = () => {
               />
             ) : (
               <Button
+                className="addCategory"
                 label="Add"
                 severity="success"
                 onClick={(e) => addNewCategory(true)}
@@ -944,125 +974,137 @@ const Goals = () => {
           />
         )}
       </div>
-      <Accordion>
-        {categories.map((data, index) => {
-          return (
-            <AccordionTab
-              className="accordionMain"
-              header={
-                <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                  {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
-                  <span className="CategoryTitle">{data.GoalCategory}</span>
-                  <div className="font-bold iconSec">
-                    {/* <Toast ref={toast} /> */}
-                    {isPopup.delIndex === index && isPopup.delPopup && (
-                      <Dialog
-                        header="Header"
-                        visible={isPopup.delPopup}
-                        style={{ width: "25%" }}
-                        onClick={(e) => e.stopPropagation()}
-                        onHide={() =>
-                          setIsPopup({
-                            ...isPopup,
-                            delPopup: false,
-                            delIndex: null,
-                          })
-                        }
-                      >
-                        <div>
-                          <p>Do you want to delete this category?</p>
-                          <Button
-                            onClick={() => deleteCategoryFun()}
-                            icon="pi pi-check"
-                            label="Confirm"
-                            className="mr-2"
-                          ></Button>
-                          <Button
-                            onClick={() =>
-                              setIsPopup({
-                                ...isPopup,
-                                delPopup: false,
-                              })
+      <div className="hrGoals">
+        <Accordion
+          activeIndex={activeIndex}
+          onTabChange={(e) => setActiveIndex(e.index)}
+        >
+          {categories.map((data, index) => {
+            return (
+              <AccordionTab
+                className="accordionMain"
+                header={
+                  <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
+                    {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
+                    <span className="CategoryTitle">{data.GoalCategory}</span>
+                    <div className="font-bold iconSec">
+                      {/* <Toast ref={toast} /> */}
+                      {isPopup.delIndex === index && isPopup.delPopup && (
+                        <Dialog
+                          header="Header"
+                          visible={isPopup.delPopup}
+                          style={{ width: "25%" }}
+                          onClick={(e) => e.stopPropagation()}
+                          onHide={() =>
+                            setIsPopup({
+                              ...isPopup,
+                              delPopup: false,
+                              delIndex: null,
+                            })
+                          }
+                        >
+                          <div>
+                            <p>Do you want to delete this category?</p>
+                            <Button
+                              onClick={() => deleteCategoryFun()}
+                              icon="pi pi-check"
+                              label="Confirm"
+                              className="mr-2"
+                            ></Button>
+                            <Button
+                              onClick={() =>
+                                setIsPopup({
+                                  ...isPopup,
+                                  delPopup: false,
+                                })
+                              }
+                              text
+                              icon="pi pi-times"
+                              label="cancel"
+                            ></Button>
+                          </div>
+                        </Dialog>
+                      )}
+                      {data.values.filter((val: any) => val.isNew).length ===
+                      0 ? (
+                        <GrAdd
+                          className="addIcon"
+                          onClick={(event) => {
+                            if (activeIndex === index) {
+                              event.stopPropagation();
+                            } else {
+                              setActiveIndex(index);
                             }
-                            text
-                            icon="pi pi-times"
-                            label="cancel"
-                          ></Button>
-                        </div>
-                      </Dialog>
-                    )}
-                    {data.values.filter((val: any) => val.isNew).length ===
-                    0 ? (
-                      <GrAdd
-                        className="addIcon"
-                        onClick={() => addGoalFunction(index)}
+                            addGoalFunction(index);
+                          }}
+                        />
+                      ) : null}
+                      <HiPencil
+                        className="editIcon"
+                        onClick={(event) => {
+                          event.preventDefault(),
+                            event.stopPropagation(),
+                            editCategoryFun(index);
+                        }}
                       />
-                    ) : null}
-                    <HiPencil
-                      className="editIcon"
-                      onClick={(event) => {
-                        event.preventDefault(),
-                          event.stopPropagation(),
-                          editCategoryFun(index);
-                      }}
-                    />
-                    <MdDelete
-                      className={styles.cancelIcon}
-                      onClick={(event) => {
-                        event.preventDefault(),
-                          event.stopPropagation(),
-                          setIsPopup({
-                            ...isPopup,
-                            delPopup: true,
-                            delIndex: index,
-                          });
-                      }}
-                    />
-                  </div>
-                  {/* <Badge value="3" className="ml-auto" /> */}
-                </span>
-              }
-            >
-              <div className="goalsTable">
-                <DataTable
-                  value={data.values}
-                  size="normal"
-                  // stripedRows
-                  tableStyle={{ minWidth: "30rem" }}
-                >
-                  <Column
-                    className="col1"
-                    field="GoalName"
-                    header="Goal Name"
-                    style={{ width: "35%" }}
-                    body={GoalnameBodyTemplate}
-                  ></Column>
-                  <Column
-                    className="col2"
-                    field="AssignLevel"
-                    header="Assign Level"
-                    style={{ width: "20%" }}
-                    body={AssignLevelBodyTemplate}
-                  ></Column>
-                  <Column
-                    className="col3"
-                    field="Role"
-                    header="Role"
-                    style={{ width: "40%" }}
-                    body={RoleBodyTemplate}
-                  ></Column>
-                  <Column
-                    className="col4"
-                    header="Action"
-                    style={{ width: "5%" }}
-                    body={ActionBodyTemplate}
-                  ></Column>
-                </DataTable>
-              </div>
-            </AccordionTab>
-          );
-        })}
-      </Accordion>
+                      <MdDelete
+                        className="deleteIcon"
+                        onClick={(event) => {
+                          event.preventDefault(),
+                            event.stopPropagation(),
+                            setIsPopup({
+                              ...isPopup,
+                              delPopup: true,
+                              delIndex: index,
+                            });
+                        }}
+                      />
+                    </div>
+                    {/* <Badge value="3" className="ml-auto" /> */}
+                  </span>
+                }
+              >
+                <div className="goalsTable">
+                  <DataTable
+                    value={data.values}
+                    size="normal"
+                    // stripedRows
+                    tableStyle={{ minWidth: "30rem" }}
+                  >
+                    <Column
+                      className="col1"
+                      field="GoalName"
+                      header="Goal Name"
+                      style={{ width: "35%" }}
+                      body={GoalnameBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col2"
+                      field="AssignLevel"
+                      header="Assign Level"
+                      style={{ width: "20%" }}
+                      body={AssignLevelBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col3"
+                      field="Role"
+                      header="Role"
+                      style={{ width: "35%" }}
+                      body={RoleBodyTemplate}
+                    ></Column>
+                    <Column
+                      className="col4"
+                      header="Action"
+                      style={{ width: "10%" }}
+                      body={ActionBodyTemplate}
+                    ></Column>
+                  </DataTable>
+                </div>
+              </AccordionTab>
+            );
+          })}
+        </Accordion>
+      </div>
 
       {/* <DataTable
         value={newData}

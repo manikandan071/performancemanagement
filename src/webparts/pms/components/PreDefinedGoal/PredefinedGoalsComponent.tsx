@@ -14,6 +14,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
+import { FaFileCircleCheck } from "react-icons/fa6";
 // import { Rating } from "primereact/rating";
 import { FaCommentDots } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
@@ -24,8 +25,9 @@ import Loader from "../Loader/Loader";
 
 const PredefinedGoals = (props: any) => {
   console.log("predefinedGoalsProps", props);
+  let appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
-  const [activeIndex, setActiveIndex] = useState<any>(0);
+  const [activeIndex, setActiveIndex] = useState<any>(null);
   const [managerGoals, setManagerGoals] = useState<any[]>([]);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -57,11 +59,9 @@ const PredefinedGoals = (props: any) => {
   console.log(
     masterData,
     duplicateData,
-    categories,
     managerGoals,
     rowHandleObj,
-    props,
-    rating
+    appraisalCycleID
   );
 
   const getDetails = () => {
@@ -76,8 +76,13 @@ const PredefinedGoals = (props: any) => {
         "AttachmentFiles"
       )
       .expand("AssignTo,AttachmentFiles")
+      .filter(
+        `AssignTo/EMail eq '${props.EmployeeEmail}' and AppraisalCycleLookupId eq  '${appraisalCycleID}'`
+      )
       .get()
       .then((items: any) => {
+        console.log(items);
+
         const filterData = items.filter(
           (item: any) =>
             props.EmployeeEmail == item.AssignTo.EMail &&
@@ -109,7 +114,7 @@ const PredefinedGoals = (props: any) => {
                 : [],
               isRowEdit: false,
               isNew: false,
-              isManagerGoal: true,
+              // isManagerGoal: true,
             });
             return false;
           } else {
@@ -123,7 +128,6 @@ const PredefinedGoals = (props: any) => {
             let existingCategory = acc.find(
               (item: any) => item.GoalCategory === obj.GoalCategory
             );
-            console.log(existingCategory, "existingCategory");
             if (existingCategory) {
               existingCategory.values.push({
                 GoalName: obj.GoalName,
@@ -202,13 +206,12 @@ const PredefinedGoals = (props: any) => {
               : [],
             isRowEdit: false,
             isNew: false,
-            isManagerGoal: obj.GoalCategory === "ManagerGoal" ? true : false,
+            // isManagerGoal: obj.GoalCategory === "ManagerGoal" ? true : false,
           });
         });
+        setDuplicateData([...tempArr]);
         setManagerGoals([...managerGoals]);
         setMasterData([...tempArr]);
-        setDuplicateData([...tempArr]);
-        console.log(categorizedItems);
         setCategories([...categorizedItems]);
         setIsLoader(false);
       })
@@ -222,7 +225,6 @@ const PredefinedGoals = (props: any) => {
       .then((res) => {
         res.forEach((user) => {
           if (user.Email === props.EmployeeEmail) {
-            console.log(user);
             setAssignUserObj({
               ...assignUserObj,
               userID: user.Id,
@@ -238,7 +240,8 @@ const PredefinedGoals = (props: any) => {
   useEffect(() => {
     setIsLoader(true);
     init();
-  }, [props]);
+  }, []);
+
   const categoryHandleFun = (data: any) => {
     let managerGoals: any = [];
     let preDefinedGoals = data.filter((pre: any) => {
@@ -252,18 +255,10 @@ const PredefinedGoals = (props: any) => {
           EmployeeComments: pre.EmployeeComments ? pre.EmployeeComments : "",
           ManagerRating: pre.ManagerRating ? pre.ManagerRating : 0,
           EmployeeRating: pre.EmployeeRating ? pre.EmployeeRating : 0,
-          AttachmentFiles: pre.AttachmentFiles
-            ? pre.AttachmentFiles.map((file: any) => {
-                return {
-                  FileName: file.FileName,
-                  ServerRelativeUrl: file.ServerRelativeUrl,
-                  isStatus: "uploaded",
-                };
-              })
-            : [],
+          AttachmentFiles: pre.AttachmentFiles ? pre.AttachmentFiles : [],
           isRowEdit: pre.isRowEdit,
           isNew: pre.isNew,
-          isManagerGoal: pre.isManagerGoal,
+          // isManagerGoal: pre.isManagerGoal,
         });
         return false;
       } else {
@@ -311,11 +306,9 @@ const PredefinedGoals = (props: any) => {
       }
       return acc;
     }, []);
-    console.log(groupedArray);
     setManagerGoals([...managerGoals]);
     setCategories([...groupedArray]);
   };
-
   const addGoalFunction = (ind: number) => {
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
@@ -353,11 +346,11 @@ const PredefinedGoals = (props: any) => {
       },
     ]);
   };
-  const goalSubmitFun = (data: any) => {
+  const goalSubmitFun = async (data: any) => {
     let duplicateArr = [...duplicateData];
     let index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
     let tempObj = duplicateArr[index];
-    let addObj: any = {
+    let updateObj: any = {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
       ManagerComments: tempObj.ManagerComments,
@@ -366,7 +359,7 @@ const PredefinedGoals = (props: any) => {
       EmployeeRating: tempObj.EmployeeRating,
     };
     if (data.isNew) {
-      sp.web.lists
+      await sp.web.lists
         .getByTitle(`PredefinedGoals`)
         .items.add({
           GoalName: tempObj.GoalName,
@@ -376,8 +369,20 @@ const PredefinedGoals = (props: any) => {
           EmployeeComments: tempObj.EmployeeComments,
           ManagerRating: tempObj.ManagerRating,
           EmployeeRating: tempObj.EmployeeRating,
+          AppraisalCycleLookupId: appraisalCycleID,
         })
-        .then((res) => {
+        .then(async (res) => {
+          let managerGoalArr = [...managerGoals];
+          setManagerGoals(
+            [...managerGoalArr].map((manager) => {
+              if (manager.ID === data.ID) {
+                manager.ID = res.data.ID;
+                return manager;
+              } else {
+                return manager;
+              }
+            })
+          );
           duplicateArr.splice(index, 1);
           duplicateArr.push({
             ...tempObj,
@@ -385,16 +390,16 @@ const PredefinedGoals = (props: any) => {
             [`${"isRowEdit"}`]: false,
             [`${"isNew"}`]: false,
           });
-          categoryHandleFun([...duplicateArr]);
-          setDuplicateData([...duplicateArr]);
-          setMasterData([...duplicateArr]);
+          await categoryHandleFun([...duplicateArr]);
+          await setDuplicateData([...duplicateArr]);
+          await setMasterData([...duplicateArr]);
         })
         .catch((err) => console.log(err));
     } else {
       sp.web.lists
         .getByTitle(`PredefinedGoals`)
         .items.getById(tempObj.ID)
-        .update(addObj)
+        .update(updateObj)
         .then((res) => {
           let duplicateArr = [...duplicateData];
           duplicateArr[index] = {
@@ -468,12 +473,13 @@ const PredefinedGoals = (props: any) => {
             res.item.attachmentFiles
               .addMultiple(newFiles)
               .then((res) => {
-                console.log(res);
                 let duplicateArr = [...duplicateData];
                 tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                   (file: any) => {
                     if (file.isStatus === "new") {
                       file.isStatus = "existing";
+                      return file;
+                    } else {
                       return file;
                     }
                   }
@@ -524,7 +530,6 @@ const PredefinedGoals = (props: any) => {
     categoryHandleFun([...duplicateArr]);
   };
   const editRowFunction = (data: any) => {
-    console.log(data);
     let duplicateArr = [...duplicateData];
     let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
@@ -634,77 +639,70 @@ const PredefinedGoals = (props: any) => {
     });
   };
   const onChangeHandleFun = (value: any, type: string, id: number) => {
-    console.log(value);
-    let tempArr = duplicateData.map((obj) => {
-      if (obj.ID == id) {
-        if (type === "GoalName") {
-          obj.GoalName = value;
-          return obj;
-        }
-        if (type === "Manager") {
-          obj.ManagerComments = value;
-          setRowHandleObj({
-            ...rowHandleObj,
-            comment: value,
-          });
+    let duplicateArr = duplicateData;
+    let index = duplicateArr.findIndex((obj: any) => obj.ID === id);
+    let orignalObj = duplicateArr[index];
+    let temp: any = [...orignalObj.AttachmentFiles];
 
-          return obj;
-        }
-        if (type === "Employee") {
-          obj.EmployeeComments = value;
-          setRowHandleObj({
-            ...rowHandleObj,
-            comment: value,
-          });
-          return obj;
-        }
-        if (type === "EmployeeRating") {
-          obj.EmployeeRating = (value + 1) / 2;
-          return obj;
-        }
-        if (type === "ManagerRating") {
-          obj.ManagerRating = (value + 1) / 2;
-          return obj;
-        }
-      } else {
-        return obj;
-      }
-    });
-    console.log(tempArr);
-    categoryHandleFun([...tempArr]);
+    let editObj = {
+      ID: orignalObj.ID,
+      GoalCategory: orignalObj.GoalCategory,
+      AssignToId: orignalObj.AssignToId,
+      isNew: orignalObj.isNew,
+      isRowEdit: orignalObj.isRowEdit,
+      GoalName: type === "GoalName" ? value : orignalObj.GoalName,
+      ManagerComments: type === "Manager" ? value : orignalObj.ManagerComments,
+      EmployeeComments:
+        type === "Employee" ? value : orignalObj.EmployeeComments,
+      EmployeeRating:
+        type === "EmployeeRating" ? (value + 1) / 2 : orignalObj.EmployeeRating,
+      ManagerRating:
+        type === "ManagerRating" ? (value + 1) / 2 : orignalObj.ManagerRating,
+      AttachmentFiles:
+        type === "Attachments"
+          ? value.forEach((file: any) => {
+              temp.push({
+                FileName: file.name,
+                content: file,
+                ServerRelativeUrl: file.objectURL,
+                isStatus: "new",
+              });
+            })
+          : "",
+    };
+    if (type === "Manager") {
+      setRowHandleObj({
+        ...rowHandleObj,
+        comment: value,
+      });
+    }
+    if (type === "Employee") {
+      setRowHandleObj({
+        ...rowHandleObj,
+        comment: value,
+      });
+    }
+    if (type === "Attachments") {
+      setRowHandleObj({
+        ...rowHandleObj,
+        files: temp,
+      });
+    }
+    editObj.AttachmentFiles = temp;
+    duplicateArr[index] = editObj;
+    setDuplicateData([...duplicateArr]);
+    categoryHandleFun([...duplicateArr]);
   };
-
   const handleMouseOver = (value: any, type: string) => {
     if (type === "manger") {
       setRating({ ...rating, MangerRating: value });
     } else {
       setRating({ ...rating, EmployeeRating: value });
     }
-    // if (fixedRating === null) {
-    //   setRating(value);
-    // } else if (fixedRating !== null) {
-    // setRating(value);
-    // }
   };
-
-  // const handleMouseOut = () => {
-  //   if (fixedRating === null) {
-  //     setRating(0);
-  //   }
-  // };
-
-  // const handleClick = (value: any) => {
-  //   if (fixedRating === null) {
-  //     setFixedRating(value);
-  //     setRating(value);
-  //   } else if (fixedRating !== null) {
-  //     setFixedRating(value);
-  //   }
-  // };
-
   const GoalnameBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return index && duplicateData[index].isRowEdit ? (
       <InputTextarea
         value={rowData.GoalName}
         rows={2}
@@ -715,7 +713,6 @@ const PredefinedGoals = (props: any) => {
         }
       />
     ) : (
-      // rowData.GoalName
       <div
         style={{
           fontFamily: "Roboto, Arial, Helvetica, sans-serif",
@@ -728,41 +725,97 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  // const ManagerCommentsBodyTemplate = (rowData: any) => {
-  //   // let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-  //   return (
-  //     <FaCommentDots
-  //       className={
-  //         rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
-  //       }
-  //       onClick={() =>
-  //         setRowHandleObj({
-  //           ...rowHandleObj,
-  //           ID: rowData.ID,
-  //           commentType: "Manager",
-  //           comment: rowData.ManagerComments,
-  //           isPopup: true,
-  //           isEdit: rowData.isRowEdit,
-  //         })
-  //       }
-  //     />
-  //   );
-  // };
-  const ManagerRatingBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
+  const EmployeeRatingBodyTemplate = (rowData: any) => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-    return currentObj[0].isRowEdit ? (
-      <div className="d-flex">
-        {/* <Rating
-          style={{ marginRight: "20px" }}
-          value={rowData.ManagerRating}
-          onChange={(e) =>
-            onChangeHandleFun(e.target.value, "ManagerRating", rowData.ID)
+
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return index && duplicateData[index].isRowEdit ? (
+      <div className=" d-flex">
+        <div
+          onMouseOut={() =>
+            setRating({ ...rating, EmployeeRating: rowData.EmployeeRating })
           }
-          disabled={!props.isManager}
-          stars={5}
-          cancel={false}
-        /> */}
+        >
+          <div className="rating-container">
+            {ratingValues.map((value: any, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.EmployeeRating ? "active" : ""
+                } ${value <= rating.EmployeeRating ? "active" : ""} ${
+                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
+                } ${props.isManager ? "disabled" : "show"}`}
+                onMouseOver={() => handleMouseOver(value, "Employee")}
+                onClick={() => {
+                  onChangeHandleFun(index, "EmployeeRating", rowData.ID);
+                }}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.EmployeeRating}</span>
+        </div>
+        <FaCommentDots
+          className={
+            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
+          }
+          onClick={() =>
+            setRowHandleObj({
+              ...rowHandleObj,
+              ID: rowData.ID,
+              commentType: "Employee",
+              comment: rowData.EmployeeComments,
+              isPopup: true,
+              isEdit: rowData.isRowEdit,
+              files: rowData.AttachmentFiles,
+            })
+          }
+        />
+      </div>
+    ) : (
+      <div className=" d-flex">
+        <div>
+          <div className="rating-container">
+            {ratingValues.map((value, index) => (
+              <a
+                key={index}
+                href="#"
+                className={`rating-star ${
+                  value <= rowData.EmployeeRating ? "active" : ""
+                } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
+              >
+                <span></span>
+              </a>
+            ))}
+          </div>
+          <span className="rating-value">{rowData.EmployeeRating}</span>
+        </div>
+        <FaCommentDots
+          className={
+            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
+          }
+          onClick={() =>
+            setRowHandleObj({
+              ...rowHandleObj,
+              ID: rowData.ID,
+              commentType: "Employee",
+              comment: rowData.EmployeeComments,
+              isPopup: true,
+              isEdit: rowData.isRowEdit,
+              files: rowData.AttachmentFiles,
+            })
+          }
+        />
+      </div>
+    );
+  };
+  const ManagerRatingBodyTemplate = (rowData: any) => {
+    const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return index && duplicateData[index].isRowEdit ? (
+      <div className="d-flex">
         <div
           onMouseOut={() =>
             setRating({ ...rating, MangerRating: rowData.ManagerRating })
@@ -851,137 +904,12 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  // const EmployeeCommentsBodyTemplate = (rowData: any) => {
-  //   // let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-  //   return (
-  //     <FaCommentDots
-  //       className={
-  //         rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
-  //       }
-  //       onClick={() =>
-  //         setRowHandleObj({
-  //           ...rowHandleObj,
-  //           ID: rowData.ID,
-  //           commentType: "Employee",
-  //           comment: rowData.EmployeeComments,
-  //           isPopup: true,
-  //           isEdit: rowData.isRowEdit,
-  //           files: rowData.AttachmentFiles,
-  //         })
-  //       }
-  //     />
-  //   );
-  // };
-  const EmployeeRatingBodyTemplate = (rowData: any) => {
-    const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
-      <div className=" d-flex">
-        {/* <Rating
-          style={{ marginRight: "20px" }}
-          value={rowData.EmployeeRating}
-          onChange={(e) =>
-            onChangeHandleFun(e.target.value, "EmployeeRating", rowData.ID)
-          }
-          disabled={props.isManager}
-          stars={5}
-          cancel={false}
-        /> */}
-        <div
-          onMouseOut={() =>
-            setRating({ ...rating, EmployeeRating: rowData.EmployeeRating })
-          }
-        >
-          <div className="rating-container">
-            {ratingValues.map((value: any, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`rating-star ${
-                  value <= rowData.EmployeeRating ? "active" : ""
-                } ${value <= rating.EmployeeRating ? "active" : ""} ${
-                  ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                } ${props.isManager ? "disabled" : "show"}`}
-                onMouseOver={() => handleMouseOver(value, "Employee")}
-                onClick={() => {
-                  onChangeHandleFun(index, "EmployeeRating", rowData.ID);
-                }}
-              >
-                <span></span>
-              </a>
-            ))}
-          </div>
-          <span className="rating-value">{rowData.EmployeeRating}</span>
-        </div>
-        <FaCommentDots
-          className={
-            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
-          }
-          onClick={() =>
-            setRowHandleObj({
-              ...rowHandleObj,
-              ID: rowData.ID,
-              commentType: "Employee",
-              comment: rowData.EmployeeComments,
-              isPopup: true,
-              isEdit: rowData.isRowEdit,
-              files: rowData.AttachmentFiles,
-            })
-          }
-        />
-      </div>
-    ) : (
-      <div className=" d-flex">
-        {/* <Rating
-          style={{ marginRight: "20px" }}
-          value={rowData.EmployeeRating}
-          onChange={(e) => setValue(e.value)}
-          stars={5}
-          disabled
-          cancel={false}
-        /> */}
-        <div>
-          <div className="rating-container">
-            {ratingValues.map((value, index) => (
-              <a
-                key={index}
-                href="#"
-                className={`rating-star ${
-                  value <= rowData.EmployeeRating ? "active" : ""
-                } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
-                // onMouseOver={() => handleMouseOver(value)}
-                // onClick={() => handleClick(value)}
-              >
-                <span></span>
-              </a>
-            ))}
-          </div>
-          <span className="rating-value">{rowData.EmployeeRating}</span>
-        </div>
-        <FaCommentDots
-          className={
-            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
-          }
-          onClick={() =>
-            setRowHandleObj({
-              ...rowHandleObj,
-              ID: rowData.ID,
-              commentType: "Employee",
-              comment: rowData.EmployeeComments,
-              isPopup: true,
-              isEdit: rowData.isRowEdit,
-              files: rowData.AttachmentFiles,
-            })
-          }
-        />
-      </div>
-    );
-  };
-
   const ActionBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
+    console.log(duplicateData, rowData);
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    console.log(duplicateData[index]);
+
+    return index && duplicateData[index].isRowEdit ? (
       <div>
         <IoMdCheckmark
           className={styles.submitIcon}
@@ -1007,36 +935,104 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  const fileUploadFunction = (file: any) => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+  // const fileUploadFunction = (file: any) => {
+  //   let duplicateArr = [...duplicateData];
+  //   let index = [...duplicateArr].findIndex(
+  //     (obj: any) => obj.ID === rowHandleObj.ID
+  //   );
+  //   let tempObj = duplicateArr[index];
+  //   file.forEach((items: any) => {
+  //     tempObj.AttachmentFiles.push({
+  //       FileName: items.name,
+  //       content: items,
+  //       ServerRelativeUrl: items.objectURL,
+  //       isStatus: "new",
+  //     });
+  //   });
+  //   duplicateArr[index] = { ...tempObj };
+  //   setDuplicateData([...duplicateArr]);
+  //   categoryHandleFun([...duplicateArr]);
+  //   setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
+  // };
+  const fileDeleteFunction = (ind: number) => {
+    let duplicateArr = duplicateData;
+    let index = duplicateArr.findIndex(
       (obj: any) => obj.ID === rowHandleObj.ID
     );
-    let tempObj = duplicateArr[index];
-    tempObj.AttachmentFiles.push({
-      FileName: file[0].name,
-      content: file[0],
-      ServerRelativeUrl: file[0].objectURL,
-      isStatus: "new",
-    });
-    duplicateArr[index] = { ...tempObj };
-    setDuplicateData([...duplicateArr]);
-    categoryHandleFun([...duplicateArr]);
-    setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
+    let orignalObj = duplicateArr[index];
+    let temp: any = [...orignalObj.AttachmentFiles];
+    if (temp[ind].isStatus === "new") {
+      temp.splice(ind, 1);
+      orignalObj.AttachmentFiles = temp;
+      duplicateArr[index] = orignalObj;
+      setDuplicateData([...duplicateArr]);
+      categoryHandleFun([...duplicateArr]);
+      setRowHandleObj({ ...rowHandleObj, files: orignalObj.AttachmentFiles });
+    } else {
+      temp[ind].isStatus = "delete";
+      orignalObj.AttachmentFiles = temp;
+      duplicateArr[index] = orignalObj;
+      setDuplicateData([...duplicateArr]);
+      categoryHandleFun([...duplicateArr]);
+      setRowHandleObj({ ...rowHandleObj, files: orignalObj.AttachmentFiles });
+    }
   };
 
-  const fileDeleteFunction = (ind: number) => {
-    console.log(ind);
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
-      (obj: any) => obj.ID === rowHandleObj.ID
-    );
-    let tempObj = duplicateArr[index];
-    tempObj.AttachmentFiles[ind].isStatus = "delete";
-    duplicateArr[index] = { ...tempObj };
-    setDuplicateData([...duplicateArr]);
-    categoryHandleFun([...duplicateArr]);
-    setRowHandleObj({ ...rowHandleObj, files: tempObj.AttachmentFiles });
+  const dialogCancelFuntion = () => {
+    let masterArr = [...masterData];
+    let index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
+    let orignalObj = masterArr[index];
+    let changeArray = duplicateData.map((obj) => {
+      if (obj.ID === rowHandleObj.ID) {
+        if (rowHandleObj.commentType === "Manager") {
+          obj.ManagerComments =
+            orignalObj && orignalObj.ManagerComments
+              ? orignalObj.ManagerComments
+              : "";
+          obj.AttachmentFiles =
+            orignalObj && orignalObj.AttachmentFiles
+              ? orignalObj.AttachmentFiles.map((file: any) => {
+                  if (file.isStatus !== "new") {
+                    if (file.isStatus === "delete") {
+                      file.isStatus = "uploaded";
+                      return file;
+                    } else {
+                      return file;
+                    }
+                  }
+                })
+              : [];
+          return obj;
+        } else {
+          obj.EmployeeComments =
+            orignalObj && orignalObj.EmployeeComments
+              ? orignalObj.EmployeeComments
+              : "";
+          obj.AttachmentFiles =
+            orignalObj && orignalObj.AttachmentFiles
+              ? orignalObj.AttachmentFiles.map((file: any) => {
+                  if (file.isStatus !== "new") {
+                    if (file.isStatus === "delete") {
+                      file.isStatus = "uploaded";
+                      return file;
+                    } else {
+                      return file;
+                    }
+                  }
+                })
+              : [];
+          return obj;
+        }
+      } else {
+        return obj;
+      }
+    });
+    setDuplicateData([...changeArray]);
+    categoryHandleFun([...changeArray]);
+    setRowHandleObj({
+      ...rowHandleObj,
+      isPopup: false,
+    });
   };
 
   return (
@@ -1079,7 +1075,6 @@ const PredefinedGoals = (props: any) => {
                   severity="danger"
                   text
                   onClick={(e) => {
-                    // setNewCategory("");
                     setCategoryHandleObj({
                       ...categoryHandleObj,
                       newCategory: "",
@@ -1102,12 +1097,138 @@ const PredefinedGoals = (props: any) => {
               <></>
             )}
           </div>
+          <div className="">
+            <Dialog
+              className="reviewDialog"
+              header={rowHandleObj.commentType + " Comments"}
+              visible={rowHandleObj.isPopup}
+              style={{ width: "35vw" }}
+              onHide={() =>
+                setRowHandleObj({ ...rowHandleObj, isPopup: false })
+              }
+            >
+              <div>
+                <InputTextarea
+                  style={{ width: "100%" }}
+                  rows={4}
+                  cols={30}
+                  value={rowHandleObj.comment}
+                  disabled={
+                    props.isManager &&
+                    rowHandleObj.commentType === "Manager" &&
+                    rowHandleObj.isEdit
+                      ? false
+                      : !props.isManager &&
+                        rowHandleObj.commentType === "Employee" &&
+                        rowHandleObj.isEdit
+                      ? false
+                      : true
+                  }
+                  onChange={(e) =>
+                    onChangeHandleFun(
+                      e.target.value,
+                      rowHandleObj.commentType,
+                      rowHandleObj.ID
+                    )
+                  }
+                />
+              </div>
+              <div className="fileBtn" style={{ marginTop: "10px" }}>
+                {!props.isManager &&
+                rowHandleObj.commentType === "Employee" &&
+                rowHandleObj.isEdit ? (
+                  <FileUpload
+                    mode="basic"
+                    name="demo[]"
+                    auto
+                    multiple
+                    chooseLabel="Upload File"
+                    maxFileSize={1000000}
+                    onSelect={(e) =>
+                      onChangeHandleFun(e.files, "Attachments", rowHandleObj.ID)
+                    }
+                  />
+                ) : null}
+              </div>
+              {rowHandleObj.files.filter(
+                (data: any) => data.isStatus !== "delete"
+              ).length > 0 && rowHandleObj.commentType === "Employee" ? (
+                <span className="uploadedFiles">Uploaded files</span>
+              ) : null}
+              <div
+                className={
+                  rowHandleObj.files.filter(
+                    (data: any) => data.isStatus !== "delete"
+                  ).length > 0 && rowHandleObj.commentType === "Employee"
+                    ? "fileSec"
+                    : "hide"
+                }
+              >
+                {rowHandleObj.isPopup && rowHandleObj.commentType === "Employee"
+                  ? rowHandleObj.files.map((file: any, index: number) => {
+                      return (
+                        file.isStatus !== "delete" && (
+                          <div className="fileBox">
+                            <a
+                              className="filename"
+                              href={file.ServerRelativeUrl}
+                            >
+                              <FaFileCircleCheck />
+                              {file.FileName}
+                            </a>
+                            {!props.isManager &&
+                            rowHandleObj.commentType === "Employee" &&
+                            rowHandleObj.isEdit ? (
+                              <MdOutlineClose
+                                className="cancelIcon"
+                                onClick={() => fileDeleteFunction(index)}
+                              />
+                            ) : null}
+                          </div>
+                        )
+                      );
+                    })
+                  : null}
+              </div>
+
+              <div className={styles.dialogFooter}>
+                <Button
+                  className={styles.submitBtn}
+                  onClick={() =>
+                    setRowHandleObj({
+                      ...rowHandleObj,
+                      isPopup: false,
+                    })
+                  }
+                  hidden={
+                    props.isManager &&
+                    rowHandleObj.commentType === "Manager" &&
+                    rowHandleObj.isEdit
+                      ? false
+                      : !props.isManager &&
+                        rowHandleObj.commentType === "Employee" &&
+                        rowHandleObj.isEdit
+                      ? false
+                      : true
+                  }
+                  label="Add"
+                  severity="success"
+                />
+                <Button
+                  className={styles.cancelBtn}
+                  onClick={() => dialogCancelFuntion()}
+                  text
+                  label="cancel"
+                ></Button>
+              </div>
+            </Dialog>
+          </div>
           <div className="card">
             <Accordion
               activeIndex={activeIndex}
               onTabChange={(e) => setActiveIndex(e.index)}
             >
-              {categories.map((items, index) => {
+              {categories.map((items, index: any) => {
                 return (
                   <AccordionTab
                     className="accordionMain"
@@ -1195,123 +1316,6 @@ const PredefinedGoals = (props: any) => {
                     }
                   >
                     <div className="preDefinedTable">
-                      <Dialog
-                        header={rowHandleObj.commentType + " Comments"}
-                        visible={rowHandleObj.isPopup}
-                        style={{ width: "50vw" }}
-                        onHide={() =>
-                          setRowHandleObj({ ...rowHandleObj, isPopup: false })
-                        }
-                      >
-                        <div>
-                          <InputTextarea
-                            style={{ width: "80%" }}
-                            rows={4}
-                            cols={30}
-                            value={rowHandleObj.comment}
-                            disabled={
-                              props.isManager &&
-                              rowHandleObj.commentType === "Manager" &&
-                              rowHandleObj.isEdit
-                                ? false
-                                : !props.isManager &&
-                                  rowHandleObj.commentType === "Employee" &&
-                                  rowHandleObj.isEdit
-                                ? false
-                                : true
-                            }
-                            onChange={(e) =>
-                              onChangeHandleFun(
-                                e.target.value,
-                                rowHandleObj.commentType,
-                                rowHandleObj.ID
-                              )
-                            }
-                          />
-                        </div>
-
-                        <div>
-                          {rowHandleObj.isPopup &&
-                          rowHandleObj.commentType === "Employee"
-                            ? rowHandleObj.files.map(
-                                (file: any, index: number) => {
-                                  return (
-                                    file.isStatus !== "delete" && (
-                                      <div style={{ marginTop: "20px" }}>
-                                        <a
-                                          className="filename"
-                                          href={file.ServerRelativeUrl}
-                                        >
-                                          {file.FileName}
-                                        </a>
-                                        {!props.isManager &&
-                                        rowHandleObj.commentType ===
-                                          "Employee" &&
-                                        rowHandleObj.isEdit ? (
-                                          <MdOutlineClose
-                                            className={styles.cancelIcon}
-                                            onClick={() =>
-                                              fileDeleteFunction(index)
-                                            }
-                                          />
-                                        ) : null}
-                                      </div>
-                                    )
-                                  );
-                                }
-                              )
-                            : null}
-                        </div>
-                        <div style={{ marginTop: "10px" }}>
-                          {!props.isManager &&
-                          rowHandleObj.commentType === "Employee" &&
-                          rowHandleObj.isEdit ? (
-                            <FileUpload
-                              mode="basic"
-                              name="demo[]"
-                              auto
-                              chooseLabel="Add File"
-                              maxFileSize={1000000}
-                              onSelect={(e) => fileUploadFunction(e.files)}
-                            />
-                          ) : null}
-                        </div>
-                        <div className={styles.dialogFooter}>
-                          <Button
-                            className={styles.submitBtn}
-                            onClick={() =>
-                              setRowHandleObj({
-                                ...rowHandleObj,
-                                isPopup: false,
-                              })
-                            }
-                            hidden={
-                              props.isManager &&
-                              rowHandleObj.commentType === "Manager" &&
-                              rowHandleObj.isEdit
-                                ? false
-                                : !props.isManager &&
-                                  rowHandleObj.commentType === "Employee" &&
-                                  rowHandleObj.isEdit
-                                ? false
-                                : true
-                            }
-                            label="Submit"
-                            severity="success"
-                          />
-                          <Button
-                            className={styles.cancelBtn}
-                            onClick={() =>
-                              setRowHandleObj({
-                                ...rowHandleObj,
-                                isPopup: false,
-                              })
-                            }
-                            text
-                            label="cancel"
-                          ></Button>
-                        </div>
-                      </Dialog>
                       <DataTable
                         value={items.values}
                         className="p-datatable-sm"
@@ -1350,10 +1354,17 @@ const PredefinedGoals = (props: any) => {
               })}
             </Accordion>
           </div>
+          {categories.length > 0 ? (
+            <></>
+          ) : (
+            <div className="noDataMsg" style={{ paddingTop: "20px" }}>
+              there are no predefined goals set at the moment
+            </div>
+          )}
           <div className="managerGoal">
             <span>Manager Goals</span>
           </div>
-          <div style={{ position: "relative" }}>
+          <div className="managerGoalTable" style={{ position: "relative" }}>
             <DataTable value={managerGoals} className="p-datatable-sm">
               <Column
                 className="col1"
@@ -1396,12 +1407,6 @@ const PredefinedGoals = (props: any) => {
               <div className="noDataMsg">No Data Found</div>
             </div>
           )}
-          {categories.length > 0 ? (
-            <></>
-          ) : (
-            <div className="noDataMsg">No Data Found</div>
-          )}
-          {/* <Loader /> */}
         </>
       )}
     </div>
