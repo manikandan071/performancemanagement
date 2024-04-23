@@ -10,7 +10,7 @@ import { PiTargetBold } from "react-icons/pi";
 import { BiTargetLock } from "react-icons/bi";
 import Button from "@mui/material/Button";
 import { Dropdown } from "primereact/dropdown";
-import "./Employee.css"
+import "./Employee.css";
 // import GoalsComponent from "../Manager/GoalsComponent";
 // import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
 
@@ -109,7 +109,7 @@ const EmployeeComponent = (props: any) => {
   return (
     <>
       <div className={styles.background}>
-        <div className={styles.container02}>
+        <div className={styles.container}>
           <div className="Goals">
             <div
               className={styles.AppraisalCycles}
