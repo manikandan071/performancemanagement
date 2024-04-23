@@ -816,16 +816,29 @@ const Goals = () => {
   };
 
   const GoalnameBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
-      <InputTextarea
-        value={rowData.GoalName}
-        rows={2}
-        cols={30}
-        onChange={(e) =>
-          onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
-        }
-      />
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <InputTextarea
+          value={rowData.GoalName}
+          rows={2}
+          cols={30}
+          onChange={(e) =>
+            onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
+          }
+        />
+      ) : (
+        <div
+          style={{
+            fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+            color: "#64728c",
+            fontSize: "13px",
+            width: "100%",
+          }}
+        >
+          {rowData.GoalName}
+        </div>
+      )
     ) : (
       <div
         style={{
@@ -841,16 +854,36 @@ const Goals = () => {
   };
 
   const AssignLevelBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
-      <Dropdown
-        value={rowData.AssignLevel}
-        onChange={(e) => onChangeHandleFun(e.value, "AssignLevel", rowData.ID)}
-        options={assignLevelList}
-        optionLabel="name"
-        placeholder="Select a Role"
-        className="w-full md:w-14rem"
-      />
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <Dropdown
+          value={rowData.AssignLevel}
+          onChange={(e) =>
+            onChangeHandleFun(e.value, "AssignLevel", rowData.ID)
+          }
+          options={assignLevelList}
+          optionLabel="name"
+          placeholder="Select a Role"
+          className="w-full md:w-14rem"
+        />
+      ) : (
+        <div
+          style={{
+            fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+            color: "#64728c",
+            fontSize: "13px",
+            width: "100%",
+          }}
+        >
+          {rowData.AssignLevel.name === "Organization" ? (
+            <GiOrganigram className="roleIcon" />
+          ) : (
+            <PiUserFocusDuotone className="roleIcon" />
+          )}
+          {rowData.AssignLevel.name}
+        </div>
+      )
     ) : (
       <div
         style={{
@@ -871,9 +904,9 @@ const Goals = () => {
   };
 
   const RoleBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
-      rowData.AssignLevel.name == "Role" ? (
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return 0 <= index ? (
+      rowData.AssignLevel.name == "Role" && duplicateData[index].isRowEdit ? (
         // <Dropdown
         //   value={rowData.Role}
         //   onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
@@ -892,6 +925,22 @@ const Goals = () => {
           maxSelectedLabels={3}
           className="w-full md:w-20rem"
         />
+      ) : rowData.AssignLevel.name == "Role" ? (
+        <div>
+          {rowData.Role.map((role: any) => (
+            <p
+              style={{
+                fontFamily: "Roboto, Arial, Helvetica, sans-serif",
+                color: "#64728c",
+                fontSize: "13px",
+                width: "100%",
+                margin: "0px",
+              }}
+            >
+              {role.name}
+            </p>
+          ))}
+        </div>
       ) : (
         <div></div>
       )
@@ -914,18 +963,31 @@ const Goals = () => {
     );
   };
   const ActionBodyTemplate = (rowData: any) => {
-    let currentObj = duplicateData.filter((obj) => obj.ID == rowData.ID);
-    return currentObj[0].isRowEdit ? (
-      <div>
-        <IoMdCheckmark
-          className={styles.submitIcon}
-          onClick={() => goalSubmitFun(rowData)}
-        />
-        <MdOutlineClose
-          className={styles.cancelIcon}
-          onClick={() => editCancelFun(rowData)}
-        />
-      </div>
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return 0 <= index ? (
+      duplicateData[index].isRowEdit ? (
+        <div>
+          <IoMdCheckmark
+            className={styles.submitIcon}
+            onClick={() => goalSubmitFun(rowData)}
+          />
+          <MdOutlineClose
+            className={styles.cancelIcon}
+            onClick={() => editCancelFun(rowData)}
+          />
+        </div>
+      ) : (
+        <div>
+          <HiPencil
+            className={styles.editIcon}
+            onClick={(e) => editRowFunction(rowData)}
+          />
+          <MdDelete
+            className={styles.cancelIcon}
+            onClick={() => goalDeleteFun(rowData)}
+          />
+        </div>
+      )
     ) : (
       <div>
         <HiPencil
@@ -1132,6 +1194,13 @@ const Goals = () => {
           })}
         </Accordion>
       </div>
+      {categories.length > 0 ? (
+        <div></div>
+      ) : (
+        <div>
+          <div className="noDataMsg">No Data Found</div>
+        </div>
+      )}
 
       {/* <DataTable
         value={newData}
