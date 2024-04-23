@@ -16,7 +16,7 @@ const MainComponent = (props: any) => {
   const [isNavOption, setNavOption] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
 
-  console.log(UserEmail, isNavOption);
+  console.log(UserEmail, "currentUser");
 
   const handleCilck = (item: string) => {
     setNavOption(item);
@@ -84,6 +84,7 @@ const MainComponent = (props: any) => {
             handleCilck={handleCilck}
             getEmployeeEmail={getEmployeeEmail}
             context={props}
+            user = {UserEmail}
           />
         </div>
 

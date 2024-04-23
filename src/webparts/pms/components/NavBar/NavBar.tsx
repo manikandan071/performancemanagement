@@ -6,20 +6,19 @@ import styles from "./NavBarStyle.module.scss";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
-// import { FaUsersGear } from "react-icons/fa6";
 import { RiTeamFill } from "react-icons/ri";
-// import { RiUserShared2Fill } from "react-icons/ri";
 import { PiUserCircleGearBold } from "react-icons/pi";
 
 const NavBar = (props: any) => {
-  console.log(props);
+  console.log(props, "props");
   const [currentUser, setCurrentUSer] = useState("");
   const [isShowEmployee, setIsShowEmployee] = useState(false);
   const [employeeList, setEmployeeList] = useState<any[]>([]);
+  const [Role, setRole] = useState("");
   const [tapName, setTapName] = useState("");
   const [tapMembersList, setTabMembersList] = useState("");
 
-  console.log(employeeList, currentUser);
+  console.log(employeeList, currentUser, Role);
 
   const getUserRole = (mail: string) => {
     sp.web.lists
@@ -30,15 +29,17 @@ const NavBar = (props: any) => {
       .expand("Employee,Members")
       .get()
       .then((res) => {
-        console.log(res);
+        console.log(res, "navbarResponse");
         if (res.length > 0) {
           let teamMembers: any = [];
           res.forEach((obj) => {
             if (obj.Employee.EMail == mail) {
               if (obj.Roles == "HR") {
                 setTapName("Goals");
+                setRole("HR");
                 props.handleCilck("Goals");
               } else if (obj.Roles == "Manager") {
+                setRole("Manager");
                 setTapName("Employee");
                 props.handleCilck("Employee");
                 obj.Members.forEach((user: any) => {
@@ -137,15 +138,19 @@ const NavBar = (props: any) => {
             setTabMembersList("");
           }}
         >
-          {props.isNav ? (
-            <div className={styles.optionIcon}>
-              <TbTargetArrow />
-              <span style={{ margin: "8px 0px 5px 10px" }}>Goals</span>
-            </div>
+          {Role === "HR" ? (
+            props.isNav ? (
+              <div className={styles.optionIcon}>
+                <TbTargetArrow />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Goals</span>
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <TbTargetArrow />
+              </div>
+            )
           ) : (
-            <div className={styles.onlyIcon}>
-              <TbTargetArrow />
-            </div>
+            <></>
           )}
         </div>
         <div
@@ -156,7 +161,7 @@ const NavBar = (props: any) => {
           }
           onClick={() => setIsShowEmployee(!isShowEmployee)}
         >
-          {props.isNav ? (
+          {Role === "Manager" ? ( props.isNav?(
             <div className={styles.optionIcon}>
               <RiTeamFill />
               <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
@@ -165,16 +170,16 @@ const NavBar = (props: any) => {
               ) : (
                 <FaChevronRight className={styles.DrpIcons} />
               )}
-            </div>
-          ) : (
-            <div className={styles.onlyIcon}>
+            </div>):( <div className={styles.onlyIcon}>
               <RiTeamFill />
               {isShowEmployee ? (
                 <FaChevronDown className={styles.DrpIcons} />
               ) : (
                 <FaChevronRight className={styles.DrpIcons} />
               )}
-            </div>
+            </div>)
+          ) : (
+            <></>
           )}
         </div>
         {isShowEmployee ? (
