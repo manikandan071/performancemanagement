@@ -1,14 +1,15 @@
 import { sp } from "@pnp/sp";
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { Toast } from "primereact/toast";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
+// import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
-import { HiPencil } from "react-icons/hi2";
+// import { HiPencil } from "react-icons/hi2";
 import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -23,21 +24,20 @@ import Loader from "../Loader/Loader";
 
 const PredefinedGoals = (props: any) => {
   console.log(props);
-
+  const toast = useRef<Toast>(null);
   let appraisalCycleID = props.appraisalCycle.currentCycle;
-
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<any>(null);
   const [managerGoals, setManagerGoals] = useState<any[]>([]);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
-    ID: null,
-    newCategory: "",
-    isNew: false,
-    isUpdate: false,
-  });
+  // const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
+  //   ID: null,
+  //   newCategory: "",
+  //   isNew: false,
+  //   isUpdate: false,
+  // });
   const [rowHandleObj, setRowHandleObj] = useState<any>({
     ID: null,
     commentType: "",
@@ -51,10 +51,10 @@ const PredefinedGoals = (props: any) => {
     userName: "",
     userEmail: "",
   });
-  const [isPopup, setIsPopup] = useState<any>({
-    delPopup: false,
-    delIndex: null,
-  });
+  // const [isPopup, setIsPopup] = useState<any>({
+  //   delPopup: false,
+  //   delIndex: null,
+  // });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
   console.log(
@@ -351,7 +351,7 @@ const PredefinedGoals = (props: any) => {
       ManagerRating: tempObj.ManagerRating,
       EmployeeRating: tempObj.EmployeeRating,
     };
-    if (data.isNew) {
+    if (data.isNew && tempObj.GoalName !== "") {
       await sp.web.lists
         .getByTitle(`PredefinedGoals`)
         .items.add({
@@ -388,7 +388,7 @@ const PredefinedGoals = (props: any) => {
           await setMasterData([...duplicateArr]);
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if (tempObj.GoalName !== "") {
       sp.web.lists
         .getByTitle(`PredefinedGoals`)
         .items.getById(tempObj.ID)
@@ -490,6 +490,13 @@ const PredefinedGoals = (props: any) => {
           }
         })
         .catch((err) => console.log(err));
+    } else {
+      // alert("please enter Goal name");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "Please enter goal name",
+      });
     }
   };
   const goalDeleteFun = (data: any) => {
@@ -525,7 +532,12 @@ const PredefinedGoals = (props: any) => {
     let duplicateArr = [...duplicateData];
     let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
-      alert("Please save or cancel the current row before editing another row");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
     } else {
       let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
       let tempObj = duplicateArr[index];
@@ -534,102 +546,102 @@ const PredefinedGoals = (props: any) => {
       categoryHandleFun([...duplicateArr]);
     }
   };
-  const addNewCategory = (condition: boolean) => {
-    let tempArr = [...duplicateData];
-    let tempCategoryArr = [...categories];
-    if (condition) {
-      if (categoryHandleObj.newCategory !== "") {
-        tempArr.push({
-          ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-          GoalCategory: categoryHandleObj.newCategory,
-          GoalName: "",
-          AssignToId: "",
-          ManagerComments: "",
-          EmployeeComments: "",
-          ManagerRating: 0,
-          EmployeeRating: 0,
-          AttachmentFiles: [],
-          isRowEdit: true,
-          isNew: true,
-        });
-        setDuplicateData([...tempArr]);
-        categoryHandleFun([...tempArr]);
-        setCategoryHandleObj({
-          ...categoryHandleObj,
-          newCategory: "",
-          isNew: false,
-          isUpdate: false,
-        });
-      }
-    } else {
-      let index = tempCategoryArr.findIndex(
-        (ind) => ind.mainID === categoryHandleObj.ID
-      );
-      let tempObj = tempCategoryArr[index];
-      let categoryGolasArr = tempObj.values;
-      if (tempObj.GoalCategory != categoryHandleObj.newCategory) {
-        categoryGolasArr.forEach((obj: any) => {
-          sp.web.lists
-            .getByTitle(`PredefinedGoals`)
-            .items.getById(obj.ID)
-            .update({ GoalCategory: categoryHandleObj.newCategory })
-            .then((res) => {
-              let duplicateindex = tempArr.findIndex(
-                (temp) => temp.ID === obj.ID
-              );
-              let duplicateObj = tempArr[duplicateindex];
-              tempArr[duplicateindex] = {
-                ...duplicateObj,
-                [`${"GoalCategory"}`]: categoryHandleObj.newCategory,
-              };
-              setCategoryHandleObj({
-                ...categoryHandleObj,
-                newCategory: "",
-                isNew: false,
-                isUpdate: false,
-                ID: null,
-              });
-              setMasterData([...tempArr]);
-              setDuplicateData([...tempArr]);
-              categoryHandleFun([...tempArr]);
-            })
-            .catch((err) => console.log(err));
-        });
-      }
-    }
-  };
-  const editCategoryFun = (ind: number) => {
-    setCategoryHandleObj({
-      ...categoryHandleObj,
-      ID: ind + 1,
-      newCategory: categories[ind].GoalCategory,
-      isUpdate: true,
-    });
-  };
-  const deleteCategoryFun = () => {
-    let duplicateArray = [...duplicateData];
-    let tempCategoryArr = [...categories];
-    let index = tempCategoryArr.findIndex(
-      (ind) => ind.mainID === isPopup.delIndex + 1
-    );
-    let tempObj = tempCategoryArr[index];
-    let categoryGoalsArr = tempObj.values;
-    categoryGoalsArr.forEach((obj: any) => {
-      duplicateArray = duplicateArray.filter((fill) => fill.ID !== obj.ID);
-      setDuplicateData([...duplicateArray]);
-      setIsPopup({ ...isPopup, delIndex: null, delPopup: false });
-      setMasterData([...duplicateArray]);
-      categoryHandleFun([...duplicateArray]);
-      sp.web.lists
-        .getByTitle(`PredefinedGoals`)
-        .items.getById(obj.ID)
-        .update({ isDelete: true })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => console.log(err));
-    });
-  };
+  // const addNewCategory = (condition: boolean) => {
+  //   let tempArr = [...duplicateData];
+  //   let tempCategoryArr = [...categories];
+  //   if (condition) {
+  //     if (categoryHandleObj.newCategory !== "") {
+  //       tempArr.push({
+  //         ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
+  //         GoalCategory: categoryHandleObj.newCategory,
+  //         GoalName: "",
+  //         AssignToId: "",
+  //         ManagerComments: "",
+  //         EmployeeComments: "",
+  //         ManagerRating: 0,
+  //         EmployeeRating: 0,
+  //         AttachmentFiles: [],
+  //         isRowEdit: true,
+  //         isNew: true,
+  //       });
+  //       setDuplicateData([...tempArr]);
+  //       categoryHandleFun([...tempArr]);
+  //       setCategoryHandleObj({
+  //         ...categoryHandleObj,
+  //         newCategory: "",
+  //         isNew: false,
+  //         isUpdate: false,
+  //       });
+  //     }
+  //   } else {
+  //     let index = tempCategoryArr.findIndex(
+  //       (ind) => ind.mainID === categoryHandleObj.ID
+  //     );
+  //     let tempObj = tempCategoryArr[index];
+  //     let categoryGolasArr = tempObj.values;
+  //     if (tempObj.GoalCategory != categoryHandleObj.newCategory) {
+  //       categoryGolasArr.forEach((obj: any) => {
+  //         sp.web.lists
+  //           .getByTitle(`PredefinedGoals`)
+  //           .items.getById(obj.ID)
+  //           .update({ GoalCategory: categoryHandleObj.newCategory })
+  //           .then((res) => {
+  //             let duplicateindex = tempArr.findIndex(
+  //               (temp) => temp.ID === obj.ID
+  //             );
+  //             let duplicateObj = tempArr[duplicateindex];
+  //             tempArr[duplicateindex] = {
+  //               ...duplicateObj,
+  //               [`${"GoalCategory"}`]: categoryHandleObj.newCategory,
+  //             };
+  //             setCategoryHandleObj({
+  //               ...categoryHandleObj,
+  //               newCategory: "",
+  //               isNew: false,
+  //               isUpdate: false,
+  //               ID: null,
+  //             });
+  //             setMasterData([...tempArr]);
+  //             setDuplicateData([...tempArr]);
+  //             categoryHandleFun([...tempArr]);
+  //           })
+  //           .catch((err) => console.log(err));
+  //       });
+  //     }
+  //   }
+  // };
+  // const editCategoryFun = (ind: number) => {
+  //   setCategoryHandleObj({
+  //     ...categoryHandleObj,
+  //     ID: ind + 1,
+  //     newCategory: categories[ind].GoalCategory,
+  //     isUpdate: true,
+  //   });
+  // };
+  // const deleteCategoryFun = () => {
+  //   let duplicateArray = [...duplicateData];
+  //   let tempCategoryArr = [...categories];
+  //   let index = tempCategoryArr.findIndex(
+  //     (ind) => ind.mainID === isPopup.delIndex + 1
+  //   );
+  //   let tempObj = tempCategoryArr[index];
+  //   let categoryGoalsArr = tempObj.values;
+  //   categoryGoalsArr.forEach((obj: any) => {
+  //     duplicateArray = duplicateArray.filter((fill) => fill.ID !== obj.ID);
+  //     setDuplicateData([...duplicateArray]);
+  //     setIsPopup({ ...isPopup, delIndex: null, delPopup: false });
+  //     setMasterData([...duplicateArray]);
+  //     categoryHandleFun([...duplicateArray]);
+  //     sp.web.lists
+  //       .getByTitle(`PredefinedGoals`)
+  //       .items.getById(obj.ID)
+  //       .update({ isDelete: true })
+  //       .then((res) => {
+  //         console.log(res);
+  //       })
+  //       .catch((err) => console.log(err));
+  //   });
+  // };
   const onChangeHandleFun = (value: any, type: string, id: number) => {
     let duplicateArr = duplicateData;
     let index = duplicateArr.findIndex((obj: any) => obj.ID === id);
@@ -1111,7 +1123,7 @@ const PredefinedGoals = (props: any) => {
         <Loader />
       ) : (
         <>
-          <div className={styles.addCategory}>
+          {/* <div className={styles.addCategory}>
             {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
               <div style={{ display: "flex", gap: 5 }}>
                 <InputText
@@ -1166,7 +1178,8 @@ const PredefinedGoals = (props: any) => {
             ) : (
               <></>
             )}
-          </div>
+          </div> */}
+          <Toast ref={toast} />
           <div className="">
             <Dialog
               className="reviewDialog"
@@ -1307,7 +1320,7 @@ const PredefinedGoals = (props: any) => {
                         <span className="CategoryTitle">
                           {items.GoalCategory}
                         </span>
-                        {props.isManager ? (
+                        {/* {props.isManager ? (
                           <div className="font-bold iconSec">
                             {isPopup.delIndex === index && isPopup.delPopup && (
                               <Dialog
@@ -1381,7 +1394,7 @@ const PredefinedGoals = (props: any) => {
                               }}
                             />
                           </div>
-                        ) : null}
+                        ) : null} */}
                       </span>
                     }
                   >
@@ -1394,27 +1407,27 @@ const PredefinedGoals = (props: any) => {
                           className="col1"
                           field="GoalName"
                           header="Goal Name"
-                          style={{ width: "30%" }}
+                          style={{ width: "45%" }}
                           body={GoalnameBodyTemplate}
                         ></Column>
                         <Column
                           className="col1"
                           field="EmployeeRating"
                           header="Employee Review"
-                          style={{ width: "15%" }}
+                          style={{ width: "20%" }}
                           body={EmployeeRatingBodyTemplate}
                         ></Column>
                         <Column
                           className="col1"
                           field="ManagerRating"
                           header="Manager Review"
-                          style={{ width: "15%" }}
+                          style={{ width: "20%" }}
                           body={ManagerRatingBodyTemplate}
                         ></Column>
                         <Column
                           className="col4"
                           header="Action"
-                          style={{ width: "10%" }}
+                          style={{ width: "15%" }}
                           body={ActionBodyTemplate}
                         ></Column>
                       </DataTable>
@@ -1440,31 +1453,34 @@ const PredefinedGoals = (props: any) => {
                 className="col1"
                 field="GoalName"
                 header="Goal Name"
-                style={{ width: "30%" }}
+                style={{ width: "45%" }}
                 body={GoalnameBodyTemplate}
               ></Column>
               <Column
                 className="col1"
                 field="EmployeeRating"
                 header="Employee Rating"
-                style={{ width: "15%" }}
+                style={{ width: "20%" }}
                 body={EmployeeRatingBodyTemplate}
               ></Column>
               <Column
                 className="col1"
                 field="ManagerRating"
                 header="Manager Rating"
-                style={{ width: "15%" }}
+                style={{ width: "20%" }}
                 body={ManagerRatingBodyTemplate}
               ></Column>
               <Column
                 className="col4"
                 header="Action"
-                style={{ width: "10%" }}
+                style={{ width: "15%" }}
                 body={ActionBodyTemplate}
               ></Column>
             </DataTable>
-            {props.isManager && props.appraisalCycle.isCurrentCycle ? (
+
+            {props.isManager &&
+            props.appraisalCycle.isCurrentCycle &&
+            !duplicateData.some((data) => data.isNew) ? (
               <div className="addMaganerGoal">
                 <GrAdd onClick={(e) => addGoalFunction(categories.length)} />
               </div>
