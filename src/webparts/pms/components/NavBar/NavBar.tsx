@@ -49,6 +49,17 @@ const NavBar = (props: any) => {
                     userName: user.Title,
                   });
                 });
+              } else if (obj.Roles == "Admin") {
+                setRole("Admin");
+                setTapName("Employee");
+                props.handleCilck("Employee");
+                obj.Members.forEach((user: any) => {
+                  teamMembers.push({
+                    userID: user.ID,
+                    userEmail: user.EMail,
+                    userName: user.Title,
+                  });
+                });
               } else {
                 setTapName("Employee");
                 props.handleCilck("Employee");
@@ -111,17 +122,12 @@ const NavBar = (props: any) => {
           />
         </div>
         {props.isNav ? (
-          <span
-            style={{
-              display: "inline-block",
-              color: "#04024a",
-              fontSize: "17px",
-              fontWeight: "600",
-              marginTop: "5px",
-            }}
-          >
-            {props.context.context.pageContext.user.displayName}
-          </span>
+          <div style={{ textAlign: "center" }}>
+            <p className={styles.employeeName}>
+              {props.context.context.pageContext.user.displayName}
+            </p>
+            <span className={styles.employeeRole}>{Role}</span>
+          </div>
         ) : null}
       </div>
       <div>
@@ -153,7 +159,7 @@ const NavBar = (props: any) => {
         ) : (
           <></>
         )}
-        {Role === "Manager" ? (
+        {Role === "Manager" || Role === "Admin" ? (
           <div
             className={
               "Manager" == tapName
