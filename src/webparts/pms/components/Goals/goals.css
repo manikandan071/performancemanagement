@@ -2,14 +2,35 @@
 .addIconSec:hover .addIconSec{
   background-color: green;
 }
+.addCategory {
+    display: flex;
+    justify-content: flex-end;
+    margin: 10px 0px 20px 0px;
+}
+.addCategory .p-button {
+    padding: 5px 10px;
+}
+.addCategory .p-inputtext {
+    padding: 5px 10px;
+    font-size: 13px;
+        color: #626262;
+        font-family: Roboto,
+            Arial,
+            Helvetica,
+            sans-serif;
+            width: 300px;
+}
 .hrGoals .p-accordion-tab{
     margin-bottom: 10px;
 }
-.accordionMain a{
-    /* display: inline-block; */
-    text-decoration: none;
+.hrGoals .accordionMain a{
+        text-decoration: none;
+            background-color: #fff;
+            padding: 10px 10px;
+            color: #61b061;
+            font-size: 15px;
 }
-.accordionMain .p-accordion-content{
+.hrGoals .accordionMain .p-accordion-content{
     padding: 0px;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .addIcon{
@@ -86,10 +107,10 @@
             sans-serif;
 }
 .goalsTable .p-multiselect-label-container .p-multiselect-label{
-    padding: 4px 0px 4px 10px;
+    padding: 5px 0px 5px 10px;
 }
 .goalsTable .p-multiselect-label-container .p-multiselect-label .p-multiselect-token{
-    padding: 4px 10px;
+    padding: 3px 10px;
     font-size: 13px;
     background-color: #92cc92;
         color: #626262;

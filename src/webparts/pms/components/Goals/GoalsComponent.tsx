@@ -51,7 +51,7 @@ const Goals = () => {
     isUpdate: false,
   });
   const [activeIndex, setActiveIndex] = useState<any>(null);
-  const [appraisalCycle, setAppraisalCycle] = useState(null);
+  const [appraisalCycleId, setAppraisalCycleId] = useState(null);
 
   console.log(
     usersList,
@@ -59,14 +59,15 @@ const Goals = () => {
     masterData,
     duplicateData,
     predefinedGoalsList,
-    appraisalCycle
+    appraisalCycleId
   );
 
-  const getPredefinedGoals = () => {
+  const getPredefinedGoals = (ACId: number) => {
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
       .items.select("*,AssignTo/ID,AssignTo/Title,AssignTo/EMail,HRGoal/ID")
       .expand("AssignTo,HRGoal")
+      .filter(`AppraisalCycleLookupId eq '${ACId}'`)
       .get()
       .then((res) => {
         console.log(res);
@@ -88,10 +89,11 @@ const Goals = () => {
       });
   };
 
-  const getHRGoals = () => {
+  const getHRGoals = (ACId: number) => {
     sp.web.lists
       .getByTitle(`HrGoals`)
-      .items.get()
+      .items.filter(`AppraisalCycleLookupId eq '${ACId}'`)
+      .get()
       .then((res) => {
         let tempArr: any = [];
         let ID = 1;
@@ -159,9 +161,30 @@ const Goals = () => {
         setCategories([...groupedArray]);
         setDuplicateData(tempaArray);
         setMasterData(tempaArray);
-        getPredefinedGoals();
+        getPredefinedGoals(ACId);
       })
       .catch((err) => console.log(err));
+  };
+
+  const getCycleYear = () => {
+    sp.web.lists
+      .getByTitle("AppraisalCycles")
+      .items.get()
+      .then((res) => {
+        console.log(res);
+        res.forEach((obj) => {
+          if (
+            new Date() >= new Date(obj.startDate) &&
+            new Date() <= new Date(obj.endDate)
+          ) {
+            setAppraisalCycleId(obj.ID);
+            getHRGoals(obj.ID);
+          }
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const getUsersRoles = () => {
@@ -208,31 +231,12 @@ const Goals = () => {
             });
           });
           setUsersList([...userArr]);
-          getHRGoals();
+          getCycleYear();
+
           //   res.filter((val,index)=>res.indexOf(val.Roles) === index)
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  const getCycleYear = () => {
-    sp.web.lists
-      .getByTitle("AppraisalCycles")
-      .items.get()
-      .then((res) => {
-        console.log(res);
-        res.forEach((obj) => {
-          if (
-            new Date() >= new Date(obj.startDate) &&
-            new Date() <= new Date(obj.endDate)
-          ) {
-            setAppraisalCycle(obj.ID);
-          }
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const categoryHandleFun = (data: any) => {
@@ -297,6 +301,7 @@ const Goals = () => {
           newCategory: "",
           isNew: false,
         });
+        setActiveIndex(categories.length);
       } else {
         alert("please enter category");
       }
@@ -466,6 +471,7 @@ const Goals = () => {
             : { results: [""] },
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
+          AppraisalCycleLookupId: appraisalCycleId,
           isDelete: false,
         })
         .then((res) => {
@@ -492,7 +498,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycle,
+                  AppraisalCycleLookupId: appraisalCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -511,7 +517,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycle,
+                  AppraisalCycleLookupId: appraisalCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -552,7 +558,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: user.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycle,
+                AppraisalCycleLookupId: appraisalCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -699,7 +705,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: filter.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycle,
+                AppraisalCycleLookupId: appraisalCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -1004,12 +1010,11 @@ const Goals = () => {
 
   useEffect(() => {
     getUsersRoles();
-    getCycleYear();
   }, []);
 
   return (
     <div className={styles.background}>
-      <div className={styles.addCategory}>
+      <div className="addCategory">
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
             <InputText
@@ -1032,7 +1037,7 @@ const Goals = () => {
               />
             ) : (
               <Button
-                className="addCategory"
+                // className="addCategory"
                 label="Add"
                 severity="success"
                 onClick={(e) => addNewCategory(true)}

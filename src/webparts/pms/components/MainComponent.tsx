@@ -40,7 +40,7 @@ const MainComponent = (props: any) => {
             width: isNavBar ? "15%" : "5%",
             height: "100vh",
             position: "relative",
-            transition: "all 0.5s",
+            transition: "all 0.3s",
             marginTop: "20px",
           }}
         >
@@ -84,7 +84,7 @@ const MainComponent = (props: any) => {
             handleCilck={handleCilck}
             getEmployeeEmail={getEmployeeEmail}
             context={props}
-            user = {UserEmail}
+            user={UserEmail}
           />
         </div>
 
