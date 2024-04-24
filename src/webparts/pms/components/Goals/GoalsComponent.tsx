@@ -200,7 +200,7 @@ const Goals = () => {
         if (res.length > 0) {
           let rolesSet = new Set();
           let uniqueArray = res.filter((data) => {
-            if (!rolesSet.has(data.Roles)) {
+            if (!rolesSet.has(data.Roles) && data.Roles !== "Admin") {
               rolesSet.add(data.Roles);
               return true;
             }
