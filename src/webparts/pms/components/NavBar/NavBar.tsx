@@ -88,23 +88,29 @@ const NavBar = (props: any) => {
   return (
     <div
       style={{
-        backgroundColor: "#61b061",
+        background: `linear-gradient(130deg, #61b061, #105610)`,
+        boxShadow: `0px 0px 10px rgba(0,0,0,0.1)`,
         height: "100vh",
         borderRadius: "0px 10px 10px 0px",
-        paddingTop: "50px",
+        padding: "15px",
       }}
     >
       <div
         style={{
           display: "flex",
+          alignItems: "center",
           justifyContent: "center",
-          flexWrap: "wrap",
+          flexDirection: "column",
           marginBottom: props.isNav ? "15px" : "10px",
+          padding: "15px",
+          borderBottom: "2px solid #02230020",
+          borderRadius: "10px",
         }}
       >
         <div
           style={{
-            width: "100%",
+            width: props.isNav ? "100px" : "40px",
+            height: props.isNav ? "95px" : "40px",
             display: "flex",
             justifyContent: "center",
             marginBottom: "5px",
@@ -112,10 +118,11 @@ const NavBar = (props: any) => {
         >
           <img
             style={{
-              width: "50%",
+              width: "100%",
               borderRadius: "100%",
-              border: props.isNav ? "3px solid #b3f1b9" : "2px solid #b3f1b9",
+              border: props.isNav ? "2px solid #007e0c" : "2px solid #007e0c",
               padding: props.isNav ? "2px" : "1px",
+              objectFit: "cover",
             }}
             src={`${props.context.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?UserName=${props.context.context.pageContext.user.email}&size=L`}
             draggable="false"
@@ -126,7 +133,7 @@ const NavBar = (props: any) => {
             <p className={styles.employeeName}>
               {props.context.context.pageContext.user.displayName}
             </p>
-            <span className={styles.employeeRole}>{Role}</span>
+            {Role && <span className={styles.employeeRole}>{Role}</span>}
           </div>
         ) : null}
       </div>
@@ -138,6 +145,9 @@ const NavBar = (props: any) => {
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }
+            style={{
+              padding: props.isNav ? "3px 15px" : "0 15px",
+            }}
             onClick={() => {
               setIsShowEmployee(false);
               setTapName("Goals");

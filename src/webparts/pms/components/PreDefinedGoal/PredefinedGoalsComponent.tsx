@@ -1306,7 +1306,7 @@ const PredefinedGoals = (props: any) => {
               </div>
             </Dialog>
           </div>
-          <div className="card">
+          <div className={`${categories.length ? `card` : ""}`}>
             <Accordion
               activeIndex={activeIndex}
               onTabChange={(e) => setActiveIndex(e.index)}

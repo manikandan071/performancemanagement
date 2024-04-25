@@ -39,6 +39,9 @@ export default class PmsWebPart extends BaseClientSideWebPart<IPmsWebPartProps> 
   public constructor() {
     super();
     SPComponentLoader.loadCss("https://unpkg.com/primeicons/primeicons.css");
+    SPComponentLoader.loadCss(
+      "https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap"
+    );
   }
 
   protected onInit(): Promise<void> {

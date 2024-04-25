@@ -1,43 +1,43 @@
- .addCategory{
-     display: flex;
-     justify-content: flex-end;
-     margin: 10px 0px ;
- }
- .editIcon{
-    cursor: pointer;
-    color:"green";
-    font-size: 17px;
-    margin-right: 10px;
+.addCategory {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0px;
 }
-.submitIcon{
-    cursor: pointer;
-    color:"green";
-    font-size: 20px;
-    margin-right: 10px;
+.editIcon {
+  cursor: pointer;
+  color: #61b061;
+  font-size: 17px;
+  margin-right: 10px;
 }
-.cancelIcon{
-    cursor: pointer;
-    color:"red";
-    font-size: 17px;
+.submitIcon {
+  cursor: pointer;
+  color: #61b061;
+  font-size: 20px;
+  margin-right: 10px;
 }
-.addIcon{
-    margin-right: 10px;
-    color: green;
-    padding: 5px;
-    font-size: 27px;
-    cursor: pointer;
+.cancelIcon {
+  cursor: pointer;
+  color: "red";
+  font-size: 17px;
 }
-.dialogFooter{
-    display: flex;
-    justify-content: end;
-    margin-top: 20px;
-    .submitBtn{
-        border-radius: 25px;
-        padding: 5px 20px;
-    }
-    .cancelBtn{
-        border-radius: 25px;
-        padding: 5px 20px;
-        margin-left: 5px;
-    }
+.addIcon {
+  margin-right: 10px;
+  color: #61b061;
+  padding: 5px;
+  font-size: 27px;
+  cursor: pointer;
+}
+.dialogFooter {
+  display: flex;
+  justify-content: end;
+  margin-top: 20px;
+  .submitBtn {
+    border-radius: 25px;
+    padding: 5px 20px;
+  }
+  .cancelBtn {
+    border-radius: 25px;
+    padding: 5px 20px;
+    margin-left: 5px;
+  }
 }

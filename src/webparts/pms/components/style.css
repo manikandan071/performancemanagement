@@ -1,18 +1,107 @@
 #workbenchPageContent {
-    max-width: 100%;
+  max-width: 100%;
 }
-
+* {
+  font-family: "Inter", sans-serif !important;
+}
 .content_3f3fd3c2,
 .CanvasZone {
-    padding: 0 !important;
-    max-width: 100% !important;
+  padding: 0 !important;
+  max-width: 100% !important;
 }
 .css-1knaqv7-MuiButtonBase-root-MuiButton-root {
-    padding: 0 !important;
+  padding: 0 !important;
 }
-.headerRow-49{
-    display: none!important;
+.headerRow-49 {
+  display: none !important;
 }
-.commandBarWrapper{
-    display: none!important;
+.commandBarWrapper {
+  display: none !important;
+}
+.RHSWrapper {
+  height: 100%;
+  position: relative;
+}
+.contentWrapper {
+  background-color: #2d762d10;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  /* height: 100vh; */
+  gap: 20px;
+  position: relative;
+}
+/* linear-gradient(130deg, #2d6016, #00ad37) */
+.p-dropdown {
+  padding: 3px;
+  border: 1px solid #e3e3e3 !important;
+}
+.p-dropdown:not(.p-disabled).p-focus {
+  box-shadow: none !important;
+  border-color: #e3e3e3 !important;
+}
+.p-multiselect {
+  box-shadow: none !important;
+  border-color: #e3e3e3 !important;
+}
+.p-multiselect:not(.p-disabled).p-focus {
+  box-shadow: none !important;
+  border-color: #e3e3e3 !important;
+}
+.p-inputtext {
+  box-shadow: none !important;
+  border-color: #e3e3e3 !important;
+}
+.p-accordion-tab-active .p-accordion-header-link {
+  box-shadow: none !important;
+  /* border-bottom: 1px solid #fff !important; */
+  background-color: #61b06110 !important;
+  border-bottom: 0 !important;
+}
+.p-button:focus {
+  box-shadow: none !important;
+}
+.card {
+  border: 1px solid #adadad20 !important;
+}
+.p-datatable-wrapper {
+  border: 1px solid #adadad20;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.goalsTable
+  .p-multiselect-label-container
+  .p-multiselect-label
+  .p-multiselect-token {
+  background-color: #eeeeee;
+}
+.goalsTable
+  .p-multiselect-label-container
+  .p-multiselect-label
+  .p-multiselect-token
+  .p-multiselect-token-icon {
+  color: #555;
+}
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item {
+  font-size: 14px !important;
+}
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+  background: #61b061;
+}
+.p-checkbox.p-highlight .p-checkbox-box {
+  background: #61b061;
+}
+.p-multiselect-panel
+  .p-multiselect-items
+  .p-multiselect-item.p-highlight.p-focus {
+  background: #61b061 !important;
+}
+.p-checkbox-input {
+  border: transparent !important;
+  background: transparent !important;
+}
+.p-accordion
+  .p-accordion-header:not(.p-disabled)
+  .p-accordion-header-link:focus-visible {
+  background: #37831580 !important;
 }
