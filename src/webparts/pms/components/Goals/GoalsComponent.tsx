@@ -865,13 +865,16 @@ const Goals = () => {
       duplicateData[index].isRowEdit ? (
         <Dropdown
           value={rowData.AssignLevel}
+          style={{
+            padding: "0",
+          }}
           onChange={(e) =>
             onChangeHandleFun(e.value, "AssignLevel", rowData.ID)
           }
           options={assignLevelList}
           optionLabel="name"
           placeholder="Select a Role"
-          className="w-full md:w-14rem"
+          className="w-full md:w-14rem tblMultiSelect"
         />
       ) : (
         <div
@@ -932,15 +935,25 @@ const Goals = () => {
           className="w-full md:w-20rem"
         />
       ) : rowData.AssignLevel.name == "Role" ? (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            gap: "10px",
+          }}
+        >
           {rowData.Role.map((role: any) => (
             <p
               style={{
-                fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-                color: "#64728c",
-                fontSize: "13px",
-                width: "100%",
-                margin: "0px",
+                fontFamily: `Roboto, Arial, Helvetica, sans-serif`,
+                color: `rgb(100, 114, 140)`,
+                fontSize: ` 12px`,
+                background: `#eee`,
+                margin: `0px`,
+                padding: `2px 10px`,
+                borderRadius: ` 30px`,
+                textAlign: `center`,
               }}
             >
               {role.name}
@@ -1015,6 +1028,7 @@ const Goals = () => {
   return (
     <div className={styles.background}>
       <div className="addCategory">
+        <span className="span">Goals</span>
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
             <InputText
@@ -1048,6 +1062,7 @@ const Goals = () => {
               label="Cancel"
               severity="danger"
               text
+              className="cancelBtn"
               onClick={(e) => {
                 // setNewCategory("");
                 setCategoryHandleObj({

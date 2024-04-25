@@ -1,14 +1,14 @@
 import * as React from "react";
 import NavBar from "./NavBar/NavBar";
 import { useState } from "react";
-import { IoIosClose } from "react-icons/io";
+// import { IoIosClose } from "react-icons/io";
 import { RxCaretRight } from "react-icons/rx";
 import Goals from "./Goals/GoalsComponent";
 import ManagerComponent from "./Manager/ManagerComponent";
 import EmployeeComponent from "./Employee/EmployeeComponent";
 // import image from "../components/Employee/welcomeDark.png";
 // let logo = require("../assets/images/welcome-dark.png")
-
+import "./style.css";
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
 
@@ -28,40 +28,36 @@ const MainComponent = (props: any) => {
   return (
     <>
       {/* <img src={image} alt="React Logo"></img>  */}
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          position: "relative",
-        }}
-      >
+      <div className="contentWrapper">
         <div
           style={{
-            width: isNavBar ? "15%" : "5%",
-            height: "100vh",
+            width: isNavBar ? "20%" : "6%",
             position: "relative",
             transition: "all 0.3s",
             marginTop: "20px",
           }}
         >
-          {!isNavBar ? (
-            <RxCaretRight
-              className="bi bi-4-circle"
-              style={{
-                position: "absolute",
-                right: "-13px",
-                top: "2%",
-                color: "#000",
-                backgroundColor: "#fff",
-                borderRadius: "50px",
-                fontSize: "25px",
-                cursor: "pointer",
-                width: "30px",
-                height: "30px",
-              }}
-              onClick={() => setIsNavBar(!isNavBar)}
-            />
-          ) : (
+          {/* {!isNavBar ? ( */}
+          <RxCaretRight
+            className="bi bi-4-circle"
+            style={{
+              boxShadow: "0px 0px 8px rgba(0,0,0,0.2)",
+              position: "absolute",
+              right: "-13px",
+              top: "2%",
+              color: "#000",
+              transition: "all .3s",
+              transform: isNavBar ? "rotate(180deg)" : "",
+              backgroundColor: "#fff",
+              borderRadius: "50px",
+              fontSize: "25px",
+              cursor: "pointer",
+              width: "30px",
+              height: "30px",
+            }}
+            onClick={() => setIsNavBar(!isNavBar)}
+          />
+          {/* ) : (
             <IoIosClose
               className="bi bi-4-circle"
               style={{
@@ -78,7 +74,7 @@ const MainComponent = (props: any) => {
               }}
               onClick={() => setIsNavBar(!isNavBar)}
             />
-          )}
+          )} */}
           <NavBar
             isNav={isNavBar}
             handleCilck={handleCilck}
@@ -91,22 +87,23 @@ const MainComponent = (props: any) => {
         <div
           style={{
             width: isNavBar ? "85%" : "95%",
-            margin: "20px 0px 0px 20px",
+            margin: "20px 0px 0px 0px",
+            // height: "100%",
           }}
         >
           {isNavOption === "Goals" ? (
-            <div>
+            <div className="RHSWrapper">
               <Goals />
             </div>
           ) : isNavOption === "Manager" ? (
-            <div style={{ position: "relative" }}>
+            <div className="RHSWrapper">
               <ManagerComponent
                 EmployeeEmail={employeeEmail}
                 isManager={true}
               />
             </div>
           ) : (
-            <div style={{ position: "relative" }}>
+            <div className="RHSWrapper">
               <EmployeeComponent EmployeeEmail={UserEmail} isManager={false} />
             </div>
           )}
