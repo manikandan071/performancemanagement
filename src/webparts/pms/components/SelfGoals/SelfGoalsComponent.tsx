@@ -44,6 +44,7 @@ const SelfGoals = (props: any) => {
     MangerRating: 0,
     EmployeeRating: 0,
   });
+  console.log(masterData, duplicateData, rowHandleObj);
 
   const getDetails = () => {
     sp.web.lists
@@ -128,40 +129,52 @@ const SelfGoals = (props: any) => {
     setDuplicateData([]);
   }, [props]);
   const addGoalFunction = () => {
-    setDuplicateData([
-      ...duplicateData,
-      {
-        ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: "SelfGoal",
-        EmployeeId: "",
-        ManagerComments: "",
-        EmployeeComments: "",
-        ManagerRating: 0,
-        EmployeeRating: 0,
-        AttachmentFiles: [],
-      },
-    ]);
-    setManagerGoals([
-      ...duplicateData,
-      {
-        ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: "SelfGoal",
-        EmployeeId: "",
-        ManagerComments: "",
-        EmployeeComments: "",
-        ManagerRating: 0,
-        EmployeeRating: 0,
-        AttachmentFiles: [],
-      },
-    ]);
+    let duplicateArr = [...duplicateData];
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      setDuplicateData([
+        ...duplicateData,
+        {
+          ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: "SelfGoal",
+          EmployeeId: "",
+          ManagerComments: "",
+          EmployeeComments: "",
+          ManagerRating: 0,
+          EmployeeRating: 0,
+          AttachmentFiles: [],
+        },
+      ]);
+      setManagerGoals([
+        ...duplicateData,
+        {
+          ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: "SelfGoal",
+          EmployeeId: "",
+          ManagerComments: "",
+          EmployeeComments: "",
+          ManagerRating: 0,
+          EmployeeRating: 0,
+          AttachmentFiles: [],
+        },
+      ]);
+    }
   };
   const goalSubmitFun = async (data: any) => {
+    setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
     let duplicateArr = [...duplicateData];
     let index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
     let tempObj = duplicateArr[index];
@@ -427,7 +440,7 @@ const SelfGoals = (props: any) => {
           value={rowData.GoalName}
           rows={2}
           cols={30}
-          disabled={!props.isManager}
+          disabled={!props.isManager || !props.appraisalCycle.goalSubmit}
           onChange={(e) =>
             onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
           }
@@ -478,7 +491,11 @@ const SelfGoals = (props: any) => {
                     value <= rowData.EmployeeRating ? "active" : ""
                   } ${value <= rating.EmployeeRating ? "active" : ""} ${
                     ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                  } ${!props.isManager ? "disabled" : "show"}`}
+                  } ${
+                    props.isManager && props.appraisalCycle.submitComments
+                      ? "show"
+                      : "disabled"
+                  }`}
                   onMouseOver={() => handleMouseOver(value, "Employee")}
                   onClick={() => {
                     onChangeHandleFun(index, "EmployeeRating", rowData.ID);
@@ -604,7 +621,11 @@ const SelfGoals = (props: any) => {
                     value <= rowData.ManagerRating ? "active" : ""
                   } ${value <= rating.MangerRating ? "active" : ""} ${
                     ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                  } ${props.isManager ? "disabled" : "show"}`}
+                  } ${
+                    !props.isManager && props.appraisalCycle.submitComments
+                      ? "show"
+                      : "disabled"
+                  }`}
                   onMouseOver={() => handleMouseOver(value, "manger")}
                   onClick={() => {
                     onChangeHandleFun(index, "ManagerRating", rowData.ID);
@@ -723,18 +744,21 @@ const SelfGoals = (props: any) => {
         </div>
       ) : (
         <div>
-          <HiPencil
-            className={styles.editIcon}
-            onClick={(e) => editRowFunction(rowData)}
-          />
-          {!props.isManager ? (
-            ""
-          ) : (
+          {props.appraisalCycle.submitComments ||
+          (props.appraisalCycle.goalSubmit && props.isManager) ? (
+            <HiPencil
+              className={styles.editIcon}
+              onClick={(e) => editRowFunction(rowData)}
+            />
+          ) : null}
+          {props.isManager &&
+          props.appraisalCycle.goalSubmit &&
+          rowData.GoalCategory === "SelfGoal" ? (
             <MdDelete
               className={styles.cancelIcon}
               onClick={() => goalDeleteFun(rowData)}
             />
-          )}
+          ) : null}
         </div>
       )
     ) : (
@@ -787,38 +811,42 @@ const SelfGoals = (props: any) => {
     let changeArray = duplicateData.map((obj) => {
       if (obj.ID === rowHandleObj.ID) {
         if (rowHandleObj.commentType === "Manager") {
-          obj.ManagerComments = orignalObj.ManagerComments
-            ? orignalObj.ManagerComments
-            : "";
-          obj.AttachmentFiles = orignalObj.AttachmentFiles
-            ? orignalObj.AttachmentFiles.map((file: any) => {
-                if (file.isStatus !== "new") {
-                  if (file.isStatus === "delete") {
-                    file.isStatus = "uploaded";
-                    return file;
-                  } else {
-                    return file;
-                  }
-                }
-              })
-            : [];
+          obj.ManagerComments =
+            orignalObj && orignalObj.ManagerComments
+              ? orignalObj.ManagerComments
+              : "";
+          // obj.AttachmentFiles =
+          //   orignalObj && orignalObj.AttachmentFiles
+          //     ? orignalObj.AttachmentFiles.map((file: any) => {
+          //         if (file.isStatus !== "new") {
+          //           if (file.isStatus === "delete") {
+          //             file.isStatus = "uploaded";
+          //             return file;
+          //           } else {
+          //             return file;
+          //           }
+          //         }
+          //       })
+          //     : [];
           return obj;
         } else {
-          obj.EmployeeComments = orignalObj.EmployeeComments
-            ? orignalObj.EmployeeComments
-            : "";
-          obj.AttachmentFiles = orignalObj.AttachmentFiles
-            ? orignalObj.AttachmentFiles.filter((file: any) => {
-                if (file.isStatus !== "new") {
-                  if (file.isStatus === "delete") {
-                    file.isStatus = "uploaded";
-                    return file;
-                  } else {
-                    return file;
+          obj.EmployeeComments =
+            orignalObj && orignalObj.EmployeeComments
+              ? orignalObj.EmployeeComments
+              : "";
+          obj.AttachmentFiles =
+            orignalObj && orignalObj.AttachmentFiles
+              ? orignalObj.AttachmentFiles.filter((file: any) => {
+                  if (file.isStatus !== "new") {
+                    if (file.isStatus === "delete") {
+                      file.isStatus = "uploaded";
+                      return file;
+                    } else {
+                      return file;
+                    }
                   }
-                }
-              })
-            : [];
+                })
+              : [];
           return obj;
         }
       } else {
@@ -826,7 +854,7 @@ const SelfGoals = (props: any) => {
       }
     });
     setDuplicateData([...changeArray]);
-    setMasterData([...changeArray]);
+    // setMasterData([...changeArray]);
     //  categoryHandleFun([...changeArray]);
     setRowHandleObj({
       ...rowHandleObj,
@@ -859,10 +887,12 @@ const SelfGoals = (props: any) => {
                   value={rowHandleObj.comment}
                   disabled={
                     !props.isManager &&
+                    props.appraisalCycle.submitComments &&
                     rowHandleObj.commentType === "Manager" &&
                     rowHandleObj.isEdit
                       ? false
                       : props.isManager &&
+                        props.appraisalCycle.submitComments &&
                         rowHandleObj.commentType === "Employee" &&
                         rowHandleObj.isEdit
                       ? false
@@ -879,6 +909,7 @@ const SelfGoals = (props: any) => {
               </div>
               <div className="fileBtn" style={{ marginTop: "10px" }}>
                 {props.isManager &&
+                props.appraisalCycle.submitComments &&
                 rowHandleObj.commentType === "Employee" &&
                 rowHandleObj.isEdit ? (
                   <FileUpload
@@ -921,6 +952,7 @@ const SelfGoals = (props: any) => {
                               {file.FileName}
                             </a>
                             {props.isManager &&
+                            props.appraisalCycle.submitComments &&
                             rowHandleObj.commentType === "Employee" &&
                             rowHandleObj.isEdit ? (
                               <MdOutlineClose
@@ -943,10 +975,12 @@ const SelfGoals = (props: any) => {
                   }
                   hidden={
                     !props.isManager &&
+                    props.appraisalCycle.submitComments &&
                     rowHandleObj.commentType === "Manager" &&
                     rowHandleObj.isEdit
                       ? false
                       : props.isManager &&
+                        props.appraisalCycle.submitComments &&
                         rowHandleObj.commentType === "Employee" &&
                         rowHandleObj.isEdit
                       ? false
@@ -998,7 +1032,7 @@ const SelfGoals = (props: any) => {
               ></Column>
             </DataTable>
             {props.isManager &&
-            props.appraisalCycle.isCurrentCycle &&
+            props.appraisalCycle.goalSubmit &&
             !duplicateData.some((data) => data.isNew) ? (
               <div className="addMaganerGoal">
                 <GrAdd onClick={(e) => addGoalFunction()} />
