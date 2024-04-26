@@ -2,11 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { sp } from "@pnp/sp/presets/all";
 import { Column } from "primereact/column";
-import {
-  DataTable,
-  //   DataTableExpandedRows,
-  //   DataTableValueArray,
-} from "primereact/datatable";
+import { DataTable } from "primereact/datatable";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
 import { MultiSelect } from "primereact/multiselect";
@@ -29,7 +25,7 @@ import styles from "./GoalsStyles.module.scss";
 import "./goals.css";
 
 const Goals = () => {
-  // const toast = useRef("");
+  let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setMasterData] = useState<any[]>([]);
   const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -51,7 +47,10 @@ const Goals = () => {
     isUpdate: false,
   });
   const [activeIndex, setActiveIndex] = useState<any>(null);
-  const [appraisalCycleId, setAppraisalCycleId] = useState(null);
+  const [appraisalCycleId, setAppraisalCycleId] = useState({
+    currentCycleId: null,
+    goalSubmit: false,
+  });
 
   console.log(
     usersList,
@@ -170,17 +169,77 @@ const Goals = () => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
       .items.get()
-      .then((res) => {
-        console.log(res);
-        res.forEach((obj) => {
+      .then((cycle) => {
+        console.log(cycle);
+        for (let i = 0; i < cycle.length; i++) {
+          let sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
+          let eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
+          let goalsSDate = new Date(cycle[i].goalsSubmitSDate).setHours(
+            0,
+            0,
+            0,
+            0
+          );
+          let goalsEDate = new Date(cycle[i].goalsSubmitEDate).setHours(
+            0,
+            0,
+            0,
+            0
+          );
           if (
-            new Date() >= new Date(obj.startDate) &&
-            new Date() <= new Date(obj.endDate)
+            currentDate >= new Date(goalsSDate) &&
+            currentDate <= new Date(goalsEDate)
           ) {
-            setAppraisalCycleId(obj.ID);
-            getHRGoals(obj.ID);
+            setAppraisalCycleId({
+              ...appraisalCycleId,
+              currentCycleId: cycle[i].ID,
+              goalSubmit: true,
+            });
+            getHRGoals(cycle[i].ID);
+            break;
+          } else {
+            if (
+              currentDate >= new Date(sDate) &&
+              currentDate <= new Date(eDate)
+            ) {
+              setAppraisalCycleId({
+                ...appraisalCycleId,
+                currentCycleId: cycle[i].ID,
+                goalSubmit: false,
+              });
+              getHRGoals(cycle[i].ID);
+            }
           }
-        });
+        }
+        // cycle.forEach((res) => {
+        //   let sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
+        //   let eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
+        //   let goalsSDate = new Date(res.goalsSubmitSDate).setHours(0, 0, 0, 0);
+        //   let goalsEDate = new Date(res.goalsSubmitEDate).setHours(0, 0, 0, 0);
+        //   if (
+        //     currentDate >= new Date(goalsSDate) &&
+        //     currentDate <= new Date(goalsEDate)
+        //   ) {
+        //     setAppraisalCycleId({
+        //       ...appraisalCycleId,
+        //       currentCycleId: res.ID,
+        //       goalSubmit: true,
+        //     });
+        //     getHRGoals(res.ID);
+        //   } else {
+        //     if (
+        //       currentDate >= new Date(sDate) &&
+        //       currentDate <= new Date(eDate)
+        //     ) {
+        //       setAppraisalCycleId({
+        //         ...appraisalCycleId,
+        //         currentCycleId: res.ID,
+        //         goalSubmit: false,
+        //       });
+        //       getHRGoals(res.ID);
+        //     }
+        //   }
+        // });
       })
       .catch((err) => {
         console.log(err);
@@ -232,8 +291,6 @@ const Goals = () => {
           });
           setUsersList([...userArr]);
           getCycleYear();
-
-          //   res.filter((val,index)=>res.indexOf(val.Roles) === index)
         }
       })
       .catch((err) => console.log(err));
@@ -357,7 +414,6 @@ const Goals = () => {
       getUsersRoles();
     }
   };
-
   const addGoalFunction = (ind: number) => {
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
@@ -471,7 +527,7 @@ const Goals = () => {
             : { results: [""] },
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
-          AppraisalCycleLookupId: appraisalCycleId,
+          AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
           isDelete: false,
         })
         .then((res) => {
@@ -498,7 +554,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycleId,
+                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -517,7 +573,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycleId,
+                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -558,7 +614,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: user.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycleId,
+                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -705,7 +761,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: filter.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycleId,
+                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -916,14 +972,6 @@ const Goals = () => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return 0 <= index ? (
       rowData.AssignLevel.name == "Role" && duplicateData[index].isRowEdit ? (
-        // <Dropdown
-        //   value={rowData.Role}
-        //   onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
-        //   options={rolesList}
-        //   optionLabel="name"
-        //   placeholder="Select a Role"
-        //   className="w-full md:w-14rem"
-        // />
         <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
@@ -1074,14 +1122,14 @@ const Goals = () => {
               }}
             />
           </div>
-        ) : (
+        ) : appraisalCycleId.goalSubmit ? (
           <Button
             label="New Category"
             onClick={(e) =>
               setCategoryHandleObj({ ...categoryHandleObj, isNew: true })
             }
           />
-        )}
+        ) : null}
       </div>
       <div className="hrGoals">
         <Accordion
@@ -1094,27 +1142,25 @@ const Goals = () => {
                 className="accordionMain"
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                    {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
                     <span className="CategoryTitle">{data.GoalCategory}</span>
-                    <div className="font-bold iconSec">
-                      {/* <Toast ref={toast} /> */}
-                      {isPopup.delIndex === index && isPopup.delPopup && (
-                        <Dialog
-                          header="Confirmation"
-                          visible={isPopup.delPopup}
-                          style={{ width: "25%" }}
-                          onClick={(e) => e.stopPropagation()}
-                          onHide={() =>
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: false,
-                              delIndex: null,
-                            })
-                          }
-                        >
-                          <div className="DeletePopup">
-                            <p>Do you want to delete this category?</p>
-                            <div>
+                    {appraisalCycleId.goalSubmit ? (
+                      <div className="font-bold iconSec">
+                        {isPopup.delIndex === index && isPopup.delPopup && (
+                          <Dialog
+                            header="Confirmation"
+                            visible={isPopup.delPopup}
+                            style={{ width: "25%" }}
+                            onClick={(e) => e.stopPropagation()}
+                            onHide={() =>
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: false,
+                                delIndex: null,
+                              })
+                            }
+                          >
+                            <div className="DeletePopup">
+                              <p>Do you want to delete this category?</p>
                               <Button
                                 onClick={() => deleteCategoryFun()}
                                 // icon="pi pi-check"
@@ -1131,48 +1177,47 @@ const Goals = () => {
                                 text
                                 // icon="pi pi-times"
                                 label="cancel"
-                                className="cancelBtn"
+                           className="cancelBtn"
                               ></Button>
                             </div>
-                          </div>
-                        </Dialog>
-                      )}
-                      {data.values.filter((val: any) => val.isNew).length ===
-                      0 ? (
-                        <GrAdd
-                          className="addIcon"
+                          </Dialog>
+                        )}
+                        {data.values.filter((val: any) => val.isNew).length ===
+                        0 ? (
+                          <GrAdd
+                            className="addIcon"
+                            onClick={(event) => {
+                              if (activeIndex === index) {
+                                event.stopPropagation();
+                              } else {
+                                setActiveIndex(index);
+                              }
+                              addGoalFunction(index);
+                            }}
+                          />
+                        ) : null}
+                        <HiPencil
+                          className="editIcon"
                           onClick={(event) => {
-                            if (activeIndex === index) {
-                              event.stopPropagation();
-                            } else {
-                              setActiveIndex(index);
-                            }
-                            addGoalFunction(index);
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              editCategoryFun(index);
                           }}
                         />
-                      ) : null}
-                      <HiPencil
-                        className="editIcon"
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            editCategoryFun(index);
-                        }}
-                      />
-                      <MdDelete
-                        className="deleteIcon"
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: true,
-                              delIndex: index,
-                            });
-                        }}
-                      />
-                    </div>
-                    {/* <Badge value="3" className="ml-auto" /> */}
+                        <MdDelete
+                          className="deleteIcon"
+                          onClick={(event) => {
+                            event.preventDefault(),
+                              event.stopPropagation(),
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: true,
+                                delIndex: index,
+                              });
+                          }}
+                        />
+                      </div>
+                    ) : null}
                   </span>
                 }
               >
@@ -1180,7 +1225,6 @@ const Goals = () => {
                   <DataTable
                     value={data.values}
                     size="normal"
-                    // stripedRows
                     tableStyle={{ minWidth: "30rem" }}
                   >
                     <Column
@@ -1226,21 +1270,6 @@ const Goals = () => {
           <div className="noDataMsg">No Data Found</div>
         </div>
       )}
-
-      {/* <DataTable
-        value={newData}
-        expandedRows={expandedRows}
-        onRowToggle={(e) => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
-        dataKey="name"
-      >
-        <Column expander={true} style={{ width: "2rem" }} />
-        <Column
-          field="name"
-          header="Name"
-          style={{ fontWeight: 500, fontSize: "16px" }}
-        />
-      </DataTable> */}
     </div>
   );
 };
