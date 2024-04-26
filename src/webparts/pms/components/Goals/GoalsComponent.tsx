@@ -1100,7 +1100,7 @@ const Goals = () => {
                       {/* <Toast ref={toast} /> */}
                       {isPopup.delIndex === index && isPopup.delPopup && (
                         <Dialog
-                          header="Header"
+                          header="Confirmation"
                           visible={isPopup.delPopup}
                           style={{ width: "25%" }}
                           onClick={(e) => e.stopPropagation()}
@@ -1112,25 +1112,28 @@ const Goals = () => {
                             })
                           }
                         >
-                          <div>
+                          <div className="DeletePopup">
                             <p>Do you want to delete this category?</p>
-                            <Button
-                              onClick={() => deleteCategoryFun()}
-                              icon="pi pi-check"
-                              label="Confirm"
-                              className="mr-2"
-                            ></Button>
-                            <Button
-                              onClick={() =>
-                                setIsPopup({
-                                  ...isPopup,
-                                  delPopup: false,
-                                })
-                              }
-                              text
-                              icon="pi pi-times"
-                              label="cancel"
-                            ></Button>
+                            <div>
+                              <Button
+                                onClick={() => deleteCategoryFun()}
+                                // icon="pi pi-check"
+                                label="Confirm"
+                                className="mr-2 dltBtn"
+                              ></Button>
+                              <Button
+                                onClick={() =>
+                                  setIsPopup({
+                                    ...isPopup,
+                                    delPopup: false,
+                                  })
+                                }
+                                text
+                                // icon="pi pi-times"
+                                label="cancel"
+                                className="cancelBtn"
+                              ></Button>
+                            </div>
                           </div>
                         </Dialog>
                       )}
@@ -1184,7 +1187,9 @@ const Goals = () => {
                       className="col1"
                       field="GoalName"
                       header="Goal Name"
-                      style={{ width: "35%" }}
+                      style={{
+                        width: "35%",
+                      }}
                       body={GoalnameBodyTemplate}
                     ></Column>
                     <Column
