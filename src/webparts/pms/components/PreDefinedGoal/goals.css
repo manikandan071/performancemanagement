@@ -3,17 +3,23 @@
 }
 .p-accordion .p-accordion-header .p-accordion-header-link {
   border: none !important;
+  border-bottom: 1px solid #adadad25 !important;
 }
 .card {
   --bs-card-border-color: none !important;
+}
+.accordionMain .p-accordion-toggle-icon {
+  width: 10px;
+  height: 10px;
 }
 .accordionMain .p-accordion-header-link {
   /* display: inline-block; */
   text-decoration: none;
   background-color: #fff;
   padding: 15px 15px;
-  color: #61b061;
-  font-size: 15px;
+  color: #006c22;
+  font-size: 14px;
+  font-weight: 500;
 }
 .p-accordion-tab-active .p-accordion-header-link {
   box-shadow: rgb(129 129 218 / 25%) 0px 6px 12px -2px,
@@ -74,7 +80,7 @@
   padding: 10px 0px;
 }
 .preDefinedTable table thead tr th {
-  padding: 20px 8px 20px 20px;
+  padding: 15px 8px 15px 20px;
 }
 .preDefinedTable table tbody tr td {
   padding: 8px 20px 8px 20px;
@@ -111,7 +117,7 @@
   font-family: Roboto, Arial, Helvetica, sans-serif;
   color: #006c22;
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13px;
 }
 .p-confirm-popup {
   left: 78% !important;
@@ -145,6 +151,8 @@
 }
 .fileBtn .p-button {
   padding: 3px 10px;
+  background-color: #61b061;
+  border: none !important;
 }
 .fileBtn .p-button svg {
   display: none;
@@ -158,12 +166,16 @@
   padding: 5px 10px;
   margin-top: 5px;
   border-radius: 5px;
-  background-color: #fbfbfb;
+  background-color: #f2f2f2;
 }
 .reviewDialog .fileBox {
   padding: 10px 10px 10px 0px;
   display: flex;
+  border: 1px solid #eee;
   justify-content: space-between;
+  border-radius: 6px;
+  background: #fff;
+  margin: 5px 0;
 }
 .reviewDialog .uploadedFiles {
   color: #626262;
@@ -173,14 +185,14 @@
   margin-top: 10px;
   font-weight: 600;
 }
-.reviewDialog .fileBox:hover {
+/* .reviewDialog .fileBox:hover {
   box-shadow: rgb(101 94 168 / 20%) 0px 10px 50px;
   border-radius: 10px;
-}
+} */
 .reviewDialog .fileBox .cancelIcon {
   cursor: pointer;
   background-color: #e4eafc;
-  color: #6d738e;
+  color: #555;
   width: 20px;
   height: 20px;
   padding: 3px;
@@ -196,7 +208,7 @@
 }
 .reviewDialog .filename svg {
   margin-right: 6px;
-  color: #812d2d;
+  color: #61b061;
 }
 .reviewDialog .p-dialog-content {
   padding: 20px 40px;
@@ -211,6 +223,8 @@
   align-items: center;
   font-size: 15px;
   font-weight: 300;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
   /* font-family: Roboto, Arial, Helvetica, sans-serif; */
   /* background-color: #fff; */
   padding: 20px 0px;

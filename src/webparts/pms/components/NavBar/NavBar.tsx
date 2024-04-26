@@ -88,11 +88,12 @@ const NavBar = (props: any) => {
   return (
     <div
       style={{
-        background: `linear-gradient(130deg, #61b061, #105610)`,
+        // background: `linear-gradient(130deg, #61b061, #105610)`,
+        background: `linear-gradient(130deg, rgb(97 186 114), rgb(1 68 63))`,
         boxShadow: `0px 0px 10px rgba(0,0,0,0.1)`,
         height: "100vh",
-        borderRadius: "0px 10px 10px 0px",
-        padding: "15px",
+        borderRadius: "10px",
+        padding: props.isNav ? "15px 15px" : "15px 10px",
       }}
     >
       <div
@@ -103,6 +104,7 @@ const NavBar = (props: any) => {
           flexDirection: "column",
           marginBottom: props.isNav ? "15px" : "10px",
           padding: "15px",
+          // padding: props.isNav ? "15px 10px" : "15px 15px",
           borderBottom: "2px solid #02230020",
           borderRadius: "10px",
         }}
@@ -110,7 +112,7 @@ const NavBar = (props: any) => {
         <div
           style={{
             width: props.isNav ? "100px" : "40px",
-            height: props.isNav ? "95px" : "40px",
+            height: props.isNav ? "100px" : "40px",
             display: "flex",
             justifyContent: "center",
             marginBottom: "5px",
@@ -147,6 +149,7 @@ const NavBar = (props: any) => {
             }
             style={{
               padding: props.isNav ? "3px 15px" : "0 15px",
+              justifyContent: props.isNav ? "flex-start" : "center",
             }}
             onClick={() => {
               setIsShowEmployee(false);
@@ -178,7 +181,7 @@ const NavBar = (props: any) => {
             }
             style={{
               display: props.isNav ? "" : "flex",
-              justifyContent: props.isNav ? "" : "center",
+              justifyContent: props.isNav ? "flex-start" : "center",
               padding: props.isNav ? "" : "0px",
             }}
             onClick={() => setIsShowEmployee(!isShowEmployee)}
@@ -226,7 +229,15 @@ const NavBar = (props: any) => {
                     }}
                   >
                     {props.isNav ? (
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: props?.isNav
+                            ? "flex-start"
+                            : "stretch",
+                        }}
+                      >
                         <Persona
                           showOverflowTooltip
                           size={PersonaSize.size24}
@@ -257,6 +268,9 @@ const NavBar = (props: any) => {
               ? styles.seletedOptionContainer
               : styles.optionContainer
           }
+          style={{
+            justifyContent: props?.isNav ? "flex-start" : "center",
+          }}
           onClick={() => {
             setTabMembersList("");
             setTapName("Employee");

@@ -1364,26 +1364,29 @@ const PredefinedGoals = (props: any) => {
                 })
               }
             >
-              <div>
+              <div className="DeletePopup">
                 <p>Do you want to delete this category?</p>
-                <Button
-                  onClick={() => goalDeleteFun()}
-                  icon="pi pi-check"
-                  label="Confirm"
-                  className="mr-2"
-                ></Button>
-                <Button
-                  onClick={() =>
-                    setGoalDelPopup({
-                      ...goalDelPopup,
-                      delPopup: false,
-                      delGoalId: null,
-                    })
-                  }
-                  text
-                  icon="pi pi-times"
-                  label="cancel"
-                ></Button>
+                <div>
+                  <Button
+                    onClick={() => goalDeleteFun()}
+                    // icon="pi pi-check"
+                    label="confirm"
+                    className="mr-2 dltBtn"
+                  ></Button>
+                  <Button
+                    onClick={() =>
+                      setGoalDelPopup({
+                        ...goalDelPopup,
+                        delPopup: false,
+                        delGoalId: null,
+                      })
+                    }
+                    text
+                    className="cancelBtn"
+                    // icon="pi pi-times"
+                    label="cancel"
+                  ></Button>
+                </div>
               </div>
             </Dialog>
           </div>
@@ -1488,7 +1491,7 @@ const PredefinedGoals = (props: any) => {
                           className="col1"
                           field="GoalName"
                           header="Goal Name"
-                          style={{ width: "45%" }}
+                          style={{ width: "35%" }}
                           body={GoalnameBodyTemplate}
                         ></Column>
                         <Column
@@ -1534,7 +1537,7 @@ const PredefinedGoals = (props: any) => {
                 className="col1"
                 field="GoalName"
                 header="Goal Name"
-                style={{ width: "45%" }}
+                style={{ width: "35%" }}
                 body={GoalnameBodyTemplate}
               ></Column>
               <Column

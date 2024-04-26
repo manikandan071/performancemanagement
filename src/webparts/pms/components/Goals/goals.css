@@ -10,7 +10,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0px 20px 0px;
+  margin: 0 0px 20px 0px;
 }
 .addCategory .p-button {
   padding: 5px 15px;
@@ -51,10 +51,10 @@
   text-decoration: none;
   background-color: #fff;
   padding: 15px;
-  color: #61b061;
-  font-size: 15px;
+  color: #006c22;
+  font-size: 14px;
 }
-.hrGoals .accordionMain a svg {
+.hrGoals .accordionMain a .p-accordion-toggle-icon {
   width: 10px;
   height: 10px;
 }
@@ -62,27 +62,31 @@
   padding: 0px;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .addIcon {
-  color: #77b168;
+  color: #61b061;
   margin-right: 10px;
   cursor: pointer;
   padding: 5px;
   font-size: 27px;
+  border-radius: 30px;
+  transition: all 0.2s;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .addIcon:hover {
-  background-color: #77b168;
+  background-color: #61b061;
   color: #fff;
   padding: 5px;
   font-size: 27px;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .editIcon {
-  color: #2f6024;
+  color: #555;
   margin-right: 10px;
   cursor: pointer;
   padding: 5px;
   font-size: 26px;
+  border-radius: 30px;
+  transition: all 0.2s;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .editIcon:hover {
-  background-color: #2f6024;
+  background-color: #555;
   color: #fff;
   padding: 5px;
   font-size: 26px;
@@ -92,6 +96,8 @@
   cursor: pointer;
   padding: 5px;
   font-size: 26px;
+  border-radius: 30px;
+  transition: all 0.2s;
 }
 .hrGoals .accordionMain a .category-sec .iconSec .deleteIcon:hover {
   background-color: #cf2121 !important;
@@ -102,20 +108,27 @@
 .goalsTable table tbody {
   border-top: 1px solid #e3e3e3;
 }
+.goalsTable table tbody tr:last-child td {
+  border-bottom: 0 !important;
+}
+.goalsTable table tbody tr:last-child {
+  border-bottom: 0 !important;
+}
 .goalsTable table tbody tr {
   border-bottom: 1px solid #e3e3e3;
 }
 .goalsTable table tbody tr td {
   border-bottom: 1px solid #e3e3e3;
+  border-right: 1px solid #e3e3e3;
   padding: 15px 8px 15px 20px;
 }
 .goalsTable table thead tr th {
-  padding: 20px 8px 20px 20px;
+  padding: 15px 8px 15px 20px;
 }
 .goalsTable table tbody .p-inputtextarea {
   width: 100%;
-  margin-top: 7px;
-  max-height: 37px !important   ;
+  margin: -10px -8px -17px;
+  /* max-height: 37px !important   ; */
 }
 .goalsTable table tbody .p-inputtext {
   font-size: 13px;

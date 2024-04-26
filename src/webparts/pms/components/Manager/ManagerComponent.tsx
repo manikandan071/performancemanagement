@@ -207,7 +207,7 @@ const ManagerComponent = (props: any) => {
                   color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
                   borderBottom:
                     show == "PredefinedGoals" ? "2px solid green" : "",
-                  backgroundColor: show == "PredefinedGoals" ? "#f5f5f5" : "",
+                  backgroundColor: show == "PredefinedGoals" ? "#35803510" : "",
                 }}
               >
                 <PiTargetBold
@@ -227,7 +227,7 @@ const ManagerComponent = (props: any) => {
                 style={{
                   color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
                   borderBottom: show == "SelfGoals" ? "2px solid green" : "",
-                  backgroundColor: show == "SelfGoals" ? "#f5f5f5" : "",
+                  backgroundColor: show == "SelfGoals" ? "#35803510" : "",
                 }}
               >
                 <BiTargetLock

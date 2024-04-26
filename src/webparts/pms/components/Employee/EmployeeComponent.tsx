@@ -212,7 +212,7 @@ const EmployeeComponent = (props: any) => {
                   color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
                   borderBottom:
                     show == "PredefinedGoals" ? "2px solid green" : "",
-                  backgroundColor: show == "PredefinedGoals" ? "#f5f5f5" : "",
+                  backgroundColor: show == "PredefinedGoals" ? "#35803510" : "",
                 }}
               >
                 <PiTargetBold
@@ -220,7 +220,7 @@ const EmployeeComponent = (props: any) => {
                     paddingRight: "5px",
                     fontSize: "22px",
                     color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
-                    backgroundColor: show == "SelfGoals" ? "#f5f5f5" : "",
+                    // backgroundColor: show == "PredefinedGoals" ? "#35803510" : "",
                   }}
                 />
                 PREDEFINEDGOALS
@@ -233,6 +233,7 @@ const EmployeeComponent = (props: any) => {
                 style={{
                   color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
                   borderBottom: show == "SelfGoals" ? "2px solid green" : "",
+                  backgroundColor: show == "SelfGoals" ? "#35803510" : "",
                 }}
               >
                 <BiTargetLock
