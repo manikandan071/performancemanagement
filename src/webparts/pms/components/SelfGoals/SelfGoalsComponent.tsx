@@ -44,6 +44,10 @@ const SelfGoals = (props: any) => {
     MangerRating: 0,
     EmployeeRating: 0,
   });
+  const [goalDelPopup, setGoalDelPopup] = useState<any>({
+    delPopup: false,
+    delGoalId: null,
+  });
   console.log(masterData, duplicateData, rowHandleObj);
 
   const getDetails = () => {
@@ -323,11 +327,15 @@ const SelfGoals = (props: any) => {
       });
     }
   };
-  const goalDeleteFun = (data: any) => {
-    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
-    let delObj = duplicateData[index];
-    // setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateData.filter((items) => items.ID != data.ID);
+  const goalDeleteFun = () => {
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj) => obj.ID === goalDelPopup.delGoalId
+    );
+    let delObj = duplicateArr[index];
+    let delArray = duplicateArr.filter(
+      (items) => items.ID != goalDelPopup.delGoalId
+    );
     sp.web.lists
       .getByTitle("SelfGoals")
       .items.getById(delObj.ID)
@@ -336,6 +344,11 @@ const SelfGoals = (props: any) => {
         setManagerGoals([...delArray]);
         setDuplicateData([...delArray]);
         setMasterData([...delArray]);
+        setGoalDelPopup({
+          ...goalDelPopup,
+          delPopup: false,
+          delGoalId: null,
+        });
       })
       .catch((err) => console.log(err));
   };
@@ -756,7 +769,24 @@ const SelfGoals = (props: any) => {
           rowData.GoalCategory === "SelfGoal" ? (
             <MdDelete
               className={styles.cancelIcon}
-              onClick={() => goalDeleteFun(rowData)}
+              onClick={() => {
+                let duplicateArr = [...duplicateData];
+                let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                if (isEdit.length > 0) {
+                  toast.current?.show({
+                    severity: "warn",
+                    summary: "Warning",
+                    detail:
+                      "Please save or cancel the current row before editing another row",
+                  });
+                } else {
+                  setGoalDelPopup({
+                    ...goalDelPopup,
+                    delPopup: true,
+                    delGoalId: rowData.ID,
+                  });
+                }
+              }}
             />
           ) : null}
         </div>
@@ -772,7 +802,7 @@ const SelfGoals = (props: any) => {
         ) : (
           <MdDelete
             className={styles.cancelIcon}
-            onClick={() => goalDeleteFun(rowData)}
+            onClick={() => goalDeleteFun()}
           />
         )}
       </div>
@@ -815,19 +845,6 @@ const SelfGoals = (props: any) => {
             orignalObj && orignalObj.ManagerComments
               ? orignalObj.ManagerComments
               : "";
-          // obj.AttachmentFiles =
-          //   orignalObj && orignalObj.AttachmentFiles
-          //     ? orignalObj.AttachmentFiles.map((file: any) => {
-          //         if (file.isStatus !== "new") {
-          //           if (file.isStatus === "delete") {
-          //             file.isStatus = "uploaded";
-          //             return file;
-          //           } else {
-          //             return file;
-          //           }
-          //         }
-          //       })
-          //     : [];
           return obj;
         } else {
           obj.EmployeeComments =
@@ -993,6 +1010,41 @@ const SelfGoals = (props: any) => {
                   className={styles.cancelBtn}
                   onClick={() => dialogCancelFuntion()}
                   text
+                  label="cancel"
+                ></Button>
+              </div>
+            </Dialog>
+            <Dialog
+              header="Header"
+              visible={goalDelPopup.delPopup}
+              style={{ width: "25%" }}
+              onClick={(e) => e.stopPropagation()}
+              onHide={() =>
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: false,
+                  delGoalId: null,
+                })
+              }
+            >
+              <div>
+                <p>Do you want to delete this category?</p>
+                <Button
+                  onClick={() => goalDeleteFun()}
+                  icon="pi pi-check"
+                  label="Confirm"
+                  className="mr-2"
+                ></Button>
+                <Button
+                  onClick={() =>
+                    setGoalDelPopup({
+                      ...goalDelPopup,
+                      delPopup: false,
+                      delGoalId: null,
+                    })
+                  }
+                  text
+                  icon="pi pi-times"
                   label="cancel"
                 ></Button>
               </div>

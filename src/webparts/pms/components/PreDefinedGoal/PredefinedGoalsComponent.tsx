@@ -62,6 +62,7 @@ const PredefinedGoals = (props: any) => {
     duplicateData,
     managerGoals,
     rowHandleObj,
+    goalDelPopup,
     appraisalCycleID
   );
 
@@ -512,12 +513,12 @@ const PredefinedGoals = (props: any) => {
     }
   };
   const goalDeleteFun = () => {
-    let index = [...duplicateData].findIndex(
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
       (obj) => obj.ID === goalDelPopup.delGoalId
     );
-    let delObj = duplicateData[index];
-    // setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateData.filter(
+    let delObj = duplicateArr[index];
+    let delArray = duplicateArr.filter(
       (items) => items.ID != goalDelPopup.delGoalId
     );
     sp.web.lists
@@ -1050,13 +1051,24 @@ const PredefinedGoals = (props: any) => {
           rowData.GoalCategory === "ManagerGoal" ? (
             <MdDelete
               className={styles.cancelIcon}
-              onClick={() =>
-                setGoalDelPopup({
-                  ...goalDelPopup,
-                  delPopup: true,
-                  delGoalId: index,
-                })
-              }
+              onClick={() => {
+                let duplicateArr = [...duplicateData];
+                let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                if (isEdit.length > 0) {
+                  toast.current?.show({
+                    severity: "warn",
+                    summary: "Warning",
+                    detail:
+                      "Please save or cancel the current row before editing another row",
+                  });
+                } else {
+                  setGoalDelPopup({
+                    ...goalDelPopup,
+                    delPopup: true,
+                    delGoalId: rowData.ID,
+                  });
+                }
+              }}
             />
           ) : null}
         </div>
@@ -1112,19 +1124,6 @@ const PredefinedGoals = (props: any) => {
             orignalObj && orignalObj.ManagerComments
               ? orignalObj.ManagerComments
               : "";
-          // obj.AttachmentFiles =
-          //   orignalObj && orignalObj.AttachmentFiles
-          //     ? orignalObj.AttachmentFiles.map((file: any) => {
-          //         if (file.isStatus !== "new") {
-          //           if (file.isStatus === "delete") {
-          //             file.isStatus = "uploaded";
-          //             return file;
-          //           } else {
-          //             return file;
-          //           }
-          //         }
-          //       })
-          //     : [];
           return obj;
         } else {
           obj.EmployeeComments =
