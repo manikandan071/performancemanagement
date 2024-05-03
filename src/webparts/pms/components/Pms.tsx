@@ -27,7 +27,7 @@ export default class Pms extends React.Component<IPmsProps, {}> {
     // } = this.props;
 
     return (
-      <section>
+      <section style={{ margin: "0px 0px 0px 10px" }}>
         <MainComponent context={this.props.context} />
       </section>
     );

@@ -1,3 +1,10 @@
+.background {
+  background-color: #f6f5fb;
+  padding: 0px 18px 18px 18px;
+  border-radius: 10px;
+  height: 84vh;
+  border: 1px solid#00000010;
+}
 .sample {
   padding-right: 10px;
 }
@@ -13,21 +20,15 @@
   padding-right: 15px;
   position: relative;
   button {
-    padding: 10px !important;
+    padding: 5px 10px !important;
   }
+  
 }
 .container {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
-  margin-bottom: 10px;
+  // margin-bottom: 10px;
 }
-.background {
-  background-color: #fbfbfb;
-  //   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  padding: 18px;
-  border-radius: 10px;
-  height: 100%;
-  overflow: auto;
-  border: 1px solid#00000010;
-}
+

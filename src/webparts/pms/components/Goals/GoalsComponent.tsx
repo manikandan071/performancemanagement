@@ -1,6 +1,7 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sp } from "@pnp/sp/presets/all";
+import * as moment from "moment";
 import { Column } from "primereact/column";
 import { DataTable } from "primereact/datatable";
 import { Accordion, AccordionTab } from "primereact/accordion";
@@ -9,10 +10,8 @@ import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
-import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "primereact/resources/primereact.min.css";
 import { Dialog } from "primereact/dialog";
-// import { Toast } from "primereact/toast";
+import { Toast } from "primereact/toast";
 import { HiPencil } from "react-icons/hi2";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -20,11 +19,13 @@ import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { GiOrganigram } from "react-icons/gi";
 import { PiUserFocusDuotone } from "react-icons/pi";
-import "./GoalsStyles.module.scss";
+import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "primereact/resources/primereact.min.css";
 import styles from "./GoalsStyles.module.scss";
-import "./goals.css";
+import "../masterStyle.css";
 
 const Goals = () => {
+  const toast = useRef<Toast>(null);
   let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setMasterData] = useState<any[]>([]);
   const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
@@ -51,6 +52,11 @@ const Goals = () => {
     currentCycleId: null,
     goalSubmit: false,
   });
+  const [goalDelPopup, setGoalDelPopup] = useState<any>({
+    delPopup: false,
+    delGoalId: null,
+  });
+  const [cyclesList, setCycleList] = useState<any[]>([]);
 
   console.log(
     usersList,
@@ -171,6 +177,21 @@ const Goals = () => {
       .items.get()
       .then((cycle) => {
         console.log(cycle);
+        let tempArr: any = [];
+        cycle.reverse();
+        cycle.forEach((res) => {
+          tempArr.push({
+            ID: res.ID,
+            Year: res.Title,
+            cycleCategory: res.cycleCategory,
+            startDate: res.startDate,
+            endDate: res.endDate,
+            commentsSubmitSDate: res.commentsSubmitSDate,
+            commentsSubmitEDate: res.commentsSubmitEDate,
+            goalsSubmitSDate: res.goalsSubmitSDate,
+            goalsSubmitEDate: res.goalsSubmitEDate,
+          });
+        });
         for (let i = 0; i < cycle.length; i++) {
           let sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
           let eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
@@ -240,6 +261,7 @@ const Goals = () => {
         //     }
         //   }
         // });
+        setCycleList([...tempArr]);
       })
       .catch((err) => {
         console.log(err);
@@ -415,39 +437,50 @@ const Goals = () => {
     }
   };
   const addGoalFunction = (ind: number) => {
+    let duplicateArr = [...duplicateData];
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
     let data = tempArr[index];
-    setDuplicateData([
-      ...duplicateData,
-      {
-        ID:
-          Math.max(
-            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
-          ) + 1,
-        AssignLevel: { name: "", code: "" },
-        Role: [],
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data.GoalCategory,
-      },
-    ]);
-    categoryHandleFun([
-      ...duplicateData,
-      {
-        ID:
-          Math.max(
-            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
-          ) + 1,
-        AssignLevel: { name: "", code: "" },
-        Role: [],
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data.GoalCategory,
-      },
-    ]);
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      setDuplicateData([
+        ...duplicateData,
+        {
+          ID:
+            Math.max(
+              ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+            ) + 1,
+          AssignLevel: { name: "", code: "" },
+          Role: [],
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data.GoalCategory,
+        },
+      ]);
+      categoryHandleFun([
+        ...duplicateData,
+        {
+          ID:
+            Math.max(
+              ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+            ) + 1,
+          AssignLevel: { name: "", code: "" },
+          Role: [],
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data.GoalCategory,
+        },
+      ]);
+    }
   };
 
   const editCategoryFun = (ind: number) => {
@@ -499,11 +532,55 @@ const Goals = () => {
 
   const editRowFunction = (data: any) => {
     let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
-    duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
-    setDuplicateData([...duplicateArr]);
-    categoryHandleFun([...duplicateArr]);
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      let tempObj = duplicateArr[index];
+      duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
+      setDuplicateData([...duplicateArr]);
+      categoryHandleFun([...duplicateArr]);
+    }
+  };
+  const validationFun = (tempObj: any) => {
+    if (tempObj.GoalName !== "") {
+      if (tempObj.AssignLevel.name !== "") {
+        if (tempObj.AssignLevel.name === "Role") {
+          if (tempObj.Role.length > 0) {
+            return true;
+          } else {
+            toast.current?.show({
+              severity: "warn",
+              summary: "Warning",
+              detail: "Please select Employee role ",
+            });
+            return false;
+          }
+        } else {
+          return true;
+        }
+      } else {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Please select assign level ",
+        });
+        return false;
+      }
+    } else {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "Please enter goal name",
+      });
+      return false;
+    }
   };
 
   const goalSubmitFun = (data: any) => {
@@ -517,7 +594,11 @@ const Goals = () => {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
     };
-    if (tempObj.isNew) {
+
+    let validation = validationFun(tempObj);
+    console.log(validation);
+
+    if (tempObj.isNew && validation) {
       sp.web.lists
         .getByTitle(`HrGoals`)
         .items.add({
@@ -582,7 +663,7 @@ const Goals = () => {
           }
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if (validation) {
       let duplicateArr = [...duplicateData];
       let masterArr = [...masterData];
       let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
@@ -805,6 +886,14 @@ const Goals = () => {
         })
         .catch((err) => console.log(err));
     }
+    // else {
+    // alert("please enter Goal name");
+    //   toast.current?.show({
+    //     severity: "warn",
+    //     summary: "Warning",
+    //     detail: "Please enter goal name",
+    //   });
+    // }
   };
 
   const editCancelFun = (data: any) => {
@@ -821,11 +910,16 @@ const Goals = () => {
     categoryHandleFun([...duplicateArr]);
   };
 
-  const goalDeleteFun = (data: any) => {
-    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
-    let delObj = duplicateData[index];
+  const goalDeleteFun = () => {
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj) => obj.ID === goalDelPopup.delGoalId
+    );
+    let delObj = duplicateArr[index];
     setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateData.filter((items) => items.ID != data.ID);
+    let delArray = duplicateArr.filter(
+      (items) => items.ID != goalDelPopup.delGoalId
+    );
     sp.web.lists
       .getByTitle(`HrGoals`)
       .items.getById(delObj.ID)
@@ -834,6 +928,11 @@ const Goals = () => {
         categoryHandleFun([...delArray]);
         setDuplicateData([...delArray]);
         setMasterData([...delArray]);
+        setGoalDelPopup({
+          ...goalDelPopup,
+          delPopup: false,
+          delGoalId: null,
+        });
       })
       .catch((err) => console.log(err));
 
@@ -924,9 +1023,17 @@ const Goals = () => {
           style={{
             padding: "0",
           }}
-          onChange={(e) =>
-            onChangeHandleFun(e.value, "AssignLevel", rowData.ID)
-          }
+          onChange={(e) => {
+            if (rowData.GoalName !== "") {
+              onChangeHandleFun(e.value, "AssignLevel", rowData.ID);
+            } else {
+              toast.current?.show({
+                severity: "warn",
+                summary: "Warning",
+                detail: "Please add goalname first and then assign level.",
+              });
+            }
+          }}
           options={assignLevelList}
           optionLabel="name"
           placeholder="Select a Role"
@@ -1043,17 +1150,46 @@ const Goals = () => {
             onClick={() => editCancelFun(rowData)}
           />
         </div>
-      ) : (
+      ) : appraisalCycleId.goalSubmit ? (
         <div>
           <HiPencil
             className={styles.editIcon}
-            onClick={(e) => editRowFunction(rowData)}
+            onClick={(e) => {
+              if (categoryHandleObj.isNew || categoryHandleObj.isUpdate) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail: "Please save or cancel the category before editing.",
+                });
+              } else {
+                editRowFunction(rowData);
+              }
+            }}
           />
           <MdDelete
             className={styles.cancelIcon}
-            onClick={() => goalDeleteFun(rowData)}
+            onClick={() => {
+              let duplicateArr = [...duplicateData];
+              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              if (isEdit.length > 0) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail:
+                    "Please save or cancel the current row before editing another row",
+                });
+              } else {
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: true,
+                  delGoalId: rowData.ID,
+                });
+              }
+            }}
           />
         </div>
+      ) : (
+        <></>
       )
     ) : (
       <div>
@@ -1063,7 +1199,7 @@ const Goals = () => {
         />
         <MdDelete
           className={styles.cancelIcon}
-          onClick={() => goalDeleteFun(rowData)}
+          onClick={() => goalDeleteFun()}
         />
       </div>
     );
@@ -1075,8 +1211,67 @@ const Goals = () => {
 
   return (
     <div className={styles.background}>
+      <Toast ref={toast} />
+      <Dialog
+        header="Header"
+        visible={goalDelPopup.delPopup}
+        style={{ width: "25%" }}
+        onClick={(e) => e.stopPropagation()}
+        onHide={() =>
+          setGoalDelPopup({
+            ...goalDelPopup,
+            delPopup: false,
+            delGoalId: null,
+          })
+        }
+      >
+        <div className="DeletePopup">
+          <p>Do you want to delete this goal?</p>
+          <div>
+            <Button
+              onClick={() => goalDeleteFun()}
+              // icon="pi pi-check"
+              label="confirm"
+              className="mr-2 dltBtn"
+            ></Button>
+            <Button
+              onClick={() =>
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: false,
+                  delGoalId: null,
+                })
+              }
+              text
+              className="cancelBtn"
+              // icon="pi pi-times"
+              label="cancel"
+            ></Button>
+          </div>
+        </div>
+      </Dialog>
+      <div className="appraisalTitle">
+        {cyclesList.map((data) => {
+          if (data.ID === appraisalCycleId.currentCycleId) {
+            return (
+              <span>
+                Appraisal {data.Year} - {data.cycleCategory}
+                {" ("}
+                {moment(data.startDate).format("DD/MMM")} to{" "}
+                {moment(data.endDate).format("DD/MMM")}
+                {")"}
+                <span className="appraisalLabel">
+                  {appraisalCycleId.goalSubmit ? " - Goal Submission" : ""}
+                </span>
+              </span>
+            );
+          }
+        })}
+      </div>
       <div className="addCategory">
-        <span className="span">Goals</span>
+        <div className="managerGoal">
+          <span>Predefined Goals</span>
+        </div>
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
             <InputText
@@ -1125,9 +1320,20 @@ const Goals = () => {
         ) : appraisalCycleId.goalSubmit ? (
           <Button
             label="New Category"
-            onClick={(e) =>
-              setCategoryHandleObj({ ...categoryHandleObj, isNew: true })
-            }
+            onClick={(e) => {
+              let duplicateArr = [...duplicateData];
+              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              if (isEdit.length > 0) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail:
+                    "Please save or cancel the current row before editing another row",
+                });
+              } else {
+                setCategoryHandleObj({ ...categoryHandleObj, isNew: true });
+              }
+            }}
           />
         ) : null}
       </div>
@@ -1161,24 +1367,26 @@ const Goals = () => {
                           >
                             <div className="DeletePopup">
                               <p>Do you want to delete this category?</p>
-                              <Button
-                                onClick={() => deleteCategoryFun()}
-                                // icon="pi pi-check"
-                                label="Confirm"
-                                className="mr-2 dltBtn"
-                              ></Button>
-                              <Button
-                                onClick={() =>
-                                  setIsPopup({
-                                    ...isPopup,
-                                    delPopup: false,
-                                  })
-                                }
-                                text
-                                // icon="pi pi-times"
-                                label="cancel"
-                           className="cancelBtn"
-                              ></Button>
+                              <div style={{ display: "flex" }}>
+                                <Button
+                                  onClick={() => deleteCategoryFun()}
+                                  // icon="pi pi-check"
+                                  label="Confirm"
+                                  className="mr-2 dltBtn"
+                                ></Button>
+                                <Button
+                                  onClick={() =>
+                                    setIsPopup({
+                                      ...isPopup,
+                                      delPopup: false,
+                                    })
+                                  }
+                                  text
+                                  // icon="pi pi-times"
+                                  label="cancel"
+                                  className="cancelBtn"
+                                ></Button>
+                              </div>
                             </div>
                           </Dialog>
                         )}
@@ -1199,21 +1407,51 @@ const Goals = () => {
                         <HiPencil
                           className="editIcon"
                           onClick={(event) => {
-                            event.preventDefault(),
-                              event.stopPropagation(),
-                              editCategoryFun(index);
+                            let duplicateArr = [...duplicateData];
+                            let isEdit = duplicateArr.filter(
+                              (edit) => edit.isRowEdit
+                            );
+                            if (isEdit.length > 0) {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                toast.current?.show({
+                                  severity: "warn",
+                                  summary: "Warning",
+                                  detail:
+                                    "Please save or cancel the current row before editing another row",
+                                });
+                            } else {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                editCategoryFun(index);
+                            }
                           }}
                         />
                         <MdDelete
                           className="deleteIcon"
                           onClick={(event) => {
-                            event.preventDefault(),
-                              event.stopPropagation(),
-                              setIsPopup({
-                                ...isPopup,
-                                delPopup: true,
-                                delIndex: index,
-                              });
+                            let duplicateArr = [...duplicateData];
+                            let isEdit = duplicateArr.filter(
+                              (edit) => edit.isRowEdit
+                            );
+                            if (isEdit.length > 0) {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                toast.current?.show({
+                                  severity: "warn",
+                                  summary: "Warning",
+                                  detail:
+                                    "Please save or cancel the current row before editing another row",
+                                });
+                            } else {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                setIsPopup({
+                                  ...isPopup,
+                                  delPopup: true,
+                                  delIndex: index,
+                                });
+                            }
                           }}
                         />
                       </div>
@@ -1250,12 +1488,14 @@ const Goals = () => {
                       style={{ width: "35%" }}
                       body={RoleBodyTemplate}
                     ></Column>
-                    <Column
-                      className="col4"
-                      header="Action"
-                      style={{ width: "10%" }}
-                      body={ActionBodyTemplate}
-                    ></Column>
+                    {appraisalCycleId.goalSubmit ? (
+                      <Column
+                        className="col4"
+                        header="Action"
+                        style={{ width: "10%" }}
+                        body={ActionBodyTemplate}
+                      ></Column>
+                    ) : null}
                   </DataTable>
                 </div>
               </AccordionTab>
@@ -1267,7 +1507,9 @@ const Goals = () => {
         <div></div>
       ) : (
         <div>
-          <div className="noDataMsg">No Data Found</div>
+          <div className="noDataMsg">
+            there are no predefined goals set at the moment
+          </div>
         </div>
       )}
     </div>

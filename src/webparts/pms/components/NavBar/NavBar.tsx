@@ -6,8 +6,9 @@ import styles from "./NavBarStyle.module.scss";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
-import { RiTeamFill } from "react-icons/ri";
-import { PiUserCircleGearBold } from "react-icons/pi";
+import { PiUserCircleGearDuotone } from "react-icons/pi";
+import { PiUserCircleDuotone } from "react-icons/pi";
+import { HiUserGroup } from "react-icons/hi2";
 
 const NavBar = (props: any) => {
   console.log(props, "props");
@@ -52,7 +53,7 @@ const NavBar = (props: any) => {
               } else if (obj.Roles == "Admin") {
                 setRole("Admin");
                 setTapName("Employee");
-                props.handleCilck("Employee");
+                props.handleCilck("Admin");
                 obj.Members.forEach((user: any) => {
                   teamMembers.push({
                     userID: user.ID,
@@ -87,11 +88,11 @@ const NavBar = (props: any) => {
   }, []);
   return (
     <div
+      className=""
       style={{
-        // background: `linear-gradient(130deg, #61b061, #105610)`,
         background: `linear-gradient(130deg, rgb(97 186 114), rgb(1 68 63))`,
         boxShadow: `0px 0px 10px rgba(0,0,0,0.1)`,
-        height: "100vh",
+        height: "84vh",
         borderRadius: "10px",
         padding: props.isNav ? "15px 15px" : "15px 10px",
       }}
@@ -104,7 +105,6 @@ const NavBar = (props: any) => {
           flexDirection: "column",
           marginBottom: props.isNav ? "15px" : "10px",
           padding: "15px",
-          // padding: props.isNav ? "15px 10px" : "15px 15px",
           borderBottom: "2px solid #02230020",
           borderRadius: "10px",
         }}
@@ -188,7 +188,7 @@ const NavBar = (props: any) => {
           >
             {props.isNav ? (
               <div className={styles.optionIcon}>
-                <RiTeamFill />
+                <HiUserGroup />
                 <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
                 {isShowEmployee ? (
                   <FaChevronDown className={styles.DrpIcons} />
@@ -198,7 +198,7 @@ const NavBar = (props: any) => {
               </div>
             ) : (
               <div className={styles.onlyIcon}>
-                <RiTeamFill />
+                <HiUserGroup />
                 {isShowEmployee ? (
                   <FaChevronDown className={styles.DrpIcons} />
                 ) : (
@@ -262,33 +262,63 @@ const NavBar = (props: any) => {
             })}
           </ul>
         ) : null}
-        <div
-          className={
-            "Employee" == tapName
-              ? styles.seletedOptionContainer
-              : styles.optionContainer
-          }
-          style={{
-            justifyContent: props?.isNav ? "flex-start" : "center",
-          }}
-          onClick={() => {
-            setTabMembersList("");
-            setTapName("Employee");
-            setIsShowEmployee(false);
-            props.handleCilck("Employee");
-          }}
-        >
-          {props.isNav ? (
-            <div className={styles.optionIcon}>
-              <PiUserCircleGearBold />
-              <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
-            </div>
-          ) : (
-            <div className={styles.onlyIcon}>
-              <PiUserCircleGearBold />
-            </div>
-          )}
-        </div>
+        {Role === "Admin" ? (
+          <div
+            className={
+              "Employee" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              justifyContent: props?.isNav ? "flex-start" : "center",
+            }}
+            onClick={() => {
+              setTabMembersList("");
+              setTapName("Admin");
+              setIsShowEmployee(false);
+              props.handleCilck("Admin");
+            }}
+          >
+            {props.isNav ? (
+              <div className={styles.optionIcon}>
+                <PiUserCircleGearDuotone />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Admin</span>
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <PiUserCircleGearDuotone />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            className={
+              "Employee" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              justifyContent: props?.isNav ? "flex-start" : "center",
+            }}
+            onClick={() => {
+              setTabMembersList("");
+              setTapName("Employee");
+              setIsShowEmployee(false);
+              props.handleCilck("Employee");
+            }}
+          >
+            {props.isNav ? (
+              <div className={styles.optionIcon}>
+                <PiUserCircleDuotone />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <PiUserCircleDuotone />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

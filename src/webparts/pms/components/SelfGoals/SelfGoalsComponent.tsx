@@ -15,8 +15,8 @@ import { MdDelete } from "react-icons/md";
 import { FaCommentDots } from "react-icons/fa6";
 import { FaFileCircleCheck } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
-import "./selfGoals.css";
 import styles from "./SelfGoalsStyle.module.scss";
+import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 
 const SelfGoals = (props: any) => {
@@ -757,13 +757,10 @@ const SelfGoals = (props: any) => {
         </div>
       ) : (
         <div>
-          {props.appraisalCycle.submitComments ||
-          (props.appraisalCycle.goalSubmit && props.isManager) ? (
-            <HiPencil
-              className={styles.editIcon}
-              onClick={(e) => editRowFunction(rowData)}
-            />
-          ) : null}
+          <HiPencil
+            className={styles.editIcon}
+            onClick={(e) => editRowFunction(rowData)}
+          />
           {props.isManager &&
           props.appraisalCycle.goalSubmit &&
           rowData.GoalCategory === "SelfGoal" ? (
@@ -1050,53 +1047,81 @@ const SelfGoals = (props: any) => {
               </div>
             </Dialog>
           </div>
-          <div className="managerGoal">
+          {/* <div className="managerGoal">
             <span>Self Goals</span>
-          </div>
-          <div className="managerGoalTable" style={{ position: "relative" }}>
-            <DataTable value={managerGoals} className="p-datatable-sm">
-              <Column
-                className="col1"
-                field="GoalName"
-                header="Goal Name"
-                style={{ width: "30%" }}
-                body={GoalnameBodyTemplate}
-              ></Column>
-              <Column
-                className="col1"
-                field="EmployeeRating"
-                header="Employee Rating"
-                style={{ width: "15%" }}
-                body={EmployeeRatingBodyTemplate}
-              ></Column>
-              <Column
-                className="col1"
-                field="ManagerRating"
-                header="Manager Rating"
-                style={{ width: "15%" }}
-                body={ManagerRatingBodyTemplate}
-              ></Column>
-              <Column
-                className="col4"
-                header="Action"
-                style={{ width: "10%" }}
-                body={ActionBodyTemplate}
-              ></Column>
-            </DataTable>
-            {props.isManager &&
-            props.appraisalCycle.goalSubmit &&
-            !duplicateData.some((data) => data.isNew) ? (
-              <div className="addMaganerGoal">
-                <GrAdd onClick={(e) => addGoalFunction()} />
-              </div>
-            ) : null}
-          </div>
-          {managerGoals.length > 0 ? (
+          </div> */}
+          {managerGoals.length > 0 ||
+          (props.isManager && props.appraisalCycle.goalSubmit) ? (
             <></>
           ) : (
-            <div>
-              <div className="noDataMsg">No Data Found</div>
+            <div className="noDataMsg" style={{ paddingTop: "20px" }}>
+              there are no self goals set at the moment
             </div>
+          )}
+
+          {managerGoals.length > 0 ||
+          (props.isManager && props.appraisalCycle.goalSubmit) ? (
+            <div>
+              <div
+                className="managerGoalTable"
+                style={{
+                  position: "relative",
+                  marginTop:
+                    props.isManager && props.appraisalCycle.goalSubmit
+                      ? "35px"
+                      : "20px",
+                }}
+              >
+                <DataTable value={managerGoals} className="p-datatable-sm">
+                  <Column
+                    className="col1"
+                    field="GoalName"
+                    header="Goal Name"
+                    style={{ width: "50%" }}
+                    body={GoalnameBodyTemplate}
+                  ></Column>
+                  <Column
+                    className="col1"
+                    field="EmployeeRating"
+                    header="Employee Rating"
+                    style={{ width: "20%" }}
+                    body={EmployeeRatingBodyTemplate}
+                  ></Column>
+                  <Column
+                    className="col1"
+                    field="ManagerRating"
+                    header="Manager Rating"
+                    style={{ width: "20%" }}
+                    body={ManagerRatingBodyTemplate}
+                  ></Column>
+                  {props.appraisalCycle.submitComments ||
+                  (props.appraisalCycle.goalSubmit && props.isManager) ? (
+                    <Column
+                      className="col4"
+                      header="Action"
+                      style={{ width: "10%" }}
+                      body={ActionBodyTemplate}
+                    ></Column>
+                  ) : null}
+                </DataTable>
+                {props.isManager &&
+                props.appraisalCycle.goalSubmit &&
+                !duplicateData.some((data) => data.isNew) ? (
+                  <div className="addMaganerGoal">
+                    <GrAdd onClick={(e) => addGoalFunction()} />
+                  </div>
+                ) : null}
+              </div>
+              {managerGoals.length > 0 ? (
+                <></>
+              ) : (
+                <div>
+                  <div className="noDataMsg">No Data Found</div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <></>
           )}
         </>
       )}

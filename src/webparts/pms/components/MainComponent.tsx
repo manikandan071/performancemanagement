@@ -2,22 +2,20 @@
 import * as React from "react";
 import NavBar from "./NavBar/NavBar";
 import { useState } from "react";
-// import { IoIosClose } from "react-icons/io";
 import { RxCaretRight } from "react-icons/rx";
 import Goals from "./Goals/GoalsComponent";
 import ManagerComponent from "./Manager/ManagerComponent";
 import EmployeeComponent from "./Employee/EmployeeComponent";
+import AdminComponent from "./Admin/AdminComponent";
 const logo: any = require("../assets/images/companyLogo.png");
-// import image from "../components/Employee/welcomeDark.png";
-// let logo = require("../assets/images/welcome-dark.png")
 import "./style.css";
+import "./masterStyle.css";
+
 const MainComponent = (props: any) => {
   let UserEmail = props.context.pageContext.user.email;
-
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
-
   console.log(UserEmail, "currentUser");
 
   const handleCilck = (item: string) => {
@@ -29,7 +27,6 @@ const MainComponent = (props: any) => {
 
   return (
     <>
-      {/* <img src={image} alt="React Logo"></img>  */}
       <div className="mainWrapper">
         <div className="topBar">
           <img src={logo} alt="logo" />
@@ -40,7 +37,7 @@ const MainComponent = (props: any) => {
               width: isNavBar ? "20%" : "6%",
               position: "relative",
               transition: "all 0.3s",
-              marginTop: "15px",
+              // marginTop: "15px",
             }}
           >
             {/* {!isNavBar ? ( */}
@@ -93,7 +90,7 @@ const MainComponent = (props: any) => {
           <div
             style={{
               width: isNavBar ? "85%" : "95%",
-              margin: "15px 0px 0px 0px",
+              // margin: "15px 0px 0px 0px",
               // height: "100%",
             }}
           >
@@ -108,6 +105,8 @@ const MainComponent = (props: any) => {
                   isManager={true}
                 />
               </div>
+            ) : isNavOption === "Admin" ? (
+              <AdminComponent />
             ) : (
               <div className="RHSWrapper">
                 <EmployeeComponent
