@@ -1,22 +1,17 @@
 import * as React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { sp } from "@pnp/sp/presets/all";
+import * as moment from "moment";
 import { Column } from "primereact/column";
-import {
-  DataTable,
-  //   DataTableExpandedRows,
-  //   DataTableValueArray,
-} from "primereact/datatable";
+import { DataTable } from "primereact/datatable";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Dropdown } from "primereact/dropdown";
 import { MultiSelect } from "primereact/multiselect";
 import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
-import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
-import "primereact/resources/primereact.min.css";
 import { Dialog } from "primereact/dialog";
-// import { Toast } from "primereact/toast";
+import { Toast } from "primereact/toast";
 import { HiPencil } from "react-icons/hi2";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -24,12 +19,14 @@ import { GrAdd } from "react-icons/gr";
 import { MdDelete } from "react-icons/md";
 import { GiOrganigram } from "react-icons/gi";
 import { PiUserFocusDuotone } from "react-icons/pi";
-import "./GoalsStyles.module.scss";
+import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import "primereact/resources/primereact.min.css";
 import styles from "./GoalsStyles.module.scss";
-import "./goals.css";
+import "../masterStyle.css";
 
 const Goals = () => {
-  // const toast = useRef("");
+  const toast = useRef<Toast>(null);
+  let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setMasterData] = useState<any[]>([]);
   const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -51,7 +48,15 @@ const Goals = () => {
     isUpdate: false,
   });
   const [activeIndex, setActiveIndex] = useState<any>(null);
-  const [appraisalCycle, setAppraisalCycle] = useState(null);
+  const [appraisalCycleId, setAppraisalCycleId] = useState({
+    currentCycleId: null,
+    goalSubmit: false,
+  });
+  const [goalDelPopup, setGoalDelPopup] = useState<any>({
+    delPopup: false,
+    delGoalId: null,
+  });
+  const [cyclesList, setCycleList] = useState<any[]>([]);
 
   console.log(
     usersList,
@@ -59,14 +64,15 @@ const Goals = () => {
     masterData,
     duplicateData,
     predefinedGoalsList,
-    appraisalCycle
+    appraisalCycleId
   );
 
-  const getPredefinedGoals = () => {
+  const getPredefinedGoals = (ACId: number) => {
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
       .items.select("*,AssignTo/ID,AssignTo/Title,AssignTo/EMail,HRGoal/ID")
       .expand("AssignTo,HRGoal")
+      .filter(`AppraisalCycleLookupId eq '${ACId}'`)
       .get()
       .then((res) => {
         console.log(res);
@@ -88,10 +94,11 @@ const Goals = () => {
       });
   };
 
-  const getHRGoals = () => {
+  const getHRGoals = (ACId: number) => {
     sp.web.lists
       .getByTitle(`HrGoals`)
-      .items.get()
+      .items.filter(`AppraisalCycleLookupId eq '${ACId}'`)
+      .get()
       .then((res) => {
         let tempArr: any = [];
         let ID = 1;
@@ -159,9 +166,106 @@ const Goals = () => {
         setCategories([...groupedArray]);
         setDuplicateData(tempaArray);
         setMasterData(tempaArray);
-        getPredefinedGoals();
+        getPredefinedGoals(ACId);
       })
       .catch((err) => console.log(err));
+  };
+
+  const getCycleYear = () => {
+    sp.web.lists
+      .getByTitle("AppraisalCycles")
+      .items.get()
+      .then((cycle) => {
+        console.log(cycle);
+        let tempArr: any = [];
+        cycle.reverse();
+        cycle.forEach((res) => {
+          tempArr.push({
+            ID: res.ID,
+            Year: res.Title,
+            cycleCategory: res.cycleCategory,
+            startDate: res.startDate,
+            endDate: res.endDate,
+            commentsSubmitSDate: res.commentsSubmitSDate,
+            commentsSubmitEDate: res.commentsSubmitEDate,
+            goalsSubmitSDate: res.goalsSubmitSDate,
+            goalsSubmitEDate: res.goalsSubmitEDate,
+          });
+        });
+        for (let i = 0; i < cycle.length; i++) {
+          let sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
+          let eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
+          let goalsSDate = new Date(cycle[i].goalsSubmitSDate).setHours(
+            0,
+            0,
+            0,
+            0
+          );
+          let goalsEDate = new Date(cycle[i].goalsSubmitEDate).setHours(
+            0,
+            0,
+            0,
+            0
+          );
+          if (
+            currentDate >= new Date(goalsSDate) &&
+            currentDate <= new Date(goalsEDate)
+          ) {
+            setAppraisalCycleId({
+              ...appraisalCycleId,
+              currentCycleId: cycle[i].ID,
+              goalSubmit: true,
+            });
+            getHRGoals(cycle[i].ID);
+            break;
+          } else {
+            if (
+              currentDate >= new Date(sDate) &&
+              currentDate <= new Date(eDate)
+            ) {
+              setAppraisalCycleId({
+                ...appraisalCycleId,
+                currentCycleId: cycle[i].ID,
+                goalSubmit: false,
+              });
+              getHRGoals(cycle[i].ID);
+            }
+          }
+        }
+        // cycle.forEach((res) => {
+        //   let sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
+        //   let eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
+        //   let goalsSDate = new Date(res.goalsSubmitSDate).setHours(0, 0, 0, 0);
+        //   let goalsEDate = new Date(res.goalsSubmitEDate).setHours(0, 0, 0, 0);
+        //   if (
+        //     currentDate >= new Date(goalsSDate) &&
+        //     currentDate <= new Date(goalsEDate)
+        //   ) {
+        //     setAppraisalCycleId({
+        //       ...appraisalCycleId,
+        //       currentCycleId: res.ID,
+        //       goalSubmit: true,
+        //     });
+        //     getHRGoals(res.ID);
+        //   } else {
+        //     if (
+        //       currentDate >= new Date(sDate) &&
+        //       currentDate <= new Date(eDate)
+        //     ) {
+        //       setAppraisalCycleId({
+        //         ...appraisalCycleId,
+        //         currentCycleId: res.ID,
+        //         goalSubmit: false,
+        //       });
+        //       getHRGoals(res.ID);
+        //     }
+        //   }
+        // });
+        setCycleList([...tempArr]);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const getUsersRoles = () => {
@@ -177,7 +281,7 @@ const Goals = () => {
         if (res.length > 0) {
           let rolesSet = new Set();
           let uniqueArray = res.filter((data) => {
-            if (!rolesSet.has(data.Roles)) {
+            if (!rolesSet.has(data.Roles) && data.Roles !== "Admin") {
               rolesSet.add(data.Roles);
               return true;
             }
@@ -208,31 +312,10 @@ const Goals = () => {
             });
           });
           setUsersList([...userArr]);
-          getHRGoals();
-          //   res.filter((val,index)=>res.indexOf(val.Roles) === index)
+          getCycleYear();
         }
       })
       .catch((err) => console.log(err));
-  };
-
-  const getCycleYear = () => {
-    sp.web.lists
-      .getByTitle("AppraisalCycles")
-      .items.get()
-      .then((res) => {
-        console.log(res);
-        res.forEach((obj) => {
-          if (
-            new Date() >= new Date(obj.startDate) &&
-            new Date() <= new Date(obj.endDate)
-          ) {
-            setAppraisalCycle(obj.ID);
-          }
-        });
-      })
-      .catch((err) => {
-        console.log(err);
-      });
   };
 
   const categoryHandleFun = (data: any) => {
@@ -297,6 +380,7 @@ const Goals = () => {
           newCategory: "",
           isNew: false,
         });
+        setActiveIndex(categories.length);
       } else {
         alert("please enter category");
       }
@@ -352,41 +436,51 @@ const Goals = () => {
       getUsersRoles();
     }
   };
-
   const addGoalFunction = (ind: number) => {
+    let duplicateArr = [...duplicateData];
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
     let data = tempArr[index];
-    setDuplicateData([
-      ...duplicateData,
-      {
-        ID:
-          Math.max(
-            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
-          ) + 1,
-        AssignLevel: { name: "", code: "" },
-        Role: [],
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data.GoalCategory,
-      },
-    ]);
-    categoryHandleFun([
-      ...duplicateData,
-      {
-        ID:
-          Math.max(
-            ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
-          ) + 1,
-        AssignLevel: { name: "", code: "" },
-        Role: [],
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data.GoalCategory,
-      },
-    ]);
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      setDuplicateData([
+        ...duplicateData,
+        {
+          ID:
+            Math.max(
+              ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+            ) + 1,
+          AssignLevel: { name: "", code: "" },
+          Role: [],
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data.GoalCategory,
+        },
+      ]);
+      categoryHandleFun([
+        ...duplicateData,
+        {
+          ID:
+            Math.max(
+              ...duplicateData.concat([...deletedGoals]).map((o) => o.ID)
+            ) + 1,
+          AssignLevel: { name: "", code: "" },
+          Role: [],
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data.GoalCategory,
+        },
+      ]);
+    }
   };
 
   const editCategoryFun = (ind: number) => {
@@ -438,11 +532,55 @@ const Goals = () => {
 
   const editRowFunction = (data: any) => {
     let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
-    duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
-    setDuplicateData([...duplicateArr]);
-    categoryHandleFun([...duplicateArr]);
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      let tempObj = duplicateArr[index];
+      duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
+      setDuplicateData([...duplicateArr]);
+      categoryHandleFun([...duplicateArr]);
+    }
+  };
+  const validationFun = (tempObj: any) => {
+    if (tempObj.GoalName !== "") {
+      if (tempObj.AssignLevel.name !== "") {
+        if (tempObj.AssignLevel.name === "Role") {
+          if (tempObj.Role.length > 0) {
+            return true;
+          } else {
+            toast.current?.show({
+              severity: "warn",
+              summary: "Warning",
+              detail: "Please select Employee role ",
+            });
+            return false;
+          }
+        } else {
+          return true;
+        }
+      } else {
+        toast.current?.show({
+          severity: "warn",
+          summary: "Warning",
+          detail: "Please select assign level ",
+        });
+        return false;
+      }
+    } else {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail: "Please enter goal name",
+      });
+      return false;
+    }
   };
 
   const goalSubmitFun = (data: any) => {
@@ -456,7 +594,11 @@ const Goals = () => {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
     };
-    if (tempObj.isNew) {
+
+    let validation = validationFun(tempObj);
+    console.log(validation);
+
+    if (tempObj.isNew && validation) {
       sp.web.lists
         .getByTitle(`HrGoals`)
         .items.add({
@@ -466,6 +608,7 @@ const Goals = () => {
             : { results: [""] },
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
+          AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
           isDelete: false,
         })
         .then((res) => {
@@ -492,7 +635,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycle,
+                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -511,7 +654,7 @@ const Goals = () => {
                   GoalCategory: tempObj.GoalCategory,
                   AssignToId: user.EmployeeID,
                   HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycle,
+                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
                 })
                 .then((res) => console.log(res))
                 .catch((err) => console.log(err));
@@ -520,7 +663,7 @@ const Goals = () => {
           }
         })
         .catch((err) => console.log(err));
-    } else {
+    } else if (validation) {
       let duplicateArr = [...duplicateData];
       let masterArr = [...masterData];
       let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
@@ -552,7 +695,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: user.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycle,
+                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -699,7 +842,7 @@ const Goals = () => {
                 GoalCategory: tempObj.GoalCategory,
                 AssignToId: filter.EmployeeID,
                 HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycle,
+                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
               })
               .then((res) => console.log(res))
               .catch((err) => console.log(err));
@@ -743,6 +886,14 @@ const Goals = () => {
         })
         .catch((err) => console.log(err));
     }
+    // else {
+    // alert("please enter Goal name");
+    //   toast.current?.show({
+    //     severity: "warn",
+    //     summary: "Warning",
+    //     detail: "Please enter goal name",
+    //   });
+    // }
   };
 
   const editCancelFun = (data: any) => {
@@ -759,11 +910,16 @@ const Goals = () => {
     categoryHandleFun([...duplicateArr]);
   };
 
-  const goalDeleteFun = (data: any) => {
-    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
-    let delObj = duplicateData[index];
+  const goalDeleteFun = () => {
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj) => obj.ID === goalDelPopup.delGoalId
+    );
+    let delObj = duplicateArr[index];
     setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateData.filter((items) => items.ID != data.ID);
+    let delArray = duplicateArr.filter(
+      (items) => items.ID != goalDelPopup.delGoalId
+    );
     sp.web.lists
       .getByTitle(`HrGoals`)
       .items.getById(delObj.ID)
@@ -772,6 +928,11 @@ const Goals = () => {
         categoryHandleFun([...delArray]);
         setDuplicateData([...delArray]);
         setMasterData([...delArray]);
+        setGoalDelPopup({
+          ...goalDelPopup,
+          delPopup: false,
+          delGoalId: null,
+        });
       })
       .catch((err) => console.log(err));
 
@@ -859,13 +1020,24 @@ const Goals = () => {
       duplicateData[index].isRowEdit ? (
         <Dropdown
           value={rowData.AssignLevel}
-          onChange={(e) =>
-            onChangeHandleFun(e.value, "AssignLevel", rowData.ID)
-          }
+          style={{
+            padding: "0",
+          }}
+          onChange={(e) => {
+            if (rowData.GoalName !== "") {
+              onChangeHandleFun(e.value, "AssignLevel", rowData.ID);
+            } else {
+              toast.current?.show({
+                severity: "warn",
+                summary: "Warning",
+                detail: "Please add goalname first and then assign level.",
+              });
+            }
+          }}
           options={assignLevelList}
           optionLabel="name"
           placeholder="Select a Role"
-          className="w-full md:w-14rem"
+          className="w-full md:w-14rem tblMultiSelect"
         />
       ) : (
         <div
@@ -907,14 +1079,6 @@ const Goals = () => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return 0 <= index ? (
       rowData.AssignLevel.name == "Role" && duplicateData[index].isRowEdit ? (
-        // <Dropdown
-        //   value={rowData.Role}
-        //   onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
-        //   options={rolesList}
-        //   optionLabel="name"
-        //   placeholder="Select a Role"
-        //   className="w-full md:w-14rem"
-        // />
         <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
@@ -926,15 +1090,25 @@ const Goals = () => {
           className="w-full md:w-20rem"
         />
       ) : rowData.AssignLevel.name == "Role" ? (
-        <div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "flex-start",
+            justifyContent: "flex-start",
+            gap: "10px",
+          }}
+        >
           {rowData.Role.map((role: any) => (
             <p
               style={{
-                fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-                color: "#64728c",
-                fontSize: "13px",
-                width: "100%",
-                margin: "0px",
+                fontFamily: `Roboto, Arial, Helvetica, sans-serif`,
+                color: `rgb(100, 114, 140)`,
+                fontSize: ` 12px`,
+                background: `#eee`,
+                margin: `0px`,
+                padding: `2px 10px`,
+                borderRadius: ` 30px`,
+                textAlign: `center`,
               }}
             >
               {role.name}
@@ -976,17 +1150,46 @@ const Goals = () => {
             onClick={() => editCancelFun(rowData)}
           />
         </div>
-      ) : (
+      ) : appraisalCycleId.goalSubmit ? (
         <div>
           <HiPencil
             className={styles.editIcon}
-            onClick={(e) => editRowFunction(rowData)}
+            onClick={(e) => {
+              if (categoryHandleObj.isNew || categoryHandleObj.isUpdate) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail: "Please save or cancel the category before editing.",
+                });
+              } else {
+                editRowFunction(rowData);
+              }
+            }}
           />
           <MdDelete
             className={styles.cancelIcon}
-            onClick={() => goalDeleteFun(rowData)}
+            onClick={() => {
+              let duplicateArr = [...duplicateData];
+              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              if (isEdit.length > 0) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail:
+                    "Please save or cancel the current row before editing another row",
+                });
+              } else {
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: true,
+                  delGoalId: rowData.ID,
+                });
+              }
+            }}
           />
         </div>
+      ) : (
+        <></>
       )
     ) : (
       <div>
@@ -996,7 +1199,7 @@ const Goals = () => {
         />
         <MdDelete
           className={styles.cancelIcon}
-          onClick={() => goalDeleteFun(rowData)}
+          onClick={() => goalDeleteFun()}
         />
       </div>
     );
@@ -1004,12 +1207,71 @@ const Goals = () => {
 
   useEffect(() => {
     getUsersRoles();
-    getCycleYear();
   }, []);
 
   return (
     <div className={styles.background}>
-      <div className={styles.addCategory}>
+      <Toast ref={toast} />
+      <Dialog
+        header="Header"
+        visible={goalDelPopup.delPopup}
+        style={{ width: "25%" }}
+        onClick={(e) => e.stopPropagation()}
+        onHide={() =>
+          setGoalDelPopup({
+            ...goalDelPopup,
+            delPopup: false,
+            delGoalId: null,
+          })
+        }
+      >
+        <div className="DeletePopup">
+          <p>Do you want to delete this goal?</p>
+          <div>
+            <Button
+              onClick={() => goalDeleteFun()}
+              // icon="pi pi-check"
+              label="confirm"
+              className="mr-2 dltBtn"
+            ></Button>
+            <Button
+              onClick={() =>
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: false,
+                  delGoalId: null,
+                })
+              }
+              text
+              className="cancelBtn"
+              // icon="pi pi-times"
+              label="cancel"
+            ></Button>
+          </div>
+        </div>
+      </Dialog>
+      <div className="appraisalTitle">
+        {cyclesList.map((data) => {
+          if (data.ID === appraisalCycleId.currentCycleId) {
+            return (
+              <span>
+                Appraisal {data.Year} - {data.cycleCategory}
+                {" ("}
+                {moment(data.startDate).format("DD/MMM")} to{" "}
+                {moment(data.endDate).format("DD/MMM")}
+                {")"}
+                <span className="appraisalLabel">
+                  {appraisalCycleId.goalSubmit ? " - Goal Submission" : ""}
+                </span>
+              </span>
+            );
+          }
+        })}
+      </div>
+      <div className="addCategory">
+        <div className="managerGoal">
+          <span>Predefined Goals</span>
+        </div>
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
             <InputText
@@ -1032,7 +1294,7 @@ const Goals = () => {
               />
             ) : (
               <Button
-                className="addCategory"
+                // className="addCategory"
                 label="Add"
                 severity="success"
                 onClick={(e) => addNewCategory(true)}
@@ -1043,6 +1305,7 @@ const Goals = () => {
               label="Cancel"
               severity="danger"
               text
+              className="cancelBtn"
               onClick={(e) => {
                 // setNewCategory("");
                 setCategoryHandleObj({
@@ -1054,14 +1317,25 @@ const Goals = () => {
               }}
             />
           </div>
-        ) : (
+        ) : appraisalCycleId.goalSubmit ? (
           <Button
             label="New Category"
-            onClick={(e) =>
-              setCategoryHandleObj({ ...categoryHandleObj, isNew: true })
-            }
+            onClick={(e) => {
+              let duplicateArr = [...duplicateData];
+              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              if (isEdit.length > 0) {
+                toast.current?.show({
+                  severity: "warn",
+                  summary: "Warning",
+                  detail:
+                    "Please save or cancel the current row before editing another row",
+                });
+              } else {
+                setCategoryHandleObj({ ...categoryHandleObj, isNew: true });
+              }
+            }}
           />
-        )}
+        ) : null}
       </div>
       <div className="hrGoals">
         <Accordion
@@ -1074,82 +1348,114 @@ const Goals = () => {
                 className="accordionMain"
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                    {/* <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" /> */}
                     <span className="CategoryTitle">{data.GoalCategory}</span>
-                    <div className="font-bold iconSec">
-                      {/* <Toast ref={toast} /> */}
-                      {isPopup.delIndex === index && isPopup.delPopup && (
-                        <Dialog
-                          header="Header"
-                          visible={isPopup.delPopup}
-                          style={{ width: "25%" }}
-                          onClick={(e) => e.stopPropagation()}
-                          onHide={() =>
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: false,
-                              delIndex: null,
-                            })
-                          }
-                        >
-                          <div>
-                            <p>Do you want to delete this category?</p>
-                            <Button
-                              onClick={() => deleteCategoryFun()}
-                              icon="pi pi-check"
-                              label="Confirm"
-                              className="mr-2"
-                            ></Button>
-                            <Button
-                              onClick={() =>
-                                setIsPopup({
-                                  ...isPopup,
-                                  delPopup: false,
-                                })
-                              }
-                              text
-                              icon="pi pi-times"
-                              label="cancel"
-                            ></Button>
-                          </div>
-                        </Dialog>
-                      )}
-                      {data.values.filter((val: any) => val.isNew).length ===
-                      0 ? (
-                        <GrAdd
-                          className="addIcon"
-                          onClick={(event) => {
-                            if (activeIndex === index) {
-                              event.stopPropagation();
-                            } else {
-                              setActiveIndex(index);
+                    {appraisalCycleId.goalSubmit ? (
+                      <div className="font-bold iconSec">
+                        {isPopup.delIndex === index && isPopup.delPopup && (
+                          <Dialog
+                            header="Confirmation"
+                            visible={isPopup.delPopup}
+                            style={{ width: "25%" }}
+                            onClick={(e) => e.stopPropagation()}
+                            onHide={() =>
+                              setIsPopup({
+                                ...isPopup,
+                                delPopup: false,
+                                delIndex: null,
+                              })
                             }
-                            addGoalFunction(index);
+                          >
+                            <div className="DeletePopup">
+                              <p>Do you want to delete this category?</p>
+                              <div style={{ display: "flex" }}>
+                                <Button
+                                  onClick={() => deleteCategoryFun()}
+                                  // icon="pi pi-check"
+                                  label="Confirm"
+                                  className="mr-2 dltBtn"
+                                ></Button>
+                                <Button
+                                  onClick={() =>
+                                    setIsPopup({
+                                      ...isPopup,
+                                      delPopup: false,
+                                    })
+                                  }
+                                  text
+                                  // icon="pi pi-times"
+                                  label="cancel"
+                                  className="cancelBtn"
+                                ></Button>
+                              </div>
+                            </div>
+                          </Dialog>
+                        )}
+                        {data.values.filter((val: any) => val.isNew).length ===
+                        0 ? (
+                          <GrAdd
+                            className="addIcon"
+                            onClick={(event) => {
+                              if (activeIndex === index) {
+                                event.stopPropagation();
+                              } else {
+                                setActiveIndex(index);
+                              }
+                              addGoalFunction(index);
+                            }}
+                          />
+                        ) : null}
+                        <HiPencil
+                          className="editIcon"
+                          onClick={(event) => {
+                            let duplicateArr = [...duplicateData];
+                            let isEdit = duplicateArr.filter(
+                              (edit) => edit.isRowEdit
+                            );
+                            if (isEdit.length > 0) {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                toast.current?.show({
+                                  severity: "warn",
+                                  summary: "Warning",
+                                  detail:
+                                    "Please save or cancel the current row before editing another row",
+                                });
+                            } else {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                editCategoryFun(index);
+                            }
                           }}
                         />
-                      ) : null}
-                      <HiPencil
-                        className="editIcon"
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            editCategoryFun(index);
-                        }}
-                      />
-                      <MdDelete
-                        className="deleteIcon"
-                        onClick={(event) => {
-                          event.preventDefault(),
-                            event.stopPropagation(),
-                            setIsPopup({
-                              ...isPopup,
-                              delPopup: true,
-                              delIndex: index,
-                            });
-                        }}
-                      />
-                    </div>
-                    {/* <Badge value="3" className="ml-auto" /> */}
+                        <MdDelete
+                          className="deleteIcon"
+                          onClick={(event) => {
+                            let duplicateArr = [...duplicateData];
+                            let isEdit = duplicateArr.filter(
+                              (edit) => edit.isRowEdit
+                            );
+                            if (isEdit.length > 0) {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                toast.current?.show({
+                                  severity: "warn",
+                                  summary: "Warning",
+                                  detail:
+                                    "Please save or cancel the current row before editing another row",
+                                });
+                            } else {
+                              event.preventDefault(),
+                                event.stopPropagation(),
+                                setIsPopup({
+                                  ...isPopup,
+                                  delPopup: true,
+                                  delIndex: index,
+                                });
+                            }
+                          }}
+                        />
+                      </div>
+                    ) : null}
                   </span>
                 }
               >
@@ -1157,14 +1463,15 @@ const Goals = () => {
                   <DataTable
                     value={data.values}
                     size="normal"
-                    // stripedRows
                     tableStyle={{ minWidth: "30rem" }}
                   >
                     <Column
                       className="col1"
                       field="GoalName"
                       header="Goal Name"
-                      style={{ width: "35%" }}
+                      style={{
+                        width: "35%",
+                      }}
                       body={GoalnameBodyTemplate}
                     ></Column>
                     <Column
@@ -1181,12 +1488,14 @@ const Goals = () => {
                       style={{ width: "35%" }}
                       body={RoleBodyTemplate}
                     ></Column>
-                    <Column
-                      className="col4"
-                      header="Action"
-                      style={{ width: "10%" }}
-                      body={ActionBodyTemplate}
-                    ></Column>
+                    {appraisalCycleId.goalSubmit ? (
+                      <Column
+                        className="col4"
+                        header="Action"
+                        style={{ width: "10%" }}
+                        body={ActionBodyTemplate}
+                      ></Column>
+                    ) : null}
                   </DataTable>
                 </div>
               </AccordionTab>
@@ -1198,24 +1507,11 @@ const Goals = () => {
         <div></div>
       ) : (
         <div>
-          <div className="noDataMsg">No Data Found</div>
+          <div className="noDataMsg">
+            there are no predefined goals set at the moment
+          </div>
         </div>
       )}
-
-      {/* <DataTable
-        value={newData}
-        expandedRows={expandedRows}
-        onRowToggle={(e) => setExpandedRows(e.data)}
-        rowExpansionTemplate={rowExpansionTemplate}
-        dataKey="name"
-      >
-        <Column expander={true} style={{ width: "2rem" }} />
-        <Column
-          field="name"
-          header="Name"
-          style={{ fontWeight: 500, fontSize: "16px" }}
-        />
-      </DataTable> */}
     </div>
   );
 };

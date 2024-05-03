@@ -6,8 +6,9 @@ import styles from "./NavBarStyle.module.scss";
 import { FaChevronRight } from "react-icons/fa";
 import { FaChevronDown } from "react-icons/fa";
 import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
-import { RiTeamFill } from "react-icons/ri";
-import { PiUserCircleGearBold } from "react-icons/pi";
+import { PiUserCircleGearDuotone } from "react-icons/pi";
+import { PiUserCircleDuotone } from "react-icons/pi";
+import { HiUserGroup } from "react-icons/hi2";
 
 const NavBar = (props: any) => {
   console.log(props, "props");
@@ -49,6 +50,17 @@ const NavBar = (props: any) => {
                     userName: user.Title,
                   });
                 });
+              } else if (obj.Roles == "Admin") {
+                setRole("Admin");
+                setTapName("Employee");
+                props.handleCilck("Admin");
+                obj.Members.forEach((user: any) => {
+                  teamMembers.push({
+                    userID: user.ID,
+                    userEmail: user.EMail,
+                    userName: user.Title,
+                  });
+                });
               } else {
                 setTapName("Employee");
                 props.handleCilck("Employee");
@@ -76,24 +88,31 @@ const NavBar = (props: any) => {
   }, []);
   return (
     <div
+      className=""
       style={{
-        backgroundColor: "#61b061",
-        height: "100vh",
-        borderRadius: "0px 10px 10px 0px",
-        paddingTop: "50px",
+        background: `linear-gradient(130deg, rgb(97 186 114), rgb(1 68 63))`,
+        boxShadow: `0px 0px 10px rgba(0,0,0,0.1)`,
+        height: "84vh",
+        borderRadius: "10px",
+        padding: props.isNav ? "15px 15px" : "15px 10px",
       }}
     >
       <div
         style={{
           display: "flex",
+          alignItems: "center",
           justifyContent: "center",
-          flexWrap: "wrap",
+          flexDirection: "column",
           marginBottom: props.isNav ? "15px" : "10px",
+          padding: "15px",
+          borderBottom: "2px solid #02230020",
+          borderRadius: "10px",
         }}
       >
         <div
           style={{
-            width: "100%",
+            width: props.isNav ? "100px" : "40px",
+            height: props.isNav ? "100px" : "40px",
             display: "flex",
             justifyContent: "center",
             marginBottom: "5px",
@@ -101,45 +120,45 @@ const NavBar = (props: any) => {
         >
           <img
             style={{
-              width: "50%",
+              width: "100%",
               borderRadius: "100%",
-              border: props.isNav ? "3px solid #b3f1b9" : "2px solid #b3f1b9",
+              border: props.isNav ? "2px solid #007e0c" : "2px solid #007e0c",
               padding: props.isNav ? "2px" : "1px",
+              objectFit: "cover",
             }}
             src={`${props.context.context.pageContext.web.absoluteUrl}/_layouts/15/userphoto.aspx?UserName=${props.context.context.pageContext.user.email}&size=L`}
             draggable="false"
           />
         </div>
         {props.isNav ? (
-          <span
-            style={{
-              display: "inline-block",
-              color: "#04024a",
-              fontSize: "17px",
-              fontWeight: "600",
-              marginTop: "5px",
-            }}
-          >
-            {props.context.context.pageContext.user.displayName}
-          </span>
+          <div style={{ textAlign: "center" }}>
+            <p className={styles.employeeName}>
+              {props.context.context.pageContext.user.displayName}
+            </p>
+            {Role && <span className={styles.employeeRole}>{Role}</span>}
+          </div>
         ) : null}
       </div>
       <div>
-        <div
-          className={
-            "Goals" == tapName
-              ? styles.seletedOptionContainer
-              : styles.optionContainer
-          }
-          onClick={() => {
-            setIsShowEmployee(false);
-            setTapName("Goals");
-            props.handleCilck("Goals");
-            setTabMembersList("");
-          }}
-        >
-          {Role === "HR" ? (
-            props.isNav ? (
+        {Role === "HR" ? (
+          <div
+            className={
+              "Goals" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              padding: props.isNav ? "3px 15px" : "0 15px",
+              justifyContent: props.isNav ? "flex-start" : "center",
+            }}
+            onClick={() => {
+              setIsShowEmployee(false);
+              setTapName("Goals");
+              props.handleCilck("Goals");
+              setTabMembersList("");
+            }}
+          >
+            {props.isNav ? (
               <div className={styles.optionIcon}>
                 <TbTargetArrow />
                 <span style={{ margin: "8px 0px 5px 10px" }}>Goals</span>
@@ -148,40 +167,49 @@ const NavBar = (props: any) => {
               <div className={styles.onlyIcon}>
                 <TbTargetArrow />
               </div>
-            )
-          ) : (
-            <></>
-          )}
-        </div>
-        <div
-          className={
-            "Manager" == tapName
-              ? styles.seletedOptionContainer
-              : styles.optionContainer
-          }
-          onClick={() => setIsShowEmployee(!isShowEmployee)}
-        >
-          {Role === "Manager" ? ( props.isNav?(
-            <div className={styles.optionIcon}>
-              <RiTeamFill />
-              <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
-              {isShowEmployee ? (
-                <FaChevronDown className={styles.DrpIcons} />
-              ) : (
-                <FaChevronRight className={styles.DrpIcons} />
-              )}
-            </div>):( <div className={styles.onlyIcon}>
-              <RiTeamFill />
-              {isShowEmployee ? (
-                <FaChevronDown className={styles.DrpIcons} />
-              ) : (
-                <FaChevronRight className={styles.DrpIcons} />
-              )}
-            </div>)
-          ) : (
-            <></>
-          )}
-        </div>
+            )}
+          </div>
+        ) : (
+          <></>
+        )}
+        {Role === "Manager" || Role === "Admin" ? (
+          <div
+            className={
+              "Manager" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              display: props.isNav ? "" : "flex",
+              justifyContent: props.isNav ? "flex-start" : "center",
+              padding: props.isNav ? "" : "0px",
+            }}
+            onClick={() => setIsShowEmployee(!isShowEmployee)}
+          >
+            {props.isNav ? (
+              <div className={styles.optionIcon}>
+                <HiUserGroup />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
+                {isShowEmployee ? (
+                  <FaChevronDown className={styles.DrpIcons} />
+                ) : (
+                  <FaChevronRight className={styles.DrpIcons} />
+                )}
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <HiUserGroup />
+                {isShowEmployee ? (
+                  <FaChevronDown className={styles.DrpIcons} />
+                ) : (
+                  <FaChevronRight className={styles.DrpIcons} />
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <></>
+        )}
         {isShowEmployee ? (
           <ul className={props.isNav ? styles.ul : styles.ul02}>
             {employeeList.map((emp) => {
@@ -201,7 +229,15 @@ const NavBar = (props: any) => {
                     }}
                   >
                     {props.isNav ? (
-                      <div style={{ display: "flex" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: props?.isNav
+                            ? "flex-start"
+                            : "stretch",
+                        }}
+                      >
                         <Persona
                           showOverflowTooltip
                           size={PersonaSize.size24}
@@ -226,31 +262,63 @@ const NavBar = (props: any) => {
             })}
           </ul>
         ) : null}
-
-        <div
-          className={
-            "Employee" == tapName
-              ? styles.seletedOptionContainer
-              : styles.optionContainer
-          }
-          onClick={() => {
-            setTabMembersList("");
-            setTapName("Employee");
-            setIsShowEmployee(false);
-            props.handleCilck("Employee");
-          }}
-        >
-          {props.isNav ? (
-            <div className={styles.optionIcon}>
-              <PiUserCircleGearBold />
-              <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
-            </div>
-          ) : (
-            <div className={styles.onlyIcon}>
-              <PiUserCircleGearBold />
-            </div>
-          )}
-        </div>
+        {Role === "Admin" ? (
+          <div
+            className={
+              "Employee" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              justifyContent: props?.isNav ? "flex-start" : "center",
+            }}
+            onClick={() => {
+              setTabMembersList("");
+              setTapName("Admin");
+              setIsShowEmployee(false);
+              props.handleCilck("Admin");
+            }}
+          >
+            {props.isNav ? (
+              <div className={styles.optionIcon}>
+                <PiUserCircleGearDuotone />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Admin</span>
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <PiUserCircleGearDuotone />
+              </div>
+            )}
+          </div>
+        ) : (
+          <div
+            className={
+              "Employee" == tapName
+                ? styles.seletedOptionContainer
+                : styles.optionContainer
+            }
+            style={{
+              justifyContent: props?.isNav ? "flex-start" : "center",
+            }}
+            onClick={() => {
+              setTabMembersList("");
+              setTapName("Employee");
+              setIsShowEmployee(false);
+              props.handleCilck("Employee");
+            }}
+          >
+            {props.isNav ? (
+              <div className={styles.optionIcon}>
+                <PiUserCircleDuotone />
+                <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
+              </div>
+            ) : (
+              <div className={styles.onlyIcon}>
+                <PiUserCircleDuotone />
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

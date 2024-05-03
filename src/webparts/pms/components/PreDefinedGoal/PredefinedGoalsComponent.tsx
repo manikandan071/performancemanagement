@@ -19,7 +19,7 @@ import { FaFileCircleCheck } from "react-icons/fa6";
 import { FaCommentDots } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
 import styles from "./PreDefinedGoalsStyle.module.scss";
-import "./goals.css";
+import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 
 const PredefinedGoals = (props: any) => {
@@ -32,12 +32,6 @@ const PredefinedGoals = (props: any) => {
   const [masterData, setMasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
-  // const [categoryHandleObj, setCategoryHandleObj] = useState<any>({
-  //   ID: null,
-  //   newCategory: "",
-  //   isNew: false,
-  //   isUpdate: false,
-  // });
   const [rowHandleObj, setRowHandleObj] = useState<any>({
     ID: null,
     commentType: "",
@@ -51,10 +45,10 @@ const PredefinedGoals = (props: any) => {
     userName: "",
     userEmail: "",
   });
-  // const [isPopup, setIsPopup] = useState<any>({
-  //   delPopup: false,
-  //   delIndex: null,
-  // });
+  const [goalDelPopup, setGoalDelPopup] = useState<any>({
+    delPopup: false,
+    delGoalId: null,
+  });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
   console.log(
@@ -62,6 +56,7 @@ const PredefinedGoals = (props: any) => {
     duplicateData,
     managerGoals,
     rowHandleObj,
+    goalDelPopup,
     appraisalCycleID
   );
 
@@ -303,43 +298,55 @@ const PredefinedGoals = (props: any) => {
     setCategories([...groupedArray]);
   };
   const addGoalFunction = (ind: number) => {
+    let duplicateArr = [...duplicateData];
     let tempArr = categories;
     let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
     let data = tempArr[index];
-    setDuplicateData([
-      ...duplicateData,
-      {
-        ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data ? data.GoalCategory : "ManagerGoal",
-        AssignToId: "",
-        ManagerComments: "",
-        EmployeeComments: "",
-        ManagerRating: 0,
-        EmployeeRating: 0,
-        AttachmentFiles: [],
-      },
-    ]);
-    categoryHandleFun([
-      ...duplicateData,
-      {
-        ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
-        GoalName: "",
-        isRowEdit: true,
-        isNew: true,
-        GoalCategory: data ? data.GoalCategory : "ManagerGoal",
-        AssignToId: "",
-        ManagerComments: "",
-        EmployeeComments: "",
-        ManagerRating: 0,
-        EmployeeRating: 0,
-        AttachmentFiles: [],
-      },
-    ]);
+    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    if (isEdit.length > 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      setDuplicateData([
+        ...duplicateData,
+        {
+          ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data ? data.GoalCategory : "ManagerGoal",
+          AssignToId: "",
+          ManagerComments: "",
+          EmployeeComments: "",
+          ManagerRating: 0,
+          EmployeeRating: 0,
+          AttachmentFiles: [],
+        },
+      ]);
+      categoryHandleFun([
+        ...duplicateData,
+        {
+          ID: Math.max(...duplicateData.map((o) => o.ID)) + 1,
+          GoalName: "",
+          isRowEdit: true,
+          isNew: true,
+          GoalCategory: data ? data.GoalCategory : "ManagerGoal",
+          AssignToId: "",
+          ManagerComments: "",
+          EmployeeComments: "",
+          ManagerRating: 0,
+          EmployeeRating: 0,
+          AttachmentFiles: [],
+        },
+      ]);
+    }
   };
   const goalSubmitFun = async (data: any) => {
+    setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
     let duplicateArr = [...duplicateData];
     let index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
     let tempObj = duplicateArr[index];
@@ -499,11 +506,15 @@ const PredefinedGoals = (props: any) => {
       });
     }
   };
-  const goalDeleteFun = (data: any) => {
-    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
-    let delObj = duplicateData[index];
-    // setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateData.filter((items) => items.ID != data.ID);
+  const goalDeleteFun = () => {
+    let duplicateArr = [...duplicateData];
+    let index = [...duplicateArr].findIndex(
+      (obj) => obj.ID === goalDelPopup.delGoalId
+    );
+    let delObj = duplicateArr[index];
+    let delArray = duplicateArr.filter(
+      (items) => items.ID != goalDelPopup.delGoalId
+    );
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
       .items.getById(delObj.ID)
@@ -512,10 +523,16 @@ const PredefinedGoals = (props: any) => {
         categoryHandleFun([...delArray]);
         setDuplicateData([...delArray]);
         setMasterData([...delArray]);
+        setGoalDelPopup({
+          ...goalDelPopup,
+          delPopup: false,
+          delGoalId: null,
+        });
       })
       .catch((err) => console.log(err));
   };
   const editCancelFun = (data: any) => {
+    setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
     let duplicateArr = [...duplicateData];
     let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
     let tempObjMain = masterData[indexMain];
@@ -712,7 +729,7 @@ const PredefinedGoals = (props: any) => {
           value={rowData.GoalName}
           rows={2}
           cols={30}
-          disabled={!props.isManager}
+          disabled={!props.isManager || !props.appraisalCycle.goalSubmit}
           onChange={(e) =>
             onChangeHandleFun(e.target.value, "GoalName", rowData.ID)
           }
@@ -763,7 +780,11 @@ const PredefinedGoals = (props: any) => {
                     value <= rowData.EmployeeRating ? "active" : ""
                   } ${value <= rating.EmployeeRating ? "active" : ""} ${
                     ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                  } ${props.isManager ? "disabled" : "show"}`}
+                  } ${
+                    !props.isManager && props.appraisalCycle.submitComments
+                      ? "show"
+                      : "disabled"
+                  }`}
                   onMouseOver={() => handleMouseOver(value, "Employee")}
                   onClick={() => {
                     onChangeHandleFun(index, "EmployeeRating", rowData.ID);
@@ -889,7 +910,11 @@ const PredefinedGoals = (props: any) => {
                     value <= rowData.ManagerRating ? "active" : ""
                   } ${value <= rating.MangerRating ? "active" : ""} ${
                     ![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""
-                  } ${!props.isManager ? "disabled" : "show"}`}
+                  } ${
+                    props.isManager && props.appraisalCycle.submitComments
+                      ? "Show"
+                      : "disabled"
+                  }`}
                   onMouseOver={() => handleMouseOver(value, "manger")}
                   onClick={() => {
                     onChangeHandleFun(index, "ManagerRating", rowData.ID);
@@ -1012,10 +1037,30 @@ const PredefinedGoals = (props: any) => {
             className={styles.editIcon}
             onClick={(e) => editRowFunction(rowData)}
           />
-          {props.isManager ? (
+
+          {props.isManager &&
+          props.appraisalCycle.goalSubmit &&
+          rowData.GoalCategory === "ManagerGoal" ? (
             <MdDelete
               className={styles.cancelIcon}
-              onClick={() => goalDeleteFun(rowData)}
+              onClick={() => {
+                let duplicateArr = [...duplicateData];
+                let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                if (isEdit.length > 0) {
+                  toast.current?.show({
+                    severity: "warn",
+                    summary: "Warning",
+                    detail:
+                      "Please save or cancel the current row before editing another row",
+                  });
+                } else {
+                  setGoalDelPopup({
+                    ...goalDelPopup,
+                    delPopup: true,
+                    delGoalId: rowData.ID,
+                  });
+                }
+              }}
             />
           ) : null}
         </div>
@@ -1029,7 +1074,7 @@ const PredefinedGoals = (props: any) => {
         {props.isManager ? (
           <MdDelete
             className={styles.cancelIcon}
-            onClick={() => goalDeleteFun(rowData)}
+            onClick={() => goalDeleteFun()}
           />
         ) : null}
       </div>
@@ -1071,19 +1116,6 @@ const PredefinedGoals = (props: any) => {
             orignalObj && orignalObj.ManagerComments
               ? orignalObj.ManagerComments
               : "";
-          obj.AttachmentFiles =
-            orignalObj && orignalObj.AttachmentFiles
-              ? orignalObj.AttachmentFiles.map((file: any) => {
-                  if (file.isStatus !== "new") {
-                    if (file.isStatus === "delete") {
-                      file.isStatus = "uploaded";
-                      return file;
-                    } else {
-                      return file;
-                    }
-                  }
-                })
-              : [];
           return obj;
         } else {
           obj.EmployeeComments =
@@ -1198,10 +1230,12 @@ const PredefinedGoals = (props: any) => {
                   value={rowHandleObj.comment}
                   disabled={
                     props.isManager &&
+                    props.appraisalCycle.submitComments &&
                     rowHandleObj.commentType === "Manager" &&
                     rowHandleObj.isEdit
                       ? false
                       : !props.isManager &&
+                        props.appraisalCycle.submitComments &&
                         rowHandleObj.commentType === "Employee" &&
                         rowHandleObj.isEdit
                       ? false
@@ -1218,6 +1252,7 @@ const PredefinedGoals = (props: any) => {
               </div>
               <div className="fileBtn" style={{ marginTop: "10px" }}>
                 {!props.isManager &&
+                props.appraisalCycle.submitComments &&
                 rowHandleObj.commentType === "Employee" &&
                 rowHandleObj.isEdit ? (
                   <FileUpload
@@ -1260,6 +1295,7 @@ const PredefinedGoals = (props: any) => {
                               {file.FileName}
                             </a>
                             {!props.isManager &&
+                            props.appraisalCycle.submitComments &&
                             rowHandleObj.commentType === "Employee" &&
                             rowHandleObj.isEdit ? (
                               <MdOutlineClose
@@ -1285,10 +1321,12 @@ const PredefinedGoals = (props: any) => {
                   }
                   hidden={
                     props.isManager &&
+                    props.appraisalCycle.submitComments &&
                     rowHandleObj.commentType === "Manager" &&
                     rowHandleObj.isEdit
                       ? false
                       : !props.isManager &&
+                        props.appraisalCycle.submitComments &&
                         rowHandleObj.commentType === "Employee" &&
                         rowHandleObj.isEdit
                       ? false
@@ -1305,8 +1343,49 @@ const PredefinedGoals = (props: any) => {
                 ></Button>
               </div>
             </Dialog>
+            <Dialog
+              header="Header"
+              visible={goalDelPopup.delPopup}
+              style={{ width: "25%" }}
+              onClick={(e) => e.stopPropagation()}
+              onHide={() =>
+                setGoalDelPopup({
+                  ...goalDelPopup,
+                  delPopup: false,
+                  delGoalId: null,
+                })
+              }
+            >
+              <div className="DeletePopup">
+                <p>Do you want to delete this Goal?</p>
+                <div>
+                  <Button
+                    onClick={() => goalDeleteFun()}
+                    // icon="pi pi-check"
+                    label="confirm"
+                    className="mr-2 dltBtn"
+                  ></Button>
+                  <Button
+                    onClick={() =>
+                      setGoalDelPopup({
+                        ...goalDelPopup,
+                        delPopup: false,
+                        delGoalId: null,
+                      })
+                    }
+                    text
+                    className="cancelBtn"
+                    // icon="pi pi-times"
+                    label="cancel"
+                  ></Button>
+                </div>
+              </div>
+            </Dialog>
           </div>
-          <div className="card">
+          <div
+            style={{ marginTop: "10px" }}
+            className={`${categories.length ? `card` : ""}`}
+          >
             <Accordion
               activeIndex={activeIndex}
               onTabChange={(e) => setActiveIndex(e.index)}
@@ -1407,29 +1486,38 @@ const PredefinedGoals = (props: any) => {
                           className="col1"
                           field="GoalName"
                           header="Goal Name"
-                          style={{ width: "45%" }}
+                          style={{
+                            width: "50%",
+                          }}
                           body={GoalnameBodyTemplate}
                         ></Column>
                         <Column
                           className="col1"
                           field="EmployeeRating"
-                          header="Employee Review"
-                          style={{ width: "20%" }}
+                          header="Employee Comments & Rating"
+                          style={{
+                            width: "20%",
+                          }}
                           body={EmployeeRatingBodyTemplate}
                         ></Column>
                         <Column
                           className="col1"
                           field="ManagerRating"
-                          header="Manager Review"
-                          style={{ width: "20%" }}
+                          header="Manager Comments & Rating"
+                          style={{
+                            width: "20%",
+                          }}
                           body={ManagerRatingBodyTemplate}
                         ></Column>
-                        <Column
-                          className="col4"
-                          header="Action"
-                          style={{ width: "15%" }}
-                          body={ActionBodyTemplate}
-                        ></Column>
+                        {props.appraisalCycle.submitComments ||
+                        (props.appraisalCycle.goalSubmit && props.isManager) ? (
+                          <Column
+                            className="col4"
+                            header="Action"
+                            style={{ width: "10%" }}
+                            body={ActionBodyTemplate}
+                          ></Column>
+                        ) : null}
                       </DataTable>
                     </div>
                   </AccordionTab>
@@ -1444,54 +1532,69 @@ const PredefinedGoals = (props: any) => {
               there are no predefined goals set at the moment
             </div>
           )}
-          <div className="managerGoal">
-            <span>Manager Goals</span>
-          </div>
-          <div className="managerGoalTable" style={{ position: "relative" }}>
-            <DataTable value={managerGoals} className="p-datatable-sm">
-              <Column
-                className="col1"
-                field="GoalName"
-                header="Goal Name"
-                style={{ width: "45%" }}
-                body={GoalnameBodyTemplate}
-              ></Column>
-              <Column
-                className="col1"
-                field="EmployeeRating"
-                header="Employee Rating"
-                style={{ width: "20%" }}
-                body={EmployeeRatingBodyTemplate}
-              ></Column>
-              <Column
-                className="col1"
-                field="ManagerRating"
-                header="Manager Rating"
-                style={{ width: "20%" }}
-                body={ManagerRatingBodyTemplate}
-              ></Column>
-              <Column
-                className="col4"
-                header="Action"
-                style={{ width: "15%" }}
-                body={ActionBodyTemplate}
-              ></Column>
-            </DataTable>
-
-            {props.isManager &&
-            props.appraisalCycle.isCurrentCycle &&
-            !duplicateData.some((data) => data.isNew) ? (
-              <div className="addMaganerGoal">
-                <GrAdd onClick={(e) => addGoalFunction(categories.length)} />
-              </div>
-            ) : null}
-          </div>
-          {managerGoals.length > 0 ? (
-            <></>
-          ) : (
+          {managerGoals.length > 0 ||
+          (props.isManager && props.appraisalCycle.goalSubmit) ? (
             <div>
-              <div className="noDataMsg">No Data Found</div>
+              <div className="managerGoal">
+                <span>Manager Goals</span>
+              </div>
+              <div
+                className="managerGoalTable"
+                style={{ position: "relative" }}
+              >
+                <DataTable value={managerGoals} className="p-datatable-sm">
+                  <Column
+                    className="col1"
+                    field="GoalName"
+                    header="Goal Name"
+                    style={{ width: "50%" }}
+                    body={GoalnameBodyTemplate}
+                  ></Column>
+                  <Column
+                    className="col1"
+                    field="EmployeeRating"
+                    header="Employee Comments & Rating"
+                    style={{ width: "20%" }}
+                    body={EmployeeRatingBodyTemplate}
+                  ></Column>
+                  <Column
+                    className="col1"
+                    field="ManagerRating"
+                    header="Manager Comments & Rating"
+                    style={{ width: "20%" }}
+                    body={ManagerRatingBodyTemplate}
+                  ></Column>
+                  {props.appraisalCycle.submitComments ||
+                  (props.appraisalCycle.goalSubmit && props.isManager) ? (
+                    <Column
+                      className="col4"
+                      header="Action"
+                      style={{ width: "10%" }}
+                      body={ActionBodyTemplate}
+                    ></Column>
+                  ) : null}
+                </DataTable>
+
+                {props.isManager &&
+                props.appraisalCycle.goalSubmit &&
+                !duplicateData.some((data) => data.isNew) ? (
+                  <div className="addMaganerGoal">
+                    <GrAdd
+                      onClick={(e) => addGoalFunction(categories.length)}
+                    />
+                  </div>
+                ) : null}
+              </div>
+              {managerGoals.length > 0 ? (
+                <></>
+              ) : (
+                <div>
+                  <div className="noDataMsg">No Data Found</div>
+                </div>
+              )}
             </div>
+          ) : (
+            <></>
           )}
         </>
       )}

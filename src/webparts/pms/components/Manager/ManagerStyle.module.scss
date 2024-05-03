@@ -1,40 +1,49 @@
-.container{
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-        margin-bottom: 30px;
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  // margin-bottom: 10px;
 }
-.background{
-    background-color:#f2f2fb;
-    padding: 18px;
-    border-radius: 10px;
-    // border: 1px solid #8776e487;
+.background {
+  background-color: #f6f5fb;
+  //   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  padding: 0px 18px 18px 18px;
+  border-radius: 10px;
+  height: 84vh;
+  border: 1px solid#00000010;
 }
+
 #workbenchPageContent {
-    max-width: 100%;
+  max-width: 100%;
 }
 
 .CanvasZone {
-    padding: 0 !important;
-    max-width: 100% !important;
-}
-.AppraisalCycles{
-    padding-right: 30px;
-    position: relative;
+  padding: 0 !important;
+  max-width: 100% !important;
 }
 
-.addCategory{
-    display: flex;
-    justify-content: flex-end;
-    margin: 10px 0px ;
+.AppraisalCycles {
+  padding-right: 15px;
+  position: relative;
+  button {
+    padding: 5px 10px !important;
+  }
 }
-.sample{
-    padding-right: 10px;
+
+.addCategory {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0px;
 }
-.sample :hover{
-    background-color: rgb(97, 176, 97) !important;
-    color : white !important;
+.sample {
+  padding-right: 10px;
 }
-.DrpYear{
-    padding-left: 30px;
+.sample :hover {
+  background-color: rgb(97, 176, 97) !important;
+  color: white !important;
+}
+.DrpYear {
+  padding: 10px;
+  padding-left: 30px;
 }
