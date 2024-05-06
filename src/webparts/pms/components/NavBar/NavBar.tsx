@@ -52,7 +52,7 @@ const NavBar = (props: any) => {
                 });
               } else if (obj.Roles == "Admin") {
                 setRole("Admin");
-                setTapName("Employee");
+                setTapName("Admin");
                 props.handleCilck("Admin");
                 obj.Members.forEach((user: any) => {
                   teamMembers.push({
@@ -175,7 +175,7 @@ const NavBar = (props: any) => {
         {Role === "Manager" || Role === "Admin" ? (
           <div
             className={
-              "Manager" == tapName
+              "Manager" == tapName 
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }
@@ -265,7 +265,7 @@ const NavBar = (props: any) => {
         {Role === "Admin" ? (
           <div
             className={
-              "Employee" == tapName
+              "Admin" == tapName
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }

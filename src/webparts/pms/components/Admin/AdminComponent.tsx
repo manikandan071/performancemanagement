@@ -11,6 +11,7 @@ import { DatePicker, mergeStyles } from "@fluentui/react";
 // import styles from "./AdminStyle.module.scss";
 import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
 import Loader from "../Loader/Loader";
+import "../masterStyle.css";
 
 const AdminComponent = () => {
   const rootClass = mergeStyles({
@@ -27,28 +28,12 @@ const AdminComponent = () => {
     },
   });
 
-  // const onFormatDate = (date?: Date): string => {
-  //   return !date
-  //     ? ""
-  //     : date.getDate() +
-  //         "/" +
-  //         (date.getMonth() + 1) +
-  //         "/" +
-  //         (date.getFullYear() % 100);
-  // };
+  
 
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [displayData, setDisplayData] = useState<any[]>([]);
   const [isLoader, setIsLoader] = useState<boolean>(false);
-  // const [updateDatas, setUpdateDatas] = useState<any>({
-  //   Id: null,
-  //   commentsSubmitSDate: "",
-  //   commentsSubmitEDate: "",
-  //   goalsSubmitSDate: "",
-  //   goalsSubmitEDate: "",
-  // });
-  //   const [date, setDate] = useState<any>(null);
   console.log(masterData, duplicateData, displayData);
 
   const getAppraisalList = () => {
@@ -90,17 +75,6 @@ const AdminComponent = () => {
     let tempObj = duplicateArr[index];
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
     setDuplicateData([...duplicateArr]);
-    // setUpdateDatas({
-    //   Id: tempObj.ID,
-    //   commentsSubmitSDate: moment(tempObj.commentsSubmitSDate).format(
-    //     "DD-MMM-YYYY"
-    //   ),
-    //   commentsSubmitEDate: moment(tempObj.commentsSubmitEDate).format(
-    //     "DD-MMM-YYYY"
-    //   ),
-    //   goalsSubmitSDate: moment(tempObj.goalsSubmitSDate).format("DD-MMM-YYYY"),
-    //   goalsSubmitEDate: moment(tempObj.goalsSubmitEDate).format("DD-MMM-YYYY"),
-    // });
   };
   const editCancelFun = (data: any) => {
     let duplicateArr = [...duplicateData];
@@ -151,89 +125,13 @@ const AdminComponent = () => {
       });
   };
 
-  // const goalSubmitFun = (rowData: any) => {
-  //   sp.web.lists
-  //     .getByTitle("AppraisalCycles")
-  //     .items.getById(updateDatas.Id)
-  //     .update({
-  //       commentsSubmitSDate: updateDatas.commentsSubmitSDate
-  //         ? updateDatas.commentsSubmitSDate
-  //         : "",
-  //       commentsSubmitEDate: updateDatas.commentsSubmitEDate
-  //         ? updateDatas.commentsSubmitEDate
-  //         : "",
-  //       goalsSubmitSDate: updateDatas.goalsSubmitSDate
-  //         ? updateDatas.goalsSubmitSDate
-  //         : "",
-  //       goalsSubmitEDate: updateDatas.goalsSubmitEDate
-  //         ? updateDatas.goalsSubmitEDate
-  //         : "",
-  //     })
-  //     .then((res) => {
-  //       masterData.forEach((obj) => {
-  //         if (obj.ID == updateDatas.Id) {
-  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
-  //             ? updateDatas.commentsSubmitSDate
-  //             : ""),
-  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
-  //               ? updateDatas.commentsSubmitEDate
-  //               : ""),
-  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
-  //               ? updateDatas.goalsSubmitSDate
-  //               : ""),
-  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
-  //               ? updateDatas.goalsSubmitEDate
-  //               : "");
-  //         }
-  //       });
-  //       displayData.forEach((obj) => {
-  //         if (obj.ID == updateDatas.Id) {
-  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
-  //             ? updateDatas.commentsSubmitSDate
-  //             : ""),
-  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
-  //               ? updateDatas.commentsSubmitEDate
-  //               : ""),
-  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
-  //               ? updateDatas.goalsSubmitSDate
-  //               : ""),
-  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
-  //               ? updateDatas.goalsSubmitEDate
-  //               : "");
-  //         }
-  //       });
-
-  //       let duplicateArr = [...duplicateData];
-  //       let indexMain = [...masterData].findIndex((obj: any) => obj.ID === rowData.ID);
-  //       let tempObjMain = masterData[indexMain];
-  //       if (tempObjMain) {
-  //         let index = [...duplicateArr].findIndex((obj: any) => obj.ID === rowData.ID);
-  //         duplicateArr[index] = tempObjMain;
-  //       } else {
-  //         duplicateArr = duplicateArr.filter((obj) => obj.ID !== rowData.ID);
-  //       }
-  //       setDuplicateData([...duplicateArr]);
-
-  //       // setUpdateDatas({
-  //       //   Id: null,
-  //       //   commentsSubmitSDate: "",
-  //       //   commentsSubmitEDate: "",
-  //       //   goalsSubmitSDate: "",
-  //       //   goalsSubmitEDate: "",
-  //       // });
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("err", err);
-  //     });
-  // };
-
   const handleDateSelection = (date: any, id: number, fieldName: any) => {
     let tempArr = [...duplicateData];
     let index = tempArr.findIndex((obj) => obj.ID === id);
     let tempObj = tempArr[index];
     let currentObj = {
       ID: tempObj.ID,
-      Year: tempObj.Title,
+      Year: tempObj.Year,
       cycleCategory: tempObj.cycleCategory,
       startDate: tempObj.startDate,
       endDate: tempObj.endDate,
@@ -254,8 +152,7 @@ const AdminComponent = () => {
     tempArr[index] = currentObj;
     setDuplicateData([...tempArr]);
     console.log(duplicateData, "DuplicateDatas", currentObj, "currentObj");
-    // const sample: any = { ...updateDatas };
-    // sample[fieldName] = moment(date).format("DD-MMM-YYYY");
+    
   };
 
   const ACNameBodyTemplate = (rowData: any) => {
@@ -279,7 +176,7 @@ const AdminComponent = () => {
       <div className={rootClass}>
         <DatePicker
           showMonthPickerAsOverlay={true}
-          value={rowData.commentsSubmitSDate}
+          value={rowData.goalsSubmitSDate}
           onSelectDate={(date) =>
             handleDateSelection(date, rowData.ID, "goalsSubmitSDate")
           }
@@ -367,6 +264,10 @@ const AdminComponent = () => {
   return isLoader ? (
     <Loader />
   ) : (
+    <>
+    <div className="AppraisalCycle">
+      <span>Appraisal Cycle</span>
+    </div>
     <div style={{ fontFamily: "Fluent MDL2 Hybrid Icons" }}>
       <DataTable value={displayData} className="p-datatable-sm">
         <Column
@@ -393,28 +294,28 @@ const AdminComponent = () => {
         <Column
           className="col1"
           field="goalsSubmitSDate"
-          header="goals submission start Date"
+          header="goals submit start Date"
           style={{ width: "15%" }}
           body={goalsSubmitSDateBodyTemplate}
         ></Column>
         <Column
           className="col1"
           field="goalsSubmitEDate"
-          header="goals submission end Date"
+          header="goals submit end Date"
           style={{ width: "15%" }}
           body={goalsSubmitEDateBodyTemplate}
         ></Column>
         <Column
           className="col1"
           field="commentsSubmitSDate"
-          header="Review submission start date"
+          header="Review submit start Date"
           style={{ width: "15%" }}
           body={commentsSubmitSDateBodyTemplate}
         ></Column>
         <Column
           className="col1"
           field="commentsSubmitEDate"
-          header="Review submission end date"
+          header="Review submit end Date"
           style={{ width: "15%" }}
           body={commentsSubmitEDateBodyTemplate}
         ></Column>
@@ -426,6 +327,7 @@ const AdminComponent = () => {
         ></Column>
       </DataTable>
     </div>
+    </>
   );
 };
 

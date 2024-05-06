@@ -220,7 +220,59 @@
     font-weight: 600;
 }
 
+.p-datatable-table th{
+    width : 11% !important;
+    color: #006c22;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid #e3e3e3;
+    padding: 10px;
+}
 
+.p-datatable-table td div{
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    color: rgb(100, 114, 140);
+    font-size: 13px;
+    
+}
+.p-datatable-table td{
+    border-right: 1px solid #e3e3e3;
+    padding: 10px;
+}
+
+.p-datatable-table td .fieldGroup-84 {
+    border: 1px solid #e3e3e3 !important;
+}
+
+.p-datatable-table td .fieldGroup-84 i{
+    color: #006c22 !important;
+}
+
+.table-117 .dayCell-118 {
+    color:rgb(100, 114, 140) !important
+}
+
+.monthAndYear-112 span{
+    color: #006c22 !important;
+}
+
+.ms-Callout .goTodayButton-108 {
+    color: #006c22 !important;
+}
+.AppraisalCycle span{
+    padding: 10px 20px;
+    background-color: #fff;
+    border: 1px solid #00710015;
+    border-left: 4px solid #61b061;
+    border-radius: 0 6px 6px 0;
+    color: #61b061;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+.AppraisalCycle{
+    margin: 10px 0px 25px 0px
+}
 
 
 
