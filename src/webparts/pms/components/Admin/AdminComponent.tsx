@@ -140,7 +140,6 @@ const AdminComponent = () => {
         ),
       })
       .then((res) => {
-        console.log(res);
         duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: false };
         setDuplicateData([...duplicateArr]);
         setDisplayData([...duplicateArr]);
