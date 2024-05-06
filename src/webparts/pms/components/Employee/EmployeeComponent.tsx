@@ -12,7 +12,6 @@ import { Dropdown } from "primereact/dropdown";
 import "../masterStyle.css";
 
 const EmployeeComponent = (props: any) => {
-  console.log(props);
   let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setmasterData] = useState<any[]>([]);
   const [cyclesList, setCycleList] = useState<any[]>([]);
@@ -24,7 +23,6 @@ const EmployeeComponent = (props: any) => {
     goalSubmit: false,
   });
   const [selectCycle, setSelectCycle] = useState<any>([]);
-  console.log(masterData, appraisalCycle, selectCycle);
 
   const getDetails = () => {
     sp.web.lists
@@ -126,7 +124,6 @@ const EmployeeComponent = (props: any) => {
   useEffect(() => {
     init();
   }, []);
-  console.log(masterData);
 
   const onChangeHandleFun = (value: any) => {
     setSelectCycle(value);

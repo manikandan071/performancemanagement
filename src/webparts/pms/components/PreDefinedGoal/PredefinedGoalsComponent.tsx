@@ -9,7 +9,6 @@ import { Button } from "primereact/button";
 // import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
-// import { HiPencil } from "react-icons/hi2";
 import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -23,7 +22,6 @@ import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 
 const PredefinedGoals = (props: any) => {
-  console.log(props);
   const toast = useRef<Toast>(null);
   let appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
@@ -50,15 +48,6 @@ const PredefinedGoals = (props: any) => {
     delGoalId: null,
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
-
-  console.log(
-    masterData,
-    duplicateData,
-    managerGoals,
-    rowHandleObj,
-    goalDelPopup,
-    appraisalCycleID
-  );
 
   const getDetails = () => {
     sp.web.lists
@@ -206,7 +195,7 @@ const PredefinedGoals = (props: any) => {
         setIsLoader(false);
       })
       .catch((err) => {
-        console.log("err", err);
+        console.log("get Data function error", err);
       });
   };
   const init = () => {
@@ -224,7 +213,7 @@ const PredefinedGoals = (props: any) => {
           }
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log("get user function error", err));
     getDetails();
   };
   useEffect(() => {
@@ -394,7 +383,7 @@ const PredefinedGoals = (props: any) => {
           await setDuplicateData([...duplicateArr]);
           await setMasterData([...duplicateArr]);
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log("PredefinedGoals submit error", err));
     } else if (tempObj.GoalName !== "") {
       sp.web.lists
         .getByTitle(`PredefinedGoals`)
@@ -448,7 +437,6 @@ const PredefinedGoals = (props: any) => {
                     res.item.attachmentFiles
                       .addMultiple(newFiles)
                       .then((res) => {
-                        console.log(res);
                         tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                           (file: any) => {
                             if (file.isStatus === "new") {
@@ -462,11 +450,11 @@ const PredefinedGoals = (props: any) => {
                         categoryHandleFun([...duplicateArr]);
                       })
                       .catch((err) => {
-                        console.log(err);
+                        console.log("Attachment add error", err);
                       });
                   }
                 })
-                .catch((err) => console.log(err));
+                .catch((err) => console.log("Attachment add error", err));
             });
           } else if (newFiles.length > 0) {
             res.item.attachmentFiles
@@ -492,11 +480,11 @@ const PredefinedGoals = (props: any) => {
                 categoryHandleFun([...duplicateArr]);
               })
               .catch((err) => {
-                console.log(err);
+                console.log("Attachment add error", err);
               });
           }
         })
-        .catch((err) => console.log(err));
+        .catch((err) => console.log("Attachment add error", err));
     } else {
       // alert("please enter Goal name");
       toast.current?.show({
@@ -529,7 +517,7 @@ const PredefinedGoals = (props: any) => {
           delGoalId: null,
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log("goal delete function error", err));
   };
   const editCancelFun = (data: any) => {
     setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
