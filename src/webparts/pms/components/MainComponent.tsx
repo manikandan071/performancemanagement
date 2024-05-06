@@ -47,7 +47,7 @@ const MainComponent = (props: any) => {
                 boxShadow: "0px 0px 8px rgba(0,0,0,0.2)",
                 position: "absolute",
                 right: "-13px",
-                top: "2%",
+                top: "4%",
                 color: "#000",
                 transition: "all .3s",
                 transform: isNavBar ? "rotate(180deg)" : "",
