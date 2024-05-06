@@ -9,11 +9,7 @@ import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import {
   DatePicker,
-  //   DayOfWeek,
-  //   Dropdown,
-  //   IDropdownOption,
   mergeStyles,
-  defaultDatePickerStrings,
 } from "@fluentui/react";
 // import styles from "./AdminStyle.module.scss";
 import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
@@ -33,19 +29,26 @@ const AdminComponent = () => {
     },
   });
 
-  const onFormatDate = (date?: Date): string => {
-    return !date
-      ? ""
-      : date.getDate() +
-          "/" +
-          (date.getMonth() + 1) +
-          "/" +
-          (date.getFullYear() % 100);
-  };
+  // const onFormatDate = (date?: Date): string => {
+  //   return !date
+  //     ? ""
+  //     : date.getDate() +
+  //         "/" +
+  //         (date.getMonth() + 1) +
+  //         "/" +
+  //         (date.getFullYear() % 100);
+  // };
 
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [displayData, setDisplayData] = useState<any[]>([]);
+  // const [updateDatas, setUpdateDatas] = useState<any>({
+  //   Id: null,
+  //   commentsSubmitSDate: "",
+  //   commentsSubmitEDate: "",
+  //   goalsSubmitSDate: "",
+  //   goalsSubmitEDate: "",
+  // });
   //   const [date, setDate] = useState<any>(null);
   console.log(masterData, duplicateData);
 
@@ -62,10 +65,10 @@ const AdminComponent = () => {
             cycleCategory: res.cycleCategory,
             startDate: res.startDate,
             endDate: res.endDate,
-            commentsSubmitSDate: res.commentsSubmitSDate,
-            commentsSubmitEDate: res.commentsSubmitEDate,
-            goalsSubmitSDate: res.goalsSubmitSDate,
-            goalsSubmitEDate: res.goalsSubmitEDate,
+            commentsSubmitSDate: new Date(res.commentsSubmitSDate),
+            commentsSubmitEDate: new Date(res.commentsSubmitEDate),
+            goalsSubmitSDate: new Date(res.goalsSubmitSDate),
+            goalsSubmitEDate: new Date(res.goalsSubmitEDate),
             isRowEdit: false,
           });
         });
@@ -88,6 +91,17 @@ const AdminComponent = () => {
     let tempObj = duplicateArr[index];
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
     setDuplicateData([...duplicateArr]);
+    // setUpdateDatas({
+    //   Id: tempObj.ID,
+    //   commentsSubmitSDate: moment(tempObj.commentsSubmitSDate).format(
+    //     "DD-MMM-YYYY"
+    //   ),
+    //   commentsSubmitEDate: moment(tempObj.commentsSubmitEDate).format(
+    //     "DD-MMM-YYYY"
+    //   ),
+    //   goalsSubmitSDate: moment(tempObj.goalsSubmitSDate).format("DD-MMM-YYYY"),
+    //   goalsSubmitEDate: moment(tempObj.goalsSubmitEDate).format("DD-MMM-YYYY"),
+    // });
   };
   const editCancelFun = (data: any) => {
     let duplicateArr = [...duplicateData];
@@ -102,6 +116,151 @@ const AdminComponent = () => {
     setDuplicateData([...duplicateArr]);
   };
 
+  const goalSubmitFun = (rowData: any) => {
+      sp.web.lists.getByTitle("AppraisalCycles").items.getById(rowData.ID).update({
+        commentsSubmitSDate: moment(rowData.commentsSubmitSDate).format("DD-MMM-YYYY"),
+        commentsSubmitEDate: moment(rowData.commentsSubmitEDate).format("DD-MMM-YYYY"),
+        goalsSubmitSDate: moment(rowData.goalsSubmitSDate).format("DD-MMM-YYYY"),
+        goalsSubmitEDate: moment(rowData.goalsSubmitEDate).format("DD-MMM-YYYY"),
+      }).then((res)=>{
+        console.log(res);
+        const updatedMasterData = masterData.map(obj => {
+          if (obj.ID === rowData.ID) {
+            return {
+              ...obj,
+              commentsSubmitSDate: rowData.commentsSubmitSDate || "",
+              commentsSubmitEDate: rowData.commentsSubmitEDate || "",
+              goalsSubmitSDate: rowData.goalsSubmitSDate || "",
+              goalsSubmitEDate: rowData.goalsSubmitEDate || "",
+            };
+          }
+          return obj;
+        });
+    
+        const updatedDisplayData = displayData.map(obj => {
+          if (obj.ID === rowData.ID) {
+            return {
+              ...obj,
+              commentsSubmitSDate: rowData.commentsSubmitSDate || "",
+              commentsSubmitEDate: rowData.commentsSubmitEDate || "",
+              goalsSubmitSDate: rowData.goalsSubmitSDate || "",
+              goalsSubmitEDate: rowData.goalsSubmitEDate || "",
+            };
+          }
+          return obj;
+        });
+    
+        const updatedDuplicateData = duplicateData.filter(obj => obj.ID !== rowData.ID);
+
+        setmasterData(updatedMasterData);
+        setDisplayData(updatedDisplayData);
+        setDuplicateData(updatedDuplicateData);
+        
+      }).catch((err)=>{
+        console.log(err);
+      })
+
+  }
+
+  // const goalSubmitFun = (rowData: any) => {
+  //   sp.web.lists
+  //     .getByTitle("AppraisalCycles")
+  //     .items.getById(updateDatas.Id)
+  //     .update({
+  //       commentsSubmitSDate: updateDatas.commentsSubmitSDate
+  //         ? updateDatas.commentsSubmitSDate
+  //         : "",
+  //       commentsSubmitEDate: updateDatas.commentsSubmitEDate
+  //         ? updateDatas.commentsSubmitEDate
+  //         : "",
+  //       goalsSubmitSDate: updateDatas.goalsSubmitSDate
+  //         ? updateDatas.goalsSubmitSDate
+  //         : "",
+  //       goalsSubmitEDate: updateDatas.goalsSubmitEDate
+  //         ? updateDatas.goalsSubmitEDate
+  //         : "",
+  //     })
+  //     .then((res) => {
+  //       masterData.forEach((obj) => {
+  //         if (obj.ID == updateDatas.Id) {
+  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
+  //             ? updateDatas.commentsSubmitSDate
+  //             : ""),
+  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
+  //               ? updateDatas.commentsSubmitEDate
+  //               : ""),
+  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
+  //               ? updateDatas.goalsSubmitSDate
+  //               : ""),
+  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
+  //               ? updateDatas.goalsSubmitEDate
+  //               : "");
+  //         }
+  //       });
+  //       displayData.forEach((obj) => {
+  //         if (obj.ID == updateDatas.Id) {
+  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
+  //             ? updateDatas.commentsSubmitSDate
+  //             : ""),
+  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
+  //               ? updateDatas.commentsSubmitEDate
+  //               : ""),
+  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
+  //               ? updateDatas.goalsSubmitSDate
+  //               : ""),
+  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
+  //               ? updateDatas.goalsSubmitEDate
+  //               : "");
+  //         }
+  //       });
+
+  //       let duplicateArr = [...duplicateData];
+  //       let indexMain = [...masterData].findIndex((obj: any) => obj.ID === rowData.ID);
+  //       let tempObjMain = masterData[indexMain];
+  //       if (tempObjMain) {
+  //         let index = [...duplicateArr].findIndex((obj: any) => obj.ID === rowData.ID);
+  //         duplicateArr[index] = tempObjMain;
+  //       } else {
+  //         duplicateArr = duplicateArr.filter((obj) => obj.ID !== rowData.ID);
+  //       }
+  //       setDuplicateData([...duplicateArr]);
+
+  //       // setUpdateDatas({
+  //       //   Id: null,
+  //       //   commentsSubmitSDate: "",
+  //       //   commentsSubmitEDate: "",
+  //       //   goalsSubmitSDate: "",
+  //       //   goalsSubmitEDate: "",
+  //       // });
+  //     })
+  //     .catch((err: any) => {
+  //       console.log("err", err);
+  //     });
+  // };
+
+  const handleDateSelection = (date: any, id:number, fieldName: any) => {
+    let tempArr=[...duplicateData];
+    let index = tempArr.findIndex((obj)=>obj.ID === id);
+    let tempObj=tempArr[index];
+    let currentObj={
+      ID: tempObj.ID,
+      Year: tempObj.Title,
+      cycleCategory: tempObj.cycleCategory,
+      startDate: tempObj.startDate,
+      endDate: tempObj.endDate,
+      commentsSubmitSDate: fieldName === "commentsSubmitSDate"?date:tempObj.commentsSubmitSDate,
+      commentsSubmitEDate: fieldName === "commentsSubmitEDate"?date:tempObj.commentsSubmitEDate,
+      goalsSubmitSDate: fieldName === "goalsSubmitSDate"?date:tempObj.goalsSubmitSDate,
+      goalsSubmitEDate: fieldName === "goalsSubmitEDate"?date:tempObj.goalsSubmitEDate,
+      isRowEdit : tempObj.isRowEdit
+    }
+    tempArr[index]=currentObj;
+    setDuplicateData([...tempArr]);
+    console.log(duplicateData,"DuplicateDatas" , currentObj,"currentObj")
+    // const sample: any = { ...updateDatas };
+    // sample[fieldName] = moment(date).format("DD-MMM-YYYY");
+  };
+
   const ACNameBodyTemplate = (rowData: any) => {
     return (
       <div>
@@ -110,47 +269,84 @@ const AdminComponent = () => {
     );
   };
   const startDateBodyTemplate = (rowData: any) => {
+    return <div>{moment(rowData.startDate).format("DD-MMM-YYYY")}</div>;
+  };
+
+  const endDateBodyTemplate = (rowData: any) => {
+    return <div>{moment(rowData.endDate).format("DD-MMM-YYYY")}</div>;
+  };
+
+  const goalsSubmitSDateBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div className={rootClass}>
         <DatePicker
-          placeholder="Select a date..."
-          ariaLabel="Select a date"
           showMonthPickerAsOverlay={true}
-          formatDate={onFormatDate}
-          strings={defaultDatePickerStrings}
+          value={rowData.commentsSubmitSDate}
+          onSelectDate={(date) => handleDateSelection(date,rowData.ID, "goalsSubmitSDate")}
         />
       </div>
     ) : (
-      <div>{moment(rowData.startDate).format("DD-MMM-YYYY")}</div>
+      <div>{moment(rowData.goalsSubmitSDate).format("DD-MM-YYYY")}</div>
     );
   };
-  const endDateBodyTemplate = (rowData: any) => {
-    return <div>{moment(rowData.endDate).format("DD-MMM-YYYY")}</div>;
-  };
-  const goalsSubmitSDateBodyTemplate = (rowData: any) => {
-    return <div>{moment(rowData.goalsSubmitSDate).format("DD-MM-YYYY")}</div>;
-  };
+
   const goalsSubmitEDateBodyTemplate = (rowData: any) => {
-    return (
-      <div>{moment(rowData.commentsSubmitEDate).format("DD-MM-YYYY")}</div>
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return duplicateData[index].isRowEdit ? (
+      <div className={rootClass}>
+        <DatePicker
+          showMonthPickerAsOverlay={true}
+          value={rowData.goalsSubmitEDate}
+          onSelectDate={(date) => handleDateSelection(date, rowData.ID, "goalsSubmitEDate")}
+        />
+      </div>
+    ) : (
+      <div>{moment(rowData.goalsSubmitEDate).format("DD-MM-YYYY")}</div>
     );
   };
+
   const commentsSubmitSDateBodyTemplate = (rowData: any) => {
-    return (
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return duplicateData[index].isRowEdit ? (
+      <div className={rootClass}>
+        <DatePicker
+         showMonthPickerAsOverlay={true}
+         value={rowData.commentsSubmitSDate}
+          onSelectDate={(date) =>
+            handleDateSelection(date, rowData.ID, "commentsSubmitSDate")
+          }
+        />
+      </div>
+    ) : (
       <div>{moment(rowData.commentsSubmitSDate).format("DD-MM-YYYY")}</div>
     );
   };
+
   const commentsSubmitEDateBodyTemplate = (rowData: any) => {
-    return <div>{moment(rowData.goalsSubmitEDate).format("DD-MM-YYYY")}</div>;
+    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    return duplicateData[index].isRowEdit ? (
+      <div className={rootClass}>
+        <DatePicker
+          showMonthPickerAsOverlay={true}
+          value={rowData.commentsSubmitEDate}
+          onSelectDate={(date) =>
+            handleDateSelection(date, rowData.ID, "commentsSubmitEDate")
+          }
+        />
+      </div>
+    ) : (
+      <div>{moment(rowData.commentsSubmitEDate).format("DD-MM-YYYY")}</div>
+    );
   };
+
   const ActionBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <IoMdCheckmark
           className={styles.submitIcon}
-          //   onClick={() => goalSubmitFun(rowData)}
+          onClick={() => goalSubmitFun(rowData)}
         />
         <MdOutlineClose
           className={styles.cancelIcon}
