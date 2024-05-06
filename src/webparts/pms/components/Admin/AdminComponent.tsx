@@ -7,10 +7,7 @@ import * as moment from "moment";
 import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
-import {
-  DatePicker,
-  mergeStyles,
-} from "@fluentui/react";
+import { DatePicker, mergeStyles } from "@fluentui/react";
 // import styles from "./AdminStyle.module.scss";
 import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
 
@@ -117,146 +114,116 @@ const AdminComponent = () => {
   };
 
   const goalSubmitFun = (rowData: any) => {
-      sp.web.lists.getByTitle("AppraisalCycles").items.getById(rowData.ID).update({
-        commentsSubmitSDate: moment(rowData.commentsSubmitSDate).format("DD-MMM-YYYY"),
-        commentsSubmitEDate: moment(rowData.commentsSubmitEDate).format("DD-MMM-YYYY"),
-        goalsSubmitSDate: moment(rowData.goalsSubmitSDate).format("DD-MMM-YYYY"),
-        goalsSubmitEDate: moment(rowData.goalsSubmitEDate).format("DD-MMM-YYYY"),
-      }).then((res)=>{
-        console.log(res);
-        const updatedMasterData = masterData.map(obj => {
-          if (obj.ID === rowData.ID) {
-            return {
-              ...obj,
-              commentsSubmitSDate: rowData.commentsSubmitSDate || "",
-              commentsSubmitEDate: rowData.commentsSubmitEDate || "",
-              goalsSubmitSDate: rowData.goalsSubmitSDate || "",
-              goalsSubmitEDate: rowData.goalsSubmitEDate || "",
-            };
-          }
-          return obj;
-        });
-    
-        const updatedDisplayData = displayData.map(obj => {
-          if (obj.ID === rowData.ID) {
-            return {
-              ...obj,
-              commentsSubmitSDate: rowData.commentsSubmitSDate || "",
-              commentsSubmitEDate: rowData.commentsSubmitEDate || "",
-              goalsSubmitSDate: rowData.goalsSubmitSDate || "",
-              goalsSubmitEDate: rowData.goalsSubmitEDate || "",
-            };
-          }
-          return obj;
-        });
-    
-        const updatedDuplicateData = duplicateData.filter(obj => obj.ID !== rowData.ID);
-
-        setmasterData(updatedMasterData);
-        setDisplayData(updatedDisplayData);
-        setDuplicateData(updatedDuplicateData);
-        
-      }).catch((err)=>{
-        console.log(err);
+    let tempArr = [...duplicateData];
+    let index = tempArr.findIndex((obj) => obj.ID === rowData.ID);
+    let tempObj = tempArr[index];
+    let currentObj = {
+      ID: tempObj.ID,
+      commentsSubmitSDate: tempObj.commentsSubmitSDate,
+      commentsSubmitEDate: tempObj.commentsSubmitEDate,
+      goalsSubmitSDate: tempObj.goalsSubmitSDate,
+      goalsSubmitEDate: tempObj.goalsSubmitEDate,
+    };
+    sp.web.lists
+      .getByTitle("AppraisalCycles")
+      .items.getById(currentObj.ID)
+      .update({
+        commentsSubmitSDate: moment(currentObj.commentsSubmitSDate).format(
+          "DD-MMM-YYYY"
+        ),
+        commentsSubmitEDate: moment(currentObj.commentsSubmitEDate).format(
+          "DD-MMM-YYYY"
+        ),
+        goalsSubmitSDate: moment(currentObj.goalsSubmitSDate).format(
+          "DD-MMM-YYYY"
+        ),
+        goalsSubmitEDate: moment(currentObj.goalsSubmitEDate).format(
+          "DD-MMM-YYYY"
+        ),
       })
+      .then((res) => {
+        console.log(res);
+        masterData.forEach((obj) => {
+          if (obj.ID == currentObj.ID) {
+            (obj.commentsSubmitSDate = currentObj.commentsSubmitSDate
+              ? currentObj.commentsSubmitSDate
+              : ""),
+              (obj.commentsSubmitEDate = currentObj.commentsSubmitEDate
+                ? currentObj.commentsSubmitEDate
+                : ""),
+              (obj.goalsSubmitSDate = currentObj.goalsSubmitSDate
+                ? currentObj.goalsSubmitSDate
+                : ""),
+              (obj.goalsSubmitEDate = currentObj.goalsSubmitEDate
+                ? currentObj.goalsSubmitEDate
+                : "");
+          }
+        });
+        displayData.forEach((obj) => {
+          if (obj.ID == currentObj.ID) {
+            (obj.commentsSubmitSDate = currentObj.commentsSubmitSDate
+              ? currentObj.commentsSubmitSDate
+              : ""),
+              (obj.commentsSubmitEDate = currentObj.commentsSubmitEDate
+                ? currentObj.commentsSubmitEDate
+                : ""),
+              (obj.goalsSubmitSDate = currentObj.goalsSubmitSDate
+                ? currentObj.goalsSubmitSDate
+                : ""),
+              (obj.goalsSubmitEDate = currentObj.goalsSubmitEDate
+                ? currentObj.goalsSubmitEDate
+                : "");
+          }
+        });
 
-  }
+        let duplicateArr = [...duplicateData];
+        let indexMain = [...masterData].findIndex(
+          (obj: any) => obj.ID === currentObj.ID
+        );
+        let tempObjMain = masterData[indexMain];
+        if (tempObjMain) {
+          let index = [...duplicateArr].findIndex(
+            (obj: any) => obj.ID === currentObj.ID
+          );
+          duplicateArr[index] = tempObjMain;
+        } else {
+          duplicateArr = duplicateArr.filter((obj) => obj.ID !== currentObj.ID);
+        }
+        setDuplicateData([...duplicateArr]);
+      })
+      
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
-  // const goalSubmitFun = (rowData: any) => {
-  //   sp.web.lists
-  //     .getByTitle("AppraisalCycles")
-  //     .items.getById(updateDatas.Id)
-  //     .update({
-  //       commentsSubmitSDate: updateDatas.commentsSubmitSDate
-  //         ? updateDatas.commentsSubmitSDate
-  //         : "",
-  //       commentsSubmitEDate: updateDatas.commentsSubmitEDate
-  //         ? updateDatas.commentsSubmitEDate
-  //         : "",
-  //       goalsSubmitSDate: updateDatas.goalsSubmitSDate
-  //         ? updateDatas.goalsSubmitSDate
-  //         : "",
-  //       goalsSubmitEDate: updateDatas.goalsSubmitEDate
-  //         ? updateDatas.goalsSubmitEDate
-  //         : "",
-  //     })
-  //     .then((res) => {
-  //       masterData.forEach((obj) => {
-  //         if (obj.ID == updateDatas.Id) {
-  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
-  //             ? updateDatas.commentsSubmitSDate
-  //             : ""),
-  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
-  //               ? updateDatas.commentsSubmitEDate
-  //               : ""),
-  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
-  //               ? updateDatas.goalsSubmitSDate
-  //               : ""),
-  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
-  //               ? updateDatas.goalsSubmitEDate
-  //               : "");
-  //         }
-  //       });
-  //       displayData.forEach((obj) => {
-  //         if (obj.ID == updateDatas.Id) {
-  //           (obj.commentsSubmitSDate = updateDatas.commentsSubmitSDate
-  //             ? updateDatas.commentsSubmitSDate
-  //             : ""),
-  //             (obj.commentsSubmitEDate = updateDatas.commentsSubmitEDate
-  //               ? updateDatas.commentsSubmitEDate
-  //               : ""),
-  //             (obj.goalsSubmitSDate = updateDatas.goalsSubmitSDate
-  //               ? updateDatas.goalsSubmitSDate
-  //               : ""),
-  //             (obj.goalsSubmitEDate = updateDatas.goalsSubmitEDate
-  //               ? updateDatas.goalsSubmitEDate
-  //               : "");
-  //         }
-  //       });
-
-  //       let duplicateArr = [...duplicateData];
-  //       let indexMain = [...masterData].findIndex((obj: any) => obj.ID === rowData.ID);
-  //       let tempObjMain = masterData[indexMain];
-  //       if (tempObjMain) {
-  //         let index = [...duplicateArr].findIndex((obj: any) => obj.ID === rowData.ID);
-  //         duplicateArr[index] = tempObjMain;
-  //       } else {
-  //         duplicateArr = duplicateArr.filter((obj) => obj.ID !== rowData.ID);
-  //       }
-  //       setDuplicateData([...duplicateArr]);
-
-  //       // setUpdateDatas({
-  //       //   Id: null,
-  //       //   commentsSubmitSDate: "",
-  //       //   commentsSubmitEDate: "",
-  //       //   goalsSubmitSDate: "",
-  //       //   goalsSubmitEDate: "",
-  //       // });
-  //     })
-  //     .catch((err: any) => {
-  //       console.log("err", err);
-  //     });
-  // };
-
-  const handleDateSelection = (date: any, id:number, fieldName: any) => {
-    let tempArr=[...duplicateData];
-    let index = tempArr.findIndex((obj)=>obj.ID === id);
-    let tempObj=tempArr[index];
-    let currentObj={
+  const handleDateSelection = (date: any, id: number, fieldName: any) => {
+    let tempArr = [...duplicateData];
+    let index = tempArr.findIndex((obj) => obj.ID === id);
+    let tempObj = tempArr[index];
+    let currentObj = {
       ID: tempObj.ID,
       Year: tempObj.Title,
       cycleCategory: tempObj.cycleCategory,
       startDate: tempObj.startDate,
       endDate: tempObj.endDate,
-      commentsSubmitSDate: fieldName === "commentsSubmitSDate"?date:tempObj.commentsSubmitSDate,
-      commentsSubmitEDate: fieldName === "commentsSubmitEDate"?date:tempObj.commentsSubmitEDate,
-      goalsSubmitSDate: fieldName === "goalsSubmitSDate"?date:tempObj.goalsSubmitSDate,
-      goalsSubmitEDate: fieldName === "goalsSubmitEDate"?date:tempObj.goalsSubmitEDate,
-      isRowEdit : tempObj.isRowEdit
-    }
-    tempArr[index]=currentObj;
+      commentsSubmitSDate:
+        fieldName === "commentsSubmitSDate"
+          ? date
+          : tempObj.commentsSubmitSDate,
+      commentsSubmitEDate:
+        fieldName === "commentsSubmitEDate"
+          ? date
+          : tempObj.commentsSubmitEDate,
+      goalsSubmitSDate:
+        fieldName === "goalsSubmitSDate" ? date : tempObj.goalsSubmitSDate,
+      goalsSubmitEDate:
+        fieldName === "goalsSubmitEDate" ? date : tempObj.goalsSubmitEDate,
+      isRowEdit: tempObj.isRowEdit,
+    };
+    tempArr[index] = currentObj;
     setDuplicateData([...tempArr]);
-    console.log(duplicateData,"DuplicateDatas" , currentObj,"currentObj")
+    console.log(duplicateData, "DuplicateDatas", currentObj, "currentObj");
     // const sample: any = { ...updateDatas };
     // sample[fieldName] = moment(date).format("DD-MMM-YYYY");
   };
@@ -283,7 +250,9 @@ const AdminComponent = () => {
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.commentsSubmitSDate}
-          onSelectDate={(date) => handleDateSelection(date,rowData.ID, "goalsSubmitSDate")}
+          onSelectDate={(date) =>
+            handleDateSelection(date, rowData.ID, "goalsSubmitSDate")
+          }
         />
       </div>
     ) : (
@@ -298,7 +267,9 @@ const AdminComponent = () => {
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.goalsSubmitEDate}
-          onSelectDate={(date) => handleDateSelection(date, rowData.ID, "goalsSubmitEDate")}
+          onSelectDate={(date) =>
+            handleDateSelection(date, rowData.ID, "goalsSubmitEDate")
+          }
         />
       </div>
     ) : (
@@ -311,8 +282,8 @@ const AdminComponent = () => {
     return duplicateData[index].isRowEdit ? (
       <div className={rootClass}>
         <DatePicker
-         showMonthPickerAsOverlay={true}
-         value={rowData.commentsSubmitSDate}
+          showMonthPickerAsOverlay={true}
+          value={rowData.commentsSubmitSDate}
           onSelectDate={(date) =>
             handleDateSelection(date, rowData.ID, "commentsSubmitSDate")
           }
