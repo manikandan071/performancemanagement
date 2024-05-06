@@ -53,8 +53,11 @@
 
 .hrGoals .p-accordion-tab {
     /* margin-bottom: 10px; */
-    border-bottom: 1px solid #00000010;
+    /* border-bottom: 1px solid #00000010; */
     border-radius: 6px 6px 0 0;
+}
+.p-accordion-tab{
+    margin-bottom: 10px;
 }
 
 .hrGoals .accordionMain a {
@@ -369,7 +372,8 @@
 }
 
 .card {
-    --bs-card-border-color: none !important;
+    border: none !important;
+    background-color: #f6f5fb;
 }
 
 .accordionMain .p-accordion-toggle-icon {
@@ -966,9 +970,9 @@
     box-shadow: none !important;
 }
 
-.card {
+/* .card {
     border: 1px solid #adadad20 !important;
-}
+} */
 
 .p-datatable-wrapper {
     border: 1px solid #adadad20;

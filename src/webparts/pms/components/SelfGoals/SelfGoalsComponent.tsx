@@ -20,7 +20,6 @@ import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 
 const SelfGoals = (props: any) => {
-  console.log(props);
   const toast = useRef<Toast>(null);
   let appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
@@ -48,7 +47,6 @@ const SelfGoals = (props: any) => {
     delPopup: false,
     delGoalId: null,
   });
-  console.log(masterData, duplicateData, rowHandleObj);
 
   const getDetails = () => {
     sp.web.lists
@@ -65,8 +63,6 @@ const SelfGoals = (props: any) => {
       .filter(`AppraisalCycleLookupId eq '${appraisalCycleID}'`)
       .get()
       .then((items) => {
-        // setTotalSFGoals([...items]);
-        console.log("items", items);
         const filterData = items.filter(
           (item) =>
             props.EmployeeEmail == item.AssignTo.EMail &&
@@ -269,7 +265,6 @@ const SelfGoals = (props: any) => {
                     res.item.attachmentFiles
                       .addMultiple(newFiles)
                       .then((res) => {
-                        console.log(res);
                         tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                           (file: any) => {
                             if (file.isStatus === "new") {
@@ -293,7 +288,6 @@ const SelfGoals = (props: any) => {
             res.item.attachmentFiles
               .addMultiple(newFiles)
               .then((res) => {
-                console.log(res);
                 let duplicateArr = [...duplicateData];
                 tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                   (file: any) => {
@@ -807,7 +801,6 @@ const SelfGoals = (props: any) => {
   };
 
   const fileDeleteFunction = (ind: number) => {
-    console.log(ind);
     let duplicateArr = [...duplicateData];
     let index = [...duplicateArr].findIndex(
       (obj: any) => obj.ID === rowHandleObj.ID

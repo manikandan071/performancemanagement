@@ -58,15 +58,6 @@ const Goals = () => {
   });
   const [cyclesList, setCycleList] = useState<any[]>([]);
 
-  console.log(
-    usersList,
-    categories,
-    masterData,
-    duplicateData,
-    predefinedGoalsList,
-    appraisalCycleId
-  );
-
   const getPredefinedGoals = (ACId: number) => {
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
@@ -75,7 +66,6 @@ const Goals = () => {
       .filter(`AppraisalCycleLookupId eq '${ACId}'`)
       .get()
       .then((res) => {
-        console.log(res);
         let tempArr: any = [];
         res.forEach((obj) => {
           tempArr.push({
@@ -176,7 +166,6 @@ const Goals = () => {
       .getByTitle("AppraisalCycles")
       .items.get()
       .then((cycle) => {
-        console.log(cycle);
         let tempArr: any = [];
         cycle.reverse();
         cycle.forEach((res) => {
@@ -277,7 +266,6 @@ const Goals = () => {
       .expand("Employee,Members")
       .get()
       .then((res) => {
-        console.log(res);
         if (res.length > 0) {
           let rolesSet = new Set();
           let uniqueArray = res.filter((data) => {
@@ -302,8 +290,6 @@ const Goals = () => {
             EmployeeID: number;
           }[] = [];
           res.forEach((obj) => {
-            console.log(obj);
-
             userArr.push({
               EmployeeName: obj.Employee.Title,
               UserEmail: obj.Employee.EMail,
@@ -351,7 +337,6 @@ const Goals = () => {
       }
       return acc;
     }, []);
-    console.log(groupedArray);
     setCategories([...groupedArray]);
   };
 
@@ -372,7 +357,6 @@ const Goals = () => {
           isRowEdit: true,
           isNew: true,
         });
-        console.log(tempArr, duplicateData);
         setDuplicateData([...tempArr]);
         categoryHandleFun([...tempArr]);
         setCategoryHandleObj({
@@ -432,7 +416,6 @@ const Goals = () => {
           });
         });
       }
-      console.log(tempObj);
       getUsersRoles();
     }
   };
@@ -596,7 +579,6 @@ const Goals = () => {
     };
 
     let validation = validationFun(tempObj);
-    console.log(validation);
 
     if (tempObj.isNew && validation) {
       sp.web.lists
@@ -681,8 +663,6 @@ const Goals = () => {
             }
           })
         );
-        console.log(permissionDeleted);
-
         const getUserDetails = usersList.filter(
           (item) => !allEmailIDs.has(`${item.UserEmail}`)
         );
@@ -870,7 +850,6 @@ const Goals = () => {
         .items.getById(tempObj.ID)
         .update(addObj)
         .then((res) => {
-          console.log(res);
           let duplicateArr = [...duplicateData];
           let index = [...duplicateArr].findIndex(
             (obj: any) => obj.ID === data.ID
