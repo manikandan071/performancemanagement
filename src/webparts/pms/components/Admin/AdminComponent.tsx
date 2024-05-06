@@ -175,7 +175,6 @@ const AdminComponent = () => {
                 : "");
           }
         });
-
         let duplicateArr = [...duplicateData];
         let indexMain = [...masterData].findIndex(
           (obj: any) => obj.ID === currentObj.ID
@@ -191,7 +190,6 @@ const AdminComponent = () => {
         }
         setDuplicateData([...duplicateArr]);
       })
-      
       .catch((err) => {
         console.log(err);
       });
