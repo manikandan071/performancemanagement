@@ -75,7 +75,6 @@ const NavBar = (props: any) => {
         console.log(err, "getRoleFunction");
       });
   };
-
   useEffect(() => {
     sp.web
       .currentUser()

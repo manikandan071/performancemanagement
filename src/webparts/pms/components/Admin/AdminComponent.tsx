@@ -28,8 +28,6 @@ const AdminComponent = () => {
     },
   });
 
-  
-
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [displayData, setDisplayData] = useState<any[]>([]);

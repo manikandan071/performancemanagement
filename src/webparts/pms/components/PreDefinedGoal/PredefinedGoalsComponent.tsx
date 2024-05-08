@@ -1332,7 +1332,7 @@ const PredefinedGoals = (props: any) => {
               </div>
             </Dialog>
             <Dialog
-              header="Header"
+              header="Delete"
               visible={goalDelPopup.delPopup}
               style={{ width: "25%" }}
               onClick={(e) => e.stopPropagation()}
