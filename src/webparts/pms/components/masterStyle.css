@@ -56,16 +56,19 @@
     /* border-bottom: 1px solid #00000010; */
     border-radius: 6px 6px 0 0;
 }
-.p-accordion-tab{
+/* .p-accordion-tab{
     margin-bottom: 10px;
-}
+} */
 
 .hrGoals .accordionMain a {
     text-decoration: none;
-    background-color: #fff;
-    padding: 15px;
+    /* background-color: #fff; */
+    padding: 17px 15px;
     color: #006c22;
     font-size: 14px;
+}
+.hrGoals .p-accordion-tab-active .p-accordion-header-link{
+    padding: 10px 15px;
 }
 
 .hrGoals .accordionMain a .p-accordion-toggle-icon {
@@ -145,7 +148,7 @@
 }
 
 .goalsTable table tbody tr td {
-    padding: 15px;
+    padding: 20px 15px;
     border-bottom: 1px solid #e3e3e3;
     /* border-right: 1px solid #e3e3e3; */
 }
@@ -224,12 +227,14 @@
 }
 
 .p-datatable-table th{
-    width : 11% !important;
+    /* width : 11% !important; */
     color: #006c22;
     font-weight: 600;
     font-size: 13px;
     border-bottom: 1px solid #e3e3e3;
-    padding: 10px;
+    padding: 10px 11px;
+    text-align: center;
+    /* background: #f6f5fb; */
 }
 
 .p-datatable-table td div{
@@ -243,16 +248,18 @@
     padding: 10px;
 }
 
-.p-datatable-table td .fieldGroup-84 {
-    border: 1px solid #e3e3e3 !important;
+.p-datatable-table td .ms-TextField-fieldGroup {
+    border: 1px solid #abeba8 !important;
 }
 
-.p-datatable-table td .fieldGroup-84 i{
+.p-datatable-table td .ms-TextField-fieldGroup i{
     color: #006c22 !important;
 }
-
+.p-datatable-table td .ms-TextField-fieldGroup div{
+    padding: 0px 25px 0px 0px!important;
+}
 .table-117 .dayCell-118 {
-    color:rgb(100, 114, 140) !important
+    color:rgb(100, 114, 140) !important;
 }
 
 .monthAndYear-112 span{
@@ -263,15 +270,14 @@
     color: #006c22 !important;
 }
 .AppraisalCycle span{
-    padding: 10px 20px;
-    background-color: #fff;
-    border: 1px solid #00710015;
-    border-left: 4px solid #61b061;
-    border-radius: 0 6px 6px 0;
-    color: #61b061;
-    font-size: 16px;
+padding: 9px 12px 10px 10px;
+    background-color: #d6f6e2;
+    border: 1px solid #f6f5fb;
+    border-left: 3px solid #1cbf1c;
+    border-radius: 0 5px 5px 0;
+    color: rgb(73, 105, 105);
+    font-size: 13px;
     font-weight: 500;
-    font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 .AppraisalCycle{
     margin: 10px 0px 25px 0px
@@ -328,9 +334,12 @@
     padding: 10px 0px;
 }
 
-.Goals {
+.predefinedGoal {
     display: flex;
-    /* margin-bottom: 10px; */
+    margin-bottom: 10px;
+}
+.selfGoal {
+    display: flex;
 }
 
 .p-dropdown-panel .p-dropdown-items .p-dropdown-item {
@@ -366,6 +375,21 @@
 
 /* Predefined Goals Style */
 
+.goalName{
+    width: 100%;
+    font-size: 13px;
+    color: #64728c;
+    font-family: Roboto,
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+.goalName svg{
+    margin: 0px 5px 2px 0px;
+    font-size: 18px;
+    color:#5eb670;
+}
+
 .p-accordion .p-accordion-header .p-accordion-header-link {
     border: none !important;
     /* border-bottom: 1px solid #adadad25 !important; */
@@ -377,15 +401,15 @@
 }
 
 .accordionMain .p-accordion-toggle-icon {
-    width: 14px;
-    height: 14px;
+    width: 12px;
+    height: 12px;
     color: #61b061;
 }
 
 .accordionMain .p-accordion-header-link {
     /* display: inline-block; */
     text-decoration: none;
-    background-color: #fff;
+    background-color: #f6f5fb;
     padding: 15px 15px;
     color: #006c22;
     font-size: 14px;
@@ -468,10 +492,9 @@
 
 .managerGoalTable table tbody .p-inputtext {
     width: 100%;
-    font-size: 13px;
     color: #626262;
     font-family: Roboto, Arial, Helvetica, sans-serif;
-    font-size: 12px;
+    font-size: 13px;
     padding: 5px;
     margin-top: 5px;
 }
@@ -631,15 +654,14 @@
 }
 
 .managerGoal span {
-    padding: 10px 20px;
-    background-color: #fff;
-    border: 1px solid #00710015;
-    border-left: 4px solid #61b061;
-    border-radius: 0 6px 6px 0;
-    color: #61b061;
-    font-size: 16px;
+    padding: 9px 10px 10px 10px; 
+    background-color: #d6f6e2;
+    border: 1px solid #f6f5fb;
+    border-left: 3px solid #1cbf1c;
+    border-radius: 0 5px 5px 0;
+    color: rgb(73, 105, 105);
+    font-size: 13px;
     font-weight: 500;
-    font-family: Roboto, Arial, Helvetica, sans-serif;
 }
 
 .addMaganerGoal {
@@ -961,9 +983,10 @@
 .p-accordion-tab-active .p-accordion-header-link {
     box-shadow: rgb(129 129 218 / 25%) 0px 6px 12px -2px,
         rgb(21 199 78 / 30%) 0px 3px 7px -3px;
-    background-color: #ccffcc5e !important;
+    background-color: #fff !important;
     border-bottom: 0 !important;
     z-index: 10;
+    color:#61b061 !important;
 }
 
 .p-button:focus {
@@ -1051,4 +1074,29 @@
     font-family: Roboto, Arial, Helvetica, sans-serif;
         color: #64728c;
         font-size: 15px;
+}
+.adminDashboard{
+    height: 84vh;
+    padding: 18px;
+    border-radius: 10px;
+    background-color: #f6f5fb;
+    border: 1px solid #00000010;
+}
+.adminTable .p-datatable .p-datatable-tbody>tr>td{
+   text-align: center!important;
+}
+.adminTable .p-datatable-table th {
+    /* width : 11% !important; */
+    color: #006c22;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid #e3e3e3;
+    padding: 10px 20px;
+    text-align: center;
+    background: #f6f5fb;
+}
+.p-component:disabled,
+.p-disabled{
+    opacity: 1;
+    color: rgb(100, 114, 140)!important;
 }

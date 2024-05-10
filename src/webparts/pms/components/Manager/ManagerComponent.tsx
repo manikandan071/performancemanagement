@@ -226,7 +226,9 @@ const ManagerComponent = (props: any) => {
             />
           </div>
         </div>
-        <div className="Goals">
+        <div
+          className={show == "PredefinedGoals" ? "predefinedGoal" : "selfGoal"}
+        >
           <div
             className={styles.AppraisalCycles}
             style={{ paddingBottom: "10px" }}
@@ -237,8 +239,9 @@ const ManagerComponent = (props: any) => {
               style={{
                 color: show == "PredefinedGoals" ? "#496969" : "#a5c0c0",
                 borderBottom:
-                  show == "PredefinedGoals" ? "2px solid green" : "",
-                // backgroundColor: show == "PredefinedGoals" ? "#35803510" : "",
+                  show == "PredefinedGoals" ? "2px solid #1cbf1c" : "",
+                backgroundColor: show == "PredefinedGoals" ? "#00ff3921" : "",
+                borderRadius: "0px",
               }}
             >
               <PiTargetBold
@@ -248,7 +251,7 @@ const ManagerComponent = (props: any) => {
                   color: show == "PredefinedGoals" ? "#ae9447" : "#a5c0c0",
                 }}
               />
-              PREDEFINEDGOALS
+              PREDEFINE GOALS
             </Button>
           </div>
           <div className={styles.AppraisalCycles}>
@@ -257,8 +260,9 @@ const ManagerComponent = (props: any) => {
               size="small"
               style={{
                 color: show == "SelfGoals" ? "#496969" : "#a5c0c0",
-                borderBottom: show == "SelfGoals" ? "2px solid green" : "",
-                // backgroundColor: show == "SelfGoals" ? "#35803510" : "",
+                borderBottom: show == "SelfGoals" ? "2px solid #1cbf1c" : "",
+                backgroundColor: show == "SelfGoals" ? "#00ff3921" : "",
+                borderRadius: "0px",
               }}
             >
               <BiTargetLock
@@ -268,7 +272,7 @@ const ManagerComponent = (props: any) => {
                   color: show == "SelfGoals" ? "#ae9447" : "#a5c0c0",
                 }}
               />
-              SELFGOALS
+              SELF GOALS
             </Button>
           </div>
         </div>
@@ -276,7 +280,7 @@ const ManagerComponent = (props: any) => {
           style={{
             height: "80%",
             overflow: "auto",
-            marginTop: show == "PredefinedGoals" ? "20px" : "0px",
+            // marginTop: show == "PredefinedGoals" ? "20px" : "0px",
           }}
         >
           {show == "PredefinedGoals" ? (

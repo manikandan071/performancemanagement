@@ -7,28 +7,26 @@ import * as moment from "moment";
 import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
-import { DatePicker, mergeStyles } from "@fluentui/react";
+import { DatePicker } from "@fluentui/react";
 // import styles from "./AdminStyle.module.scss";
 import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
 import Loader from "../Loader/Loader";
 import "../masterStyle.css";
 
 const AdminComponent = () => {
-  const rootClass = mergeStyles({
-    maxWidth: 300,
-    fontFamily: "Fluent MDL2 Hybrid Icons !important",
-    selectors: {
-      "> *": { marginBottom: 15 },
-      ".icon-95": {
-        fontFamily: "Fluent MDL2 Hybrid Icons !important",
-      },
-      ".root-110": {
-        fontFamily: "Fluent MDL2 Hybrid Icons !important",
-      },
-    },
-  });
-
-  
+  // const rootClass = mergeStyles({
+  //   maxWidth: 300,
+  //   fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //   selectors: {
+  //     "> *": { marginBottom: 15 },
+  //     ".icon-95": {
+  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //     },
+  //     ".root-110": {
+  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //     },
+  //   },
+  // });
 
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -152,12 +150,15 @@ const AdminComponent = () => {
     tempArr[index] = currentObj;
     setDuplicateData([...tempArr]);
     console.log(duplicateData, "DuplicateDatas", currentObj, "currentObj");
-    
   };
 
   const ACNameBodyTemplate = (rowData: any) => {
     return (
-      <div>
+      <div
+        style={{
+          padding: "9px 0px",
+        }}
+      >
         {rowData.Year} - {rowData.cycleCategory}
       </div>
     );
@@ -173,7 +174,7 @@ const AdminComponent = () => {
   const goalsSubmitSDateBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
-      <div className={rootClass}>
+      <div>
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.goalsSubmitSDate}
@@ -190,7 +191,7 @@ const AdminComponent = () => {
   const goalsSubmitEDateBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
-      <div className={rootClass}>
+      <div>
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.goalsSubmitEDate}
@@ -207,7 +208,7 @@ const AdminComponent = () => {
   const commentsSubmitSDateBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
-      <div className={rootClass}>
+      <div>
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.commentsSubmitSDate}
@@ -224,7 +225,7 @@ const AdminComponent = () => {
   const commentsSubmitEDateBodyTemplate = (rowData: any) => {
     let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
     return duplicateData[index].isRowEdit ? (
-      <div className={rootClass}>
+      <div>
         <DatePicker
           showMonthPickerAsOverlay={true}
           value={rowData.commentsSubmitEDate}
@@ -265,68 +266,68 @@ const AdminComponent = () => {
     <Loader />
   ) : (
     <>
-    <div className="AppraisalCycle">
-      <span>Appraisal Cycle</span>
-    </div>
-    <div style={{ fontFamily: "Fluent MDL2 Hybrid Icons" }}>
-      <DataTable value={displayData} className="p-datatable-sm">
-        <Column
-          className="col1"
-          field="Year"
-          header="Appraisal Year"
-          style={{ width: "10%" }}
-          body={ACNameBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="startDate"
-          header="Cycle start date"
-          style={{ width: "10%" }}
-          body={startDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="endDate"
-          header="Cycle end date"
-          style={{ width: "10%" }}
-          body={endDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="goalsSubmitSDate"
-          header="goals submit start Date"
-          style={{ width: "15%" }}
-          body={goalsSubmitSDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="goalsSubmitEDate"
-          header="goals submit end Date"
-          style={{ width: "15%" }}
-          body={goalsSubmitEDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="commentsSubmitSDate"
-          header="Review submit start Date"
-          style={{ width: "15%" }}
-          body={commentsSubmitSDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col1"
-          field="commentsSubmitEDate"
-          header="Review submit end Date"
-          style={{ width: "15%" }}
-          body={commentsSubmitEDateBodyTemplate}
-        ></Column>
-        <Column
-          className="col4"
-          header="Action"
-          style={{ width: "10%" }}
-          body={ActionBodyTemplate}
-        ></Column>
-      </DataTable>
-    </div>
+      <div className="AppraisalCycle">
+        <span>APPRAISAL CYCLE</span>
+      </div>
+      <div className="adminTable">
+        <DataTable value={displayData} className="p-datatable-sm">
+          <Column
+            className="col1"
+            field="Year"
+            header="Appraisal Year"
+            style={{ width: "10%" }}
+            body={ACNameBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="startDate"
+            header="Cycle start date"
+            style={{ width: "10%" }}
+            body={startDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="endDate"
+            header="Cycle end date"
+            style={{ width: "10%" }}
+            body={endDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="goalsSubmitSDate"
+            header="goals submit start Date"
+            style={{ width: "15%" }}
+            body={goalsSubmitSDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="goalsSubmitEDate"
+            header="goals submit end Date"
+            style={{ width: "15%" }}
+            body={goalsSubmitEDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="commentsSubmitSDate"
+            header="Review submit start Date"
+            style={{ width: "15%" }}
+            body={commentsSubmitSDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col1"
+            field="commentsSubmitEDate"
+            header="Review submit end Date"
+            style={{ width: "15%" }}
+            body={commentsSubmitEDateBodyTemplate}
+          ></Column>
+          <Column
+            className="col4"
+            header="Action"
+            style={{ width: "10%" }}
+            body={ActionBodyTemplate}
+          ></Column>
+        </DataTable>
+      </div>
     </>
   );
 };
