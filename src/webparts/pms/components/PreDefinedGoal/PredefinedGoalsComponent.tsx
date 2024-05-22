@@ -49,6 +49,8 @@ const PredefinedGoals = (props: any) => {
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
+  console.log(props, "predefinedProps");
+
   const getDetails = () => {
     sp.web.lists
       .getByTitle("PredefinedGoals")
@@ -1479,24 +1481,29 @@ const PredefinedGoals = (props: any) => {
                           }}
                           body={GoalnameBodyTemplate}
                         ></Column>
-                        <Column
-                          className="col1"
-                          field="EmployeeRating"
-                          header="Employee Comments & Rating"
-                          style={{
-                            width: "20%",
-                          }}
-                          body={EmployeeRatingBodyTemplate}
-                        ></Column>
-                        <Column
-                          className="col1"
-                          field="ManagerRating"
-                          header="Manager Comments & Rating"
-                          style={{
-                            width: "20%",
-                          }}
-                          body={ManagerRatingBodyTemplate}
-                        ></Column>
+                        {props.appraisalCycle.submitComments ? (
+                          <Column
+                            className="col1"
+                            field="EmployeeRating"
+                            header="Employee Comments & Rating"
+                            style={{
+                              width: "20%",
+                            }}
+                            body={EmployeeRatingBodyTemplate}
+                          ></Column>
+                        ) : null}
+                        {props.appraisalCycle.submitComments ? (
+                          <Column
+                            className="col1"
+                            field="ManagerRating"
+                            header="Manager Comments & Rating"
+                            style={{
+                              width: "20%",
+                            }}
+                            body={ManagerRatingBodyTemplate}
+                          ></Column>
+                        ) : null}
+
                         {props.appraisalCycle.submitComments ||
                         (props.appraisalCycle.goalSubmit && props.isManager) ? (
                           <Column
@@ -1538,20 +1545,25 @@ const PredefinedGoals = (props: any) => {
                     style={{ width: "50%" }}
                     body={GoalnameBodyTemplate}
                   ></Column>
-                  <Column
-                    className="col1"
-                    field="EmployeeRating"
-                    header="Employee Comments & Rating"
-                    style={{ width: "20%" }}
-                    body={EmployeeRatingBodyTemplate}
-                  ></Column>
-                  <Column
-                    className="col1"
-                    field="ManagerRating"
-                    header="Manager Comments & Rating"
-                    style={{ width: "20%" }}
-                    body={ManagerRatingBodyTemplate}
-                  ></Column>
+                  {props.appraisalCycle.submitComments ? (
+                    <Column
+                      className="col1"
+                      field="EmployeeRating"
+                      header="Employee Comments & Rating"
+                      style={{ width: "20%" }}
+                      body={EmployeeRatingBodyTemplate}
+                    ></Column>
+                  ) : null}
+                  {props.appraisalCycle.submitComments ? (
+                    <Column
+                      className="col1"
+                      field="ManagerRating"
+                      header="Manager Comments & Rating"
+                      style={{ width: "20%" }}
+                      body={ManagerRatingBodyTemplate}
+                    ></Column>
+                  ) : null}
+
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (
                     <Column
