@@ -7,7 +7,8 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
-import { HiPencil } from "react-icons/hi2";
+// import { HiPencil } from "react-icons/hi2";
+import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { GrAdd } from "react-icons/gr";
@@ -15,6 +16,7 @@ import { MdDelete } from "react-icons/md";
 import { FaCommentDots } from "react-icons/fa6";
 import { FaFileCircleCheck } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
+import { RiInformationFill } from "react-icons/ri";
 import styles from "./SelfGoalsStyle.module.scss";
 import "../masterStyle.css";
 import Loader from "../Loader/Loader";
@@ -453,28 +455,13 @@ const SelfGoals = (props: any) => {
           }
         />
       ) : (
-        <div
-          style={{
-            fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-            color: "#64728c",
-            fontSize: "13px",
-            width: "100%",
-          }}
-        >
+        <div className="goalName">
+          <RiInformationFill />
           {rowData.GoalName}
         </div>
       )
     ) : (
-      <div
-        style={{
-          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-          color: "#64728c",
-          fontSize: "13px",
-          width: "100%",
-        }}
-      >
-        {rowData.GoalName}
-      </div>
+      <div className="goalName">{rowData.GoalName}</div>
     );
   };
   const EmployeeRatingBodyTemplate = (rowData: any) => {
@@ -751,7 +738,7 @@ const SelfGoals = (props: any) => {
         </div>
       ) : (
         <div>
-          <HiPencil
+          <MdEditDocument
             className={styles.editIcon}
             onClick={(e) => editRowFunction(rowData)}
           />
@@ -784,7 +771,7 @@ const SelfGoals = (props: any) => {
       )
     ) : (
       <div>
-        <HiPencil
+        <MdEditDocument
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
         />
@@ -1109,8 +1096,11 @@ const SelfGoals = (props: any) => {
                 {props.isManager &&
                 props.appraisalCycle.goalSubmit &&
                 !duplicateData.some((data) => data.isNew) ? (
-                  <div className="addMaganerGoal">
-                    <GrAdd onClick={(e) => addGoalFunction()} />
+                  <div
+                    className="addMaganerGoal"
+                    onClick={(e) => addGoalFunction()}
+                  >
+                    <GrAdd />
                   </div>
                 ) : null}
               </div>

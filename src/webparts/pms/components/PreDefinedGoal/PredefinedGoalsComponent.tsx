@@ -6,9 +6,9 @@ import { Accordion, AccordionTab } from "primereact/accordion";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-// import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Dialog } from "primereact/dialog";
+// import { HiPencil } from "react-icons/hi2";
 import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -18,6 +18,7 @@ import { FaFileCircleCheck } from "react-icons/fa6";
 import { FaCommentDots } from "react-icons/fa6";
 import { FileUpload } from "primereact/fileupload";
 import styles from "./PreDefinedGoalsStyle.module.scss";
+import { RiInformationFill } from "react-icons/ri";
 import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 
@@ -190,9 +191,12 @@ const PredefinedGoals = (props: any) => {
             isNew: false,
           });
         });
+        let splitCatList = categorizedItems.sort((a: any, b: any) =>
+          a.GoalCategory.localeCompare(b.GoalCategory)
+        );
         setDuplicateData([...tempArr]);
         setManagerGoals([...managerGoals]);
-        setCategories([...categorizedItems]);
+        setCategories([...splitCatList]);
         setMasterData([...tempArr]);
         setIsLoader(false);
       })
@@ -285,8 +289,11 @@ const PredefinedGoals = (props: any) => {
       }
       return acc;
     }, []);
+    let splitCatList = groupedArray.sort((a: any, b: any) =>
+      a.GoalCategory.localeCompare(b.GoalCategory)
+    );
     setManagerGoals([...managerGoals]);
-    setCategories([...groupedArray]);
+    setCategories([...splitCatList]);
   };
   const addGoalFunction = (ind: number) => {
     let duplicateArr = [...duplicateData];
@@ -725,28 +732,13 @@ const PredefinedGoals = (props: any) => {
           }
         />
       ) : (
-        <div
-          style={{
-            fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-            color: "#64728c",
-            fontSize: "13px",
-            width: "100%",
-          }}
-        >
+        <div className="goalName">
+          <RiInformationFill />
           {rowData.GoalName}
         </div>
       )
     ) : (
-      <div
-        style={{
-          fontFamily: "Roboto, Arial, Helvetica, sans-serif",
-          color: "#64728c",
-          fontSize: "13px",
-          width: "100%",
-        }}
-      >
-        {rowData.GoalName}
-      </div>
+      <div className="goalName">{rowData.GoalName}</div>
     );
   };
   const EmployeeRatingBodyTemplate = (rowData: any) => {
@@ -1070,7 +1062,6 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-
   const fileDeleteFunction = (ind: number) => {
     let duplicateArr = duplicateData;
     let index = duplicateArr.findIndex(
@@ -1094,7 +1085,6 @@ const PredefinedGoals = (props: any) => {
       setRowHandleObj({ ...rowHandleObj, files: orignalObj.AttachmentFiles });
     }
   };
-
   const dialogCancelFuntion = () => {
     let masterArr = [...masterData];
     let index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
@@ -1373,7 +1363,7 @@ const PredefinedGoals = (props: any) => {
             </Dialog>
           </div>
           <div
-            style={{ marginTop: "10px" }}
+            // style={{ marginTop: "10px" }}
             className={`${categories.length ? `card` : ""}`}
           >
             <Accordion
@@ -1477,10 +1467,11 @@ const PredefinedGoals = (props: any) => {
                           field="GoalName"
                           header="Goal Name"
                           style={{
-                            width: "50%",
+                            width: "46%",
                           }}
                           body={GoalnameBodyTemplate}
                         ></Column>
+
                         {props.appraisalCycle.submitComments ? (
                           <Column
                             className="col1"
@@ -1504,6 +1495,25 @@ const PredefinedGoals = (props: any) => {
                           ></Column>
                         ) : null}
 
+                        <Column
+                          className="col1"
+                          field="EmployeeRating"
+                          header="Employee Comments & Rating"
+                          style={{
+                            width: "22%",
+                          }}
+                          body={EmployeeRatingBodyTemplate}
+                        ></Column>
+                        <Column
+                          className="col1"
+                          field="ManagerRating"
+                          header="Manager Comments & Rating"
+                          style={{
+                            width: "22%",
+                          }}
+                          body={ManagerRatingBodyTemplate}
+                        ></Column>
+                        
                         {props.appraisalCycle.submitComments ||
                         (props.appraisalCycle.goalSubmit && props.isManager) ? (
                           <Column
@@ -1531,7 +1541,7 @@ const PredefinedGoals = (props: any) => {
           (props.isManager && props.appraisalCycle.goalSubmit) ? (
             <div>
               <div className="managerGoal">
-                <span>Manager Goals</span>
+                <span>MANAGER GOALS</span>
               </div>
               <div
                 className="managerGoalTable"
@@ -1542,9 +1552,10 @@ const PredefinedGoals = (props: any) => {
                     className="col1"
                     field="GoalName"
                     header="Goal Name"
-                    style={{ width: "50%" }}
+                    style={{ width: "46%" }}
                     body={GoalnameBodyTemplate}
                   ></Column>
+
                   {props.appraisalCycle.submitComments ? (
                     <Column
                       className="col1"
@@ -1564,6 +1575,21 @@ const PredefinedGoals = (props: any) => {
                     ></Column>
                   ) : null}
 
+                  <Column
+                    className="col1"
+                    field="EmployeeRating"
+                    header="Employee Comments & Rating"
+                    style={{ width: "22%" }}
+                    body={EmployeeRatingBodyTemplate}
+                  ></Column>
+                  <Column
+                    className="col1"
+                    field="ManagerRating"
+                    header="Manager Comments & Rating"
+                    style={{ width: "22%" }}
+                    body={ManagerRatingBodyTemplate}
+                  ></Column>
+                  
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (
                     <Column
@@ -1578,10 +1604,11 @@ const PredefinedGoals = (props: any) => {
                 {props.isManager &&
                 props.appraisalCycle.goalSubmit &&
                 !duplicateData.some((data) => data.isNew) ? (
-                  <div className="addMaganerGoal">
-                    <GrAdd
-                      onClick={(e) => addGoalFunction(categories.length)}
-                    />
+                  <div
+                    className="addMaganerGoal"
+                    onClick={(e) => addGoalFunction(categories.length)}
+                  >
+                    <GrAdd />
                   </div>
                 ) : null}
               </div>

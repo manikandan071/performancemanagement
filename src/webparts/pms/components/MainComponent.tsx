@@ -106,7 +106,9 @@ const MainComponent = (props: any) => {
                 />
               </div>
             ) : isNavOption === "Admin" ? (
-              <AdminComponent />
+              <div className="adminDashboard">
+                <AdminComponent />
+              </div>
             ) : (
               <div className="RHSWrapper">
                 <EmployeeComponent

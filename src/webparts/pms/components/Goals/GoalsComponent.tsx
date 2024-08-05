@@ -12,10 +12,13 @@ import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
 import { Toast } from "primereact/toast";
-import { HiPencil } from "react-icons/hi2";
+// import { HiPencil } from "react-icons/hi2";
+import { MdEditDocument } from "react-icons/md";
+import { AddSquare28Regular } from "@fluentui/react-icons";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
-import { GrAdd } from "react-icons/gr";
+// import { GrAdd } from "react-icons/gr";
+// import { BiMessageSquareAdd } from "react-icons/bi";
 import { MdDelete } from "react-icons/md";
 import { GiOrganigram } from "react-icons/gi";
 import { PiUserFocusDuotone } from "react-icons/pi";
@@ -293,12 +296,14 @@ const Goals = () => {
             EmployeeID: number;
           }[] = [];
           res.forEach((obj) => {
-            userArr.push({
-              EmployeeName: obj.Employee.Title,
-              UserEmail: obj.Employee.EMail,
-              Role: obj.Roles,
-              EmployeeID: obj.Employee.ID,
-            });
+            if (obj.Roles !== "Admin") {
+              userArr.push({
+                EmployeeName: obj.Employee.Title,
+                UserEmail: obj.Employee.EMail,
+                Role: obj.Roles,
+                EmployeeID: obj.Employee.ID,
+              });
+            }
           });
           setUsersList([...userArr]);
           getCycleYear();
@@ -1134,7 +1139,7 @@ const Goals = () => {
         </div>
       ) : appraisalCycleId.goalSubmit ? (
         <div>
-          <HiPencil
+          <MdEditDocument
             className={styles.editIcon}
             onClick={(e) => {
               if (categoryHandleObj.isNew || categoryHandleObj.isUpdate) {
@@ -1175,7 +1180,7 @@ const Goals = () => {
       )
     ) : (
       <div>
-        <HiPencil
+        <MdEditDocument
           className={styles.editIcon}
           onClick={(e) => editRowFunction(rowData)}
         />
@@ -1252,7 +1257,7 @@ const Goals = () => {
       </div>
       <div className="addCategory">
         <div className="managerGoal">
-          <span>Predefined Goals</span>
+          <span>PREDEFINE GOALS</span>
         </div>
         {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
           <div style={{ display: "flex", gap: 5 }}>
@@ -1331,7 +1336,7 @@ const Goals = () => {
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                     <span className="CategoryTitle">{data.GoalCategory}</span>
-                    {appraisalCycleId.goalSubmit ? (
+                    {appraisalCycleId.goalSubmit && activeIndex === index ? (
                       <div className="font-bold iconSec">
                         {isPopup.delIndex === index && isPopup.delPopup && (
                           <Dialog
@@ -1374,7 +1379,7 @@ const Goals = () => {
                         )}
                         {data.values.filter((val: any) => val.isNew).length ===
                         0 ? (
-                          <GrAdd
+                          <AddSquare28Regular
                             className="addIcon"
                             onClick={(event) => {
                               if (activeIndex === index) {
@@ -1386,7 +1391,7 @@ const Goals = () => {
                             }}
                           />
                         ) : null}
-                        <HiPencil
+                        <MdEditDocument
                           className="editIcon"
                           onClick={(event) => {
                             let duplicateArr = [...duplicateData];
