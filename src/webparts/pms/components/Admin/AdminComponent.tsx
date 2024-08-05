@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { sp } from "@pnp/sp";
@@ -13,20 +18,20 @@ import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
 import Loader from "../Loader/Loader";
 import "../masterStyle.css";
 
-const AdminComponent = () => {
-  const rootClass = mergeStyles({
-    maxWidth: 300,
-    fontFamily: "Fluent MDL2 Hybrid Icons !important",
-    selectors: {
-      "> *": { marginBottom: 15 },
-      ".icon-95": {
-        fontFamily: "Fluent MDL2 Hybrid Icons !important",
-      },
-      ".root-110": {
-        fontFamily: "Fluent MDL2 Hybrid Icons !important",
-      },
-    },
-  });
+const AdminComponent = (): any => {
+  // const rootClass = mergeStyles({
+  //   maxWidth: 300,
+  //   fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //   selectors: {
+  //     "> *": { marginBottom: 15 },
+  //     ".icon-95": {
+  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //     },
+  //     ".root-110": {
+  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
+  //     },
+  //   },
+  // });
 
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -34,12 +39,12 @@ const AdminComponent = () => {
   const [isLoader, setIsLoader] = useState<boolean>(false);
   console.log(masterData, duplicateData, displayData);
 
-  const getAppraisalList = () => {
+  const getAppraisalList = (): any => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
       .items.get()
       .then((items) => {
-        let tempArr: any = [];
+        const tempArr: any = [];
         items.forEach((res) => {
           tempArr.push({
             ID: res.ID,
@@ -67,19 +72,23 @@ const AdminComponent = () => {
     getAppraisalList();
   }, []);
 
-  const editRowFunction = (data: any) => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
+  const editRowFunction = (data: any): any => {
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+    const tempObj = duplicateArr[index];
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
     setDuplicateData([...duplicateArr]);
   };
-  const editCancelFun = (data: any) => {
+  const editCancelFun = (data: any): any => {
     let duplicateArr = [...duplicateData];
-    let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObjMain = masterData[indexMain];
+    const indexMain = [...masterData].findIndex(
+      (obj: any) => obj.ID === data.ID
+    );
+    const tempObjMain = masterData[indexMain];
     if (tempObjMain) {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
       duplicateArr[index] = tempObjMain;
     } else {
       duplicateArr = duplicateArr.filter((obj) => obj.ID !== data.ID);
@@ -87,13 +96,13 @@ const AdminComponent = () => {
     setDuplicateData([...duplicateArr]);
   };
 
-  const goalSubmitFun = (rowData: any) => {
+  const goalSubmitFun = (rowData: any): any => {
     setIsLoader(true);
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex(
       (obj: any) => obj.ID === rowData.ID
     );
-    let tempObj = duplicateArr[index];
+    const tempObj = duplicateArr[index];
     sp.web.lists
       .getByTitle("AppraisalCycles")
       .items.getById(rowData.ID)
@@ -123,11 +132,11 @@ const AdminComponent = () => {
       });
   };
 
-  const handleDateSelection = (date: any, id: number, fieldName: any) => {
-    let tempArr = [...duplicateData];
-    let index = tempArr.findIndex((obj) => obj.ID === id);
-    let tempObj = tempArr[index];
-    let currentObj = {
+  const handleDateSelection = (date: any, id: number, fieldName: any): any => {
+    const tempArr = [...duplicateData];
+    const index = tempArr.findIndex((obj) => obj.ID === id);
+    const tempObj = tempArr[index];
+    const currentObj = {
       ID: tempObj.ID,
       Year: tempObj.Year,
       cycleCategory: tempObj.cycleCategory,
@@ -152,7 +161,7 @@ const AdminComponent = () => {
     console.log(duplicateData, "DuplicateDatas", currentObj, "currentObj");
   };
 
-  const ACNameBodyTemplate = (rowData: any) => {
+  const ACNameBodyTemplate = (rowData: any): any => {
     return (
       <div
         style={{
@@ -163,16 +172,16 @@ const AdminComponent = () => {
       </div>
     );
   };
-  const startDateBodyTemplate = (rowData: any) => {
+  const startDateBodyTemplate = (rowData: any): any => {
     return <div>{moment(rowData.startDate).format("DD-MMM-YYYY")}</div>;
   };
 
-  const endDateBodyTemplate = (rowData: any) => {
+  const endDateBodyTemplate = (rowData: any): any => {
     return <div>{moment(rowData.endDate).format("DD-MMM-YYYY")}</div>;
   };
 
-  const goalsSubmitSDateBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const goalsSubmitSDateBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <DatePicker
@@ -188,8 +197,8 @@ const AdminComponent = () => {
     );
   };
 
-  const goalsSubmitEDateBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const goalsSubmitEDateBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <DatePicker
@@ -205,8 +214,8 @@ const AdminComponent = () => {
     );
   };
 
-  const commentsSubmitSDateBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const commentsSubmitSDateBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <DatePicker
@@ -222,8 +231,8 @@ const AdminComponent = () => {
     );
   };
 
-  const commentsSubmitEDateBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const commentsSubmitEDateBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <DatePicker
@@ -239,8 +248,8 @@ const AdminComponent = () => {
     );
   };
 
-  const ActionBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const ActionBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return duplicateData[index].isRowEdit ? (
       <div>
         <IoMdCheckmark
@@ -277,55 +286,55 @@ const AdminComponent = () => {
             header="Appraisal Year"
             style={{ width: "10%" }}
             body={ACNameBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="startDate"
             header="Cycle start date"
             style={{ width: "10%" }}
             body={startDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="endDate"
             header="Cycle end date"
             style={{ width: "10%" }}
             body={endDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="goalsSubmitSDate"
             header="goals submit start Date"
             style={{ width: "15%" }}
             body={goalsSubmitSDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="goalsSubmitEDate"
             header="goals submit end Date"
             style={{ width: "15%" }}
             body={goalsSubmitEDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="commentsSubmitSDate"
             header="Review submit start Date"
             style={{ width: "15%" }}
             body={commentsSubmitSDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col1"
             field="commentsSubmitEDate"
             header="Review submit end Date"
             style={{ width: "15%" }}
             body={commentsSubmitEDateBodyTemplate}
-          ></Column>
+          />
           <Column
             className="col4"
             header="Action"
             style={{ width: "10%" }}
             body={ActionBodyTemplate}
-          ></Column>
+          />
         </DataTable>
       </div>
     </>

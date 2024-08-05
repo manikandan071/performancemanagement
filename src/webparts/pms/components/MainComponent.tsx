@@ -1,4 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
 import NavBar from "./NavBar/NavBar";
 import { useState } from "react";
@@ -11,17 +15,17 @@ const logo: any = require("../assets/images/companyLogo.png");
 import "./style.css";
 import "./masterStyle.css";
 
-const MainComponent = (props: any) => {
-  let UserEmail = props.context.pageContext.user.email;
+const MainComponent = (props: any): any => {
+  const UserEmail = props.context.pageContext.user.email;
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
   console.log(UserEmail, "currentUser");
 
-  const handleCilck = (item: string) => {
+  const handleCilck = (item: string): void => {
     setNavOption(item);
   };
-  const getEmployeeEmail = (item: string) => {
+  const getEmployeeEmail = (item: string): void => {
     setEmployeeEmail(item);
   };
 

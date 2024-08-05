@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { sp } from "@pnp/sp";
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
@@ -23,7 +28,7 @@ import Loader from "../Loader/Loader";
 
 const SelfGoals = (props: any) => {
   const toast = useRef<Toast>(null);
-  let appraisalCycleID = props.appraisalCycle.currentCycle;
+  const appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [masterData, setMasterData] = useState<any[]>([]);
   const [managerGoals, setManagerGoals] = useState<any[]>([]);
@@ -67,7 +72,7 @@ const SelfGoals = (props: any) => {
       .then((items) => {
         const filterData = items.filter(
           (item) =>
-            props.EmployeeEmail == item.AssignTo.EMail &&
+            props.EmployeeEmail === item.AssignTo.EMail &&
             !item.isDelete &&
             !item.isDeleteHR
         );
@@ -130,9 +135,9 @@ const SelfGoals = (props: any) => {
     setManagerGoals([]);
     setDuplicateData([]);
   }, [props]);
-  const addGoalFunction = () => {
-    let duplicateArr = [...duplicateData];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+  const addGoalFunction = (): void => {
+    const duplicateArr = [...duplicateData];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -177,10 +182,10 @@ const SelfGoals = (props: any) => {
   };
   const goalSubmitFun = async (data: any) => {
     setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
-    let addObj: any = {
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
+    const tempObj = duplicateArr[index];
+    const addObj: any = {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
       ManagerComments: tempObj.ManagerComments,
@@ -220,7 +225,7 @@ const SelfGoals = (props: any) => {
         .items.getById(tempObj.ID)
         .update(addObj)
         .then((res) => {
-          let duplicateArr = [...duplicateData];
+          const duplicateArr = [...duplicateData];
           duplicateArr[index] = {
             ...tempObj,
             [`${"isRowEdit"}`]: false,
@@ -229,7 +234,7 @@ const SelfGoals = (props: any) => {
           setMasterData([...duplicateArr]);
           setManagerGoals([...duplicateArr]);
 
-          let newFiles = tempObj.AttachmentFiles.filter(
+          const newFiles = tempObj.AttachmentFiles.filter(
             (fill: any) => fill.isStatus === "new"
           ).map((file: any) => {
             return {
@@ -238,7 +243,7 @@ const SelfGoals = (props: any) => {
             };
           });
 
-          let deleteFiles = tempObj.AttachmentFiles.filter(
+          const deleteFiles = tempObj.AttachmentFiles.filter(
             (fill: any) => fill.isStatus === "delete"
           ).map((file: any) => {
             return {
@@ -252,7 +257,7 @@ const SelfGoals = (props: any) => {
                 .getByName(deleteFiles[ind].name)
                 .delete()
                 .then((delRes) => {
-                  let duplicateArr = [...duplicateData];
+                  const duplicateArr = [...duplicateData];
                   tempObj.AttachmentFiles = tempObj.AttachmentFiles.filter(
                     (file: any) => file.isStatus !== "delete"
                   );
@@ -290,7 +295,7 @@ const SelfGoals = (props: any) => {
             res.item.attachmentFiles
               .addMultiple(newFiles)
               .then((res) => {
-                let duplicateArr = [...duplicateData];
+                const duplicateArr = [...duplicateData];
                 tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                   (file: any) => {
                     if (file.isStatus === "new") {
@@ -324,13 +329,13 @@ const SelfGoals = (props: any) => {
     }
   };
   const goalDeleteFun = () => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex(
       (obj) => obj.ID === goalDelPopup.delGoalId
     );
-    let delObj = duplicateArr[index];
-    let delArray = duplicateArr.filter(
-      (items) => items.ID != goalDelPopup.delGoalId
+    const delObj = duplicateArr[index];
+    const delArray = duplicateArr.filter(
+      (items) => items.ID !== goalDelPopup.delGoalId
     );
     sp.web.lists
       .getByTitle("SelfGoals")
@@ -350,10 +355,14 @@ const SelfGoals = (props: any) => {
   };
   const editCancelFun = (data: any) => {
     let duplicateArr = [...duplicateData];
-    let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObjMain = masterData[indexMain];
+    const indexMain = [...masterData].findIndex(
+      (obj: any) => obj.ID === data.ID
+    );
+    const tempObjMain = masterData[indexMain];
     if (tempObjMain) {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
       duplicateArr[index] = tempObjMain;
     } else {
       duplicateArr = duplicateArr.filter((obj) => obj.ID !== data.ID);
@@ -362,8 +371,8 @@ const SelfGoals = (props: any) => {
     setManagerGoals([...duplicateArr]);
   };
   const editRowFunction = (data: any) => {
-    let duplicateArr = [...duplicateData];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+    const duplicateArr = [...duplicateData];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -372,20 +381,22 @@ const SelfGoals = (props: any) => {
           "Please save or cancel the current row before editing another row",
       });
     } else {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-      let tempObj = duplicateArr[index];
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
+      const tempObj = duplicateArr[index];
       duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
       setDuplicateData([...duplicateArr]);
       setManagerGoals([...duplicateArr]);
     }
   };
   const onChangeHandleFun = (value: any, type: string, id: number) => {
-    let duplicateArr = duplicateData;
-    let index = duplicateArr.findIndex((obj: any) => obj.ID === id);
-    let orignalObj = duplicateArr[index];
-    let temp: any = [...orignalObj.AttachmentFiles];
+    const duplicateArr = duplicateData;
+    const index = duplicateArr.findIndex((obj: any) => obj.ID === id);
+    const orignalObj = duplicateArr[index];
+    const temp: any = [...orignalObj.AttachmentFiles];
 
-    let editObj = {
+    const editObj = {
       ID: orignalObj.ID,
       GoalCategory: orignalObj.GoalCategory,
       AssignToId: orignalObj.AssignToId,
@@ -442,7 +453,7 @@ const SelfGoals = (props: any) => {
     }
   };
   const GoalnameBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <InputTextarea
@@ -467,7 +478,7 @@ const SelfGoals = (props: any) => {
   const EmployeeRatingBodyTemplate = (rowData: any) => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div className=" d-flex">
@@ -495,7 +506,7 @@ const SelfGoals = (props: any) => {
                     onChangeHandleFun(index, "EmployeeRating", rowData.ID);
                   }}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -503,7 +514,7 @@ const SelfGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.EmployeeComments == ""
+              rowData.EmployeeComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -532,7 +543,7 @@ const SelfGoals = (props: any) => {
                     value <= rowData.EmployeeRating ? "active" : ""
                   } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -540,7 +551,7 @@ const SelfGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.EmployeeComments == ""
+              rowData.EmployeeComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -570,7 +581,7 @@ const SelfGoals = (props: any) => {
                   value <= rowData.EmployeeRating ? "active" : ""
                 } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
               >
-                <span></span>
+                <span />
               </a>
             ))}
           </div>
@@ -578,7 +589,9 @@ const SelfGoals = (props: any) => {
         </div>
         <FaCommentDots
           className={
-            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
+            rowData.EmployeeComments === ""
+              ? "commentIcon"
+              : "filledCommentIcon"
           }
           onClick={() =>
             setRowHandleObj({
@@ -597,7 +610,7 @@ const SelfGoals = (props: any) => {
   };
   const ManagerRatingBodyTemplate = (rowData: any) => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div className="d-flex">
@@ -625,7 +638,7 @@ const SelfGoals = (props: any) => {
                     onChangeHandleFun(index, "ManagerRating", rowData.ID);
                   }}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -633,7 +646,7 @@ const SelfGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.ManagerComments == ""
+              rowData.ManagerComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -661,7 +674,7 @@ const SelfGoals = (props: any) => {
                     value <= rowData.ManagerRating ? "active" : ""
                   } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -669,7 +682,7 @@ const SelfGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.ManagerComments == ""
+              rowData.ManagerComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -698,7 +711,7 @@ const SelfGoals = (props: any) => {
                   value <= rowData.ManagerRating ? "active" : ""
                 } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
               >
-                <span></span>
+                <span />
               </a>
             ))}
           </div>
@@ -706,7 +719,7 @@ const SelfGoals = (props: any) => {
         </div>
         <FaCommentDots
           className={
-            rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
+            rowData.ManagerComments === "" ? "commentIcon" : "filledCommentIcon"
           }
           onClick={() =>
             setRowHandleObj({
@@ -723,7 +736,7 @@ const SelfGoals = (props: any) => {
     );
   };
   const ActionBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div>
@@ -748,8 +761,8 @@ const SelfGoals = (props: any) => {
             <MdDelete
               className={styles.cancelIcon}
               onClick={() => {
-                let duplicateArr = [...duplicateData];
-                let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                const duplicateArr = [...duplicateData];
+                const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
                 if (isEdit.length > 0) {
                   toast.current?.show({
                     severity: "warn",
@@ -788,11 +801,11 @@ const SelfGoals = (props: any) => {
   };
 
   const fileDeleteFunction = (ind: number) => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex(
       (obj: any) => obj.ID === rowHandleObj.ID
     );
-    let tempObj = duplicateArr[index];
+    const tempObj = duplicateArr[index];
     if (tempObj.AttachmentFiles[ind].isStatus === "new") {
       tempObj.AttachmentFiles.splice(ind, 1);
       duplicateArr[index] = { ...tempObj };
@@ -812,10 +825,10 @@ const SelfGoals = (props: any) => {
   };
 
   const dialogCancelFuntion = () => {
-    let masterArr = [...masterData];
-    let index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
-    let orignalObj = masterArr[index];
-    let changeArray = duplicateData.map((obj) => {
+    const masterArr = [...masterData];
+    const index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
+    const orignalObj = masterArr[index];
+    const changeArray = duplicateData.map((obj) => {
       if (obj.ID === rowHandleObj.ID) {
         if (rowHandleObj.commentType === "Manager") {
           obj.ManagerComments =
@@ -988,7 +1001,7 @@ const SelfGoals = (props: any) => {
                   onClick={() => dialogCancelFuntion()}
                   text
                   label="cancel"
-                ></Button>
+                />
               </div>
             </Dialog>
             <Dialog
@@ -1011,7 +1024,7 @@ const SelfGoals = (props: any) => {
                   icon="pi pi-check"
                   label="Confirm"
                   className="mr-2"
-                ></Button>
+                />
                 <Button
                   onClick={() =>
                     setGoalDelPopup({
@@ -1023,7 +1036,7 @@ const SelfGoals = (props: any) => {
                   text
                   icon="pi pi-times"
                   label="cancel"
-                ></Button>
+                />
               </div>
             </Dialog>
           </div>
@@ -1059,7 +1072,7 @@ const SelfGoals = (props: any) => {
                     header="Goal Name"
                     style={{ width: "50%" }}
                     body={GoalnameBodyTemplate}
-                  ></Column>
+                  />
                   {props.appraisalCycle.submitComments ? (
                     <Column
                       className="col1"
@@ -1067,10 +1080,8 @@ const SelfGoals = (props: any) => {
                       header="Employee Rating"
                       style={{ width: "20%" }}
                       body={EmployeeRatingBodyTemplate}
-                    ></Column>
-                  ) : (
-                    null
-                  )}
+                    />
+                  ) : null}
                   {props.appraisalCycle.submitComments ? (
                     <Column
                       className="col1"
@@ -1078,10 +1089,8 @@ const SelfGoals = (props: any) => {
                       header="Manager Rating"
                       style={{ width: "20%" }}
                       body={ManagerRatingBodyTemplate}
-                    ></Column>
-                  ) : (
-                    null
-                  )}
+                    />
+                  ) : null}
 
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (
@@ -1090,7 +1099,7 @@ const SelfGoals = (props: any) => {
                       header="Action"
                       style={{ width: "10%" }}
                       body={ActionBodyTemplate}
-                    ></Column>
+                    />
                   ) : null}
                 </DataTable>
                 {props.isManager &&

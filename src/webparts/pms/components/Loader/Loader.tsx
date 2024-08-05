@@ -1,7 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
 import "./Loader.css";
 
-const Loader = () => {
+const Loader = (): any => {
   return (
     <div className="container">
       <div className="logo">
@@ -28,7 +33,7 @@ const Loader = () => {
         L 0.00 0.00
         L 0.00 20.00 Z"
               className="svg-elem-1"
-            ></path>
+            />
           </g>
 
           <g
@@ -45,7 +50,7 @@ const Loader = () => {
         L 89.00 0.00
         C 107.99 8.59 99.38 30.79 117.25 42.75 C 135.13 54.70 144.88 31.99 156.92 19.92 C 168.95 7.85 196.34 18.05 201.00 35.00 Z"
               className="svg-elem-3"
-            ></path>
+            />
           </g>
 
           <g
@@ -62,7 +67,7 @@ const Loader = () => {
         L 201.00 38.00
         C 182.33 32.07 174.01 48.18 172.78 62.78 C 171.55 77.37 158.17 85.67 145.68 87.68 C 133.19 89.68 119.58 96.98 115.99 109.99 C 112.40 123.00 115.69 140.16 101.00 147.00 Z"
               className="svg-elem-5"
-            ></path>
+            />
           </g>
           <g fill="#F7FDFC" fillOpacity="1.00" stroke="None">
             <path
@@ -75,7 +80,7 @@ const Loader = () => {
         L 0.00 0.00
         L 0.00 20.00 Z"
               className="svg-elem-6"
-            ></path>
+            />
           </g>
           <g fill="#33D8AE" fillOpacity="1.00" stroke="None">
             <path
@@ -88,7 +93,7 @@ const Loader = () => {
         L 78.00 0.00
         C 56.59 6.57 64.75 40.51 85.00 38.00 C 105.25 35.49 122.03 50.84 125.00 69.00 C 127.97 87.16 113.82 108.29 94.67 109.67 C 75.52 111.05 66.76 139.08 88.00 147.00 Z"
               className="svg-elem-7"
-            ></path>
+            />
           </g>
           <g fill="#F7FDFC" fillOpacity="1.00" stroke="None">
             <path
@@ -98,7 +103,7 @@ const Loader = () => {
         L 89.00 0.00
         C 107.99 8.59 99.38 30.79 117.25 42.75 C 135.13 54.70 144.88 31.99 156.92 19.92 C 168.95 7.85 196.34 18.05 201.00 35.00 Z"
               className="svg-elem-8"
-            ></path>
+            />
           </g>
           <g fill="#33D8AE" fillOpacity="1.00" stroke="None">
             <path
@@ -107,7 +112,7 @@ const Loader = () => {
         L 0.00 31.00
         C 7.83 48.87 26.87 41.40 42.25 48.75 C 57.63 56.11 56.25 74.23 64.25 86.75 C 72.24 99.28 99.28 95.11 98.00 75.00 C 96.72 54.90 75.36 58.08 59.70 53.30 C 44.03 48.53 39.49 31.73 35.78 17.22 C 32.06 2.72 2.90 4.39 0.00 20.00 Z"
               className="svg-elem-9"
-            ></path>
+            />
           </g>
           <g fill="#F7FDFC" fillOpacity="1.00" stroke="None">
             <path
@@ -117,7 +122,7 @@ const Loader = () => {
         L 201.00 38.00
         C 182.33 32.07 174.01 48.18 172.78 62.78 C 171.55 77.37 158.17 85.67 145.68 87.68 C 133.19 89.68 119.58 96.98 115.99 109.99 C 112.40 123.00 115.69 140.16 101.00 147.00 Z"
               className="svg-elem-10"
-            ></path>
+            />
           </g>
         </svg>
       </div>

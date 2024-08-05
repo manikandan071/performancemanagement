@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
 import { sp } from "@pnp/sp/presets/all";
 import { useState, useEffect } from "react";
@@ -10,7 +15,7 @@ import { PiUserCircleGearDuotone } from "react-icons/pi";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { HiUserGroup } from "react-icons/hi2";
 
-const NavBar = (props: any) => {
+const NavBar = (props: any): any => {
   console.log(props, "props");
   const [currentUser, setCurrentUSer] = useState("");
   const [isShowEmployee, setIsShowEmployee] = useState(false);
@@ -32,14 +37,14 @@ const NavBar = (props: any) => {
       .then((res) => {
         console.log(res, "navbarResponse");
         if (res.length > 0) {
-          let teamMembers: any = [];
+          const teamMembers: any = [];
           res.forEach((obj) => {
-            if (obj.Employee.EMail == mail) {
-              if (obj.Roles == "HR") {
+            if (obj.Employee.EMail === mail) {
+              if (obj.Roles === "HR") {
                 setTapName("Goals");
                 setRole("HR");
                 props.handleCilck("Goals");
-              } else if (obj.Roles == "Manager") {
+              } else if (obj.Roles === "Manager") {
                 setRole("Manager");
                 setTapName("Employee");
                 props.handleCilck("Employee");
@@ -50,7 +55,7 @@ const NavBar = (props: any) => {
                     userName: user.Title,
                   });
                 });
-              } else if (obj.Roles == "Admin") {
+              } else if (obj.Roles === "Admin") {
                 setRole("Admin");
                 setTapName("Admin");
                 props.handleCilck("Admin");
@@ -67,7 +72,7 @@ const NavBar = (props: any) => {
               }
             }
           });
-          let teamEmployees = teamMembers.sort((a: any, b: any) =>
+          const teamEmployees = teamMembers.sort((a: any, b: any) =>
             a.userName.localeCompare(b.userName)
           );
           setEmployeeList([...teamEmployees]);
@@ -145,7 +150,7 @@ const NavBar = (props: any) => {
         {Role === "HR" ? (
           <div
             className={
-              "Goals" == tapName
+              "Goals" === tapName
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }
@@ -177,7 +182,7 @@ const NavBar = (props: any) => {
         {Role === "Manager" || Role === "Admin" ? (
           <div
             className={
-              "Manager" == tapName
+              "Manager" === tapName
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }
@@ -219,7 +224,7 @@ const NavBar = (props: any) => {
                 <>
                   <li
                     className={
-                      emp.userName == tapMembersList
+                      emp.userName === tapMembersList
                         ? styles.seletedMembersContainer
                         : styles.optionMembersContainer
                     }
@@ -267,7 +272,7 @@ const NavBar = (props: any) => {
         {Role === "Admin" ? (
           <div
             className={
-              "Admin" == tapName
+              "Admin" === tapName
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }
@@ -295,7 +300,7 @@ const NavBar = (props: any) => {
         ) : (
           <div
             className={
-              "Employee" == tapName
+              "Employee" === tapName
                 ? styles.seletedOptionContainer
                 : styles.optionContainer
             }

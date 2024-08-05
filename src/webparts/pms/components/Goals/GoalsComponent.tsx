@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-use-before-define */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
 import { useState, useEffect, useRef } from "react";
 import { sp } from "@pnp/sp/presets/all";
@@ -27,9 +32,9 @@ import "primereact/resources/primereact.min.css";
 import styles from "./GoalsStyles.module.scss";
 import "../masterStyle.css";
 
-const Goals = () => {
+const Goals = (): any => {
   const toast = useRef<Toast>(null);
-  let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setMasterData] = useState<any[]>([]);
   const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
@@ -61,7 +66,7 @@ const Goals = () => {
   });
   const [cyclesList, setCycleList] = useState<any[]>([]);
 
-  const getPredefinedGoals = (ACId: number) => {
+  const getPredefinedGoals = (ACId: number): any => {
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
       .items.select("*,AssignTo/ID,AssignTo/Title,AssignTo/EMail,HRGoal/ID")
@@ -69,7 +74,7 @@ const Goals = () => {
       .filter(`AppraisalCycleLookupId eq '${ACId}'`)
       .get()
       .then((res) => {
-        let tempArr: any = [];
+        const tempArr: any = [];
         res.forEach((obj) => {
           tempArr.push({
             ID: obj.ID ? obj.ID : null,
@@ -87,18 +92,18 @@ const Goals = () => {
       });
   };
 
-  const getHRGoals = (ACId: number) => {
+  const getHRGoals = (ACId: number): any => {
     sp.web.lists
       .getByTitle(`HrGoals`)
       .items.filter(`AppraisalCycleLookupId eq '${ACId}'`)
       .get()
       .then((res) => {
-        let tempArr: any = [];
+        const tempArr: any = [];
         let ID = 1;
-        let deletedGoals = res.filter((del) => del.isDelete);
-        let assignedGoals = res.filter((del) => !del.isDelete);
-        let groupedArray = assignedGoals.reduce((acc, obj) => {
-          let existingCategory = acc.find(
+        const deletedGoals = res.filter((del) => del.isDelete);
+        const assignedGoals = res.filter((del) => !del.isDelete);
+        const groupedArray = assignedGoals.reduce((acc, obj) => {
+          const existingCategory = acc.find(
             (item: any) => item.GoalCategory === obj.GoalCategory
           );
           if (existingCategory) {
@@ -139,7 +144,7 @@ const Goals = () => {
           return acc;
         }, []);
         assignedGoals.forEach((obj) => {
-          let json = {
+          const json = {
             ID: obj.ID ? obj.ID : null,
             GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
             GoalName: obj.GoalName ? obj.GoalName : "",
@@ -154,7 +159,7 @@ const Goals = () => {
           };
           tempArr.push(json);
         });
-        let tempaArray = [...tempArr];
+        const tempaArray = [...tempArr];
         setDeletedGoals([...deletedGoals]);
         setCategories([...groupedArray]);
         setDuplicateData(tempaArray);
@@ -164,12 +169,12 @@ const Goals = () => {
       .catch((err) => console.log(err));
   };
 
-  const getCycleYear = () => {
+  const getCycleYear = (): void => {
     sp.web.lists
       .getByTitle("AppraisalCycles")
       .items.get()
       .then((cycle) => {
-        let tempArr: any = [];
+        const tempArr: any = [];
         cycle.reverse();
         cycle.forEach((res) => {
           tempArr.push({
@@ -185,15 +190,15 @@ const Goals = () => {
           });
         });
         for (let i = 0; i < cycle.length; i++) {
-          let sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
-          let eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
-          let goalsSDate = new Date(cycle[i].goalsSubmitSDate).setHours(
+          const sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
+          const eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
+          const goalsSDate = new Date(cycle[i].goalsSubmitSDate).setHours(
             0,
             0,
             0,
             0
           );
-          let goalsEDate = new Date(cycle[i].goalsSubmitEDate).setHours(
+          const goalsEDate = new Date(cycle[i].goalsSubmitEDate).setHours(
             0,
             0,
             0,
@@ -260,7 +265,7 @@ const Goals = () => {
       });
   };
 
-  const getUsersRoles = () => {
+  const getUsersRoles = (): void => {
     sp.web.lists
       .getByTitle(`EmployeeList`)
       .items.select(
@@ -269,19 +274,19 @@ const Goals = () => {
       .expand("Employee,Members")
       .get()
       .then((res) => {
-         res.forEach((datas) => {
-            console.log(datas.Roles , "roles");
-         })
+        res.forEach((datas) => {
+          console.log(datas.Roles, "roles");
+        });
         if (res.length > 0) {
-          let rolesSet = new Set();
-          let uniqueArray = res.filter((data) => {
+          const rolesSet = new Set();
+          const uniqueArray = res.filter((data) => {
             if (!rolesSet.has(data.Roles) && data.Roles !== "Admin") {
               rolesSet.add(data.Roles);
               return true;
             }
             return false;
           });
-          let rolesArr: any = uniqueArray.map((role) => {
+          const rolesArr: any = uniqueArray.map((role) => {
             return { name: role.Roles, code: role.Roles };
           });
           setRolesList([...rolesArr]);
@@ -289,7 +294,7 @@ const Goals = () => {
             { name: "Organization", code: "Organization" },
             { name: "Role", code: "Role" },
           ]);
-          let userArr: {
+          const userArr: {
             EmployeeName: string;
             UserEmail: string;
             Role: string;
@@ -312,10 +317,10 @@ const Goals = () => {
       .catch((err) => console.log(err));
   };
 
-  const categoryHandleFun = (data: any) => {
+  const categoryHandleFun = (data: any): any => {
     let ID = 1;
-    let groupedArray = data.reduce((acc: any, obj: any) => {
-      let existingCategory = acc.find(
+    const groupedArray = data.reduce((acc: any, obj: any) => {
+      const existingCategory = acc.find(
         (item: any) => item.GoalCategory === obj.GoalCategory
       );
       if (existingCategory) {
@@ -348,11 +353,11 @@ const Goals = () => {
     setCategories([...groupedArray]);
   };
 
-  const addNewCategory = (condition: boolean) => {
-    let tempArr = [...duplicateData];
-    let tempCategoryArr = [...categories];
+  const addNewCategory = (condition: boolean): any => {
+    const tempArr = [...duplicateData];
+    const tempCategoryArr = [...categories];
     if (condition) {
-      if (categoryHandleObj.newCategory != "") {
+      if (categoryHandleObj.newCategory !== "") {
         tempArr.push({
           ID:
             Math.max(
@@ -377,23 +382,23 @@ const Goals = () => {
         alert("please enter category");
       }
     } else {
-      let index = tempCategoryArr.findIndex(
+      const index = tempCategoryArr.findIndex(
         (ind) => ind.mainID === categoryHandleObj.ID
       );
-      let tempObj = tempCategoryArr[index];
-      if (tempObj.GoalCategory != categoryHandleObj.newCategory) {
+      const tempObj = tempCategoryArr[index];
+      if (tempObj.GoalCategory !== categoryHandleObj.newCategory) {
         // tempObj.GoalCategory = categoryHandleObj.newCategory;
-        let categoryGolasArr = tempObj.values;
+        const categoryGolasArr = tempObj.values;
         categoryGolasArr.forEach((obj: any) => {
           sp.web.lists
             .getByTitle(`HrGoals`)
             .items.getById(obj.ID)
             .update({ GoalCategory: categoryHandleObj.newCategory })
             .then((res) => {
-              let duplicateindex = tempArr.findIndex(
+              const duplicateindex = tempArr.findIndex(
                 (temp) => temp.ID === obj.ID
               );
-              let duplicateObj = tempArr[duplicateindex];
+              const duplicateObj = tempArr[duplicateindex];
               tempArr[duplicateindex] = {
                 ...duplicateObj,
                 [`${"GoalCategory"}`]: categoryHandleObj.newCategory,
@@ -427,12 +432,12 @@ const Goals = () => {
       getUsersRoles();
     }
   };
-  const addGoalFunction = (ind: number) => {
-    let duplicateArr = [...duplicateData];
-    let tempArr = categories;
-    let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
-    let data = tempArr[index];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+  const addGoalFunction = (ind: number): any => {
+    const duplicateArr = [...duplicateData];
+    const tempArr = categories;
+    const index = [...tempArr].findIndex((obj) => obj.mainID === ind + 1);
+    const data = tempArr[index];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -474,7 +479,7 @@ const Goals = () => {
     }
   };
 
-  const editCategoryFun = (ind: number) => {
+  const editCategoryFun = (ind: number): any => {
     setCategoryHandleObj({
       ...categoryHandleObj,
       ID: ind + 1,
@@ -483,14 +488,14 @@ const Goals = () => {
     });
   };
 
-  const deleteCategoryFun = () => {
+  const deleteCategoryFun = (): any => {
     let duplicateArray = [...duplicateData];
-    let tempCategoryArr = [...categories];
-    let index = tempCategoryArr.findIndex(
+    const tempCategoryArr = [...categories];
+    const index = tempCategoryArr.findIndex(
       (ind) => ind.mainID === isPopup.delIndex + 1
     );
-    let tempObj = tempCategoryArr[index];
-    let categoryGoalsArr = tempObj.values;
+    const tempObj = tempCategoryArr[index];
+    const categoryGoalsArr = tempObj.values;
     categoryGoalsArr.forEach((obj: any) => {
       duplicateArray = duplicateArray.filter((fill) => fill.ID !== obj.ID);
       setDuplicateData([...duplicateArray]);
@@ -521,9 +526,9 @@ const Goals = () => {
     getUsersRoles();
   };
 
-  const editRowFunction = (data: any) => {
-    let duplicateArr = [...duplicateData];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+  const editRowFunction = (data: any): any => {
+    const duplicateArr = [...duplicateData];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -532,14 +537,16 @@ const Goals = () => {
           "Please save or cancel the current row before editing another row",
       });
     } else {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-      let tempObj = duplicateArr[index];
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
+      const tempObj = duplicateArr[index];
       duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
       setDuplicateData([...duplicateArr]);
       categoryHandleFun([...duplicateArr]);
     }
   };
-  const validationFun = (tempObj: any) => {
+  const validationFun = (tempObj: any): any => {
     if (tempObj.GoalName !== "") {
       if (tempObj.AssignLevel.name !== "") {
         if (tempObj.AssignLevel.name === "Role") {
@@ -574,10 +581,10 @@ const Goals = () => {
     }
   };
 
-  const goalSubmitFun = (data: any) => {
-    let index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
-    let tempObj = duplicateData[index];
-    let addObj: any = {
+  const goalSubmitFun = (data: any): any => {
+    const index = [...duplicateData].findIndex((obj) => obj.ID === data.ID);
+    const tempObj = duplicateData[index];
+    const addObj: any = {
       AssignLevel: tempObj.AssignLevel.name,
       Role: tempObj.Role
         ? { results: tempObj.Role.map((role: any) => role.name) }
@@ -586,7 +593,7 @@ const Goals = () => {
       GoalCategory: tempObj.GoalCategory,
     };
 
-    let validation = validationFun(tempObj);
+    const validation = validationFun(tempObj);
 
     if (tempObj.isNew && validation) {
       sp.web.lists
@@ -602,11 +609,11 @@ const Goals = () => {
           isDelete: false,
         })
         .then((res) => {
-          let duplicateArr = [...duplicateData];
-          let index = [...duplicateArr].findIndex(
+          const duplicateArr = [...duplicateData];
+          const index = [...duplicateArr].findIndex(
             (obj: any) => obj.ID === data.ID
           );
-          let tempObj = duplicateArr[index];
+          const tempObj = duplicateArr[index];
           duplicateArr[index] = {
             ...tempObj,
             [`${"isRowEdit"}`]: false,
@@ -632,7 +639,7 @@ const Goals = () => {
             });
             getUsersRoles();
           } else {
-            let selectedRoles = tempObj.Role.map((item: any) => item.name);
+            const selectedRoles = tempObj.Role.map((item: any) => item.name);
             const userListArray = usersList.filter((item) =>
               selectedRoles.includes(item.Role)
             );
@@ -654,19 +661,21 @@ const Goals = () => {
         })
         .catch((err) => console.log(err));
     } else if (validation) {
-      let duplicateArr = [...duplicateData];
-      let masterArr = [...masterData];
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-      let tempObj = duplicateArr[index];
-      let masterObj = masterArr[index];
-      let permissionDeleted: any = [];
+      const duplicateArr = [...duplicateData];
+      const masterArr = [...masterData];
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
+      const tempObj = duplicateArr[index];
+      const masterObj = masterArr[index];
+      const permissionDeleted: any = [];
       if (tempObj.AssignLevel.name === "Organization") {
         const allEmailIDs = new Set(
           predefinedGoalsList.map((item) => {
             if (item.HRGoalId === tempObj.ID) {
-              item.isDeleteHR
-                ? permissionDeleted.push(`${item.AssignTo.EMail}`)
-                : "";
+              if (item.isDeleteHR) {
+                permissionDeleted.push(`${item.AssignTo.EMail}`);
+              }
               return `${item.AssignTo.EMail}`;
             }
           })
@@ -719,7 +728,7 @@ const Goals = () => {
         }
       } else {
         let resultArray: any = [];
-        let allEmailIDs = new Set(
+        const allEmailIDs = new Set(
           predefinedGoalsList.map((item: any) => {
             if (item.HRGoalId === tempObj.ID && item.isDeleteHR !== true) {
               return item.AssignTo.EMail;
@@ -741,7 +750,7 @@ const Goals = () => {
           }));
         }
 
-        let commonRoles = tempObj.Role.filter((item1: any) =>
+        const commonRoles = tempObj.Role.filter((item1: any) =>
           resultArray.some(
             (item2: any) =>
               item1.code === item2.code && item1.name === item2.name
@@ -762,7 +771,7 @@ const Goals = () => {
             )
         );
         if (commonRoles.length > 0 && tempObj.GoalName !== masterObj.GoalName) {
-          let selectedRoles = commonRoles.map((item: any) => item.name);
+          const selectedRoles = commonRoles.map((item: any) => item.name);
           const userListArray = usersList.filter((item) =>
             selectedRoles.includes(item.Role)
           );
@@ -783,11 +792,11 @@ const Goals = () => {
           });
         }
         if (removeUser.length > 0) {
-          let selectedRoles = removeUser.map((item: any) => item.name);
+          const selectedRoles = removeUser.map((item: any) => item.name);
           const userListArray = usersList.filter((item) =>
             selectedRoles.includes(item.Role)
           );
-          let lookUpGoalsList: any = [];
+          const lookUpGoalsList: any = [];
           predefinedGoalsList.filter((goals) => {
             userListArray.forEach((user) => {
               if (
@@ -808,7 +817,7 @@ const Goals = () => {
           });
         }
         if (updateUser.length > 0 && masterObj.Role.length > 0) {
-          let selectedRoles = updateUser.map((item: any) => item.name);
+          const selectedRoles = updateUser.map((item: any) => item.name);
           const userListArray = usersList.filter((item) =>
             selectedRoles.includes(item.Role)
           );
@@ -858,11 +867,11 @@ const Goals = () => {
         .items.getById(tempObj.ID)
         .update(addObj)
         .then((res) => {
-          let duplicateArr = [...duplicateData];
-          let index = [...duplicateArr].findIndex(
+          const duplicateArr = [...duplicateData];
+          const index = [...duplicateArr].findIndex(
             (obj: any) => obj.ID === data.ID
           );
-          let tempObj = duplicateArr[index];
+          const tempObj = duplicateArr[index];
           duplicateArr[index] = {
             ...tempObj,
             [`${"isRowEdit"}`]: false,
@@ -883,12 +892,16 @@ const Goals = () => {
     // }
   };
 
-  const editCancelFun = (data: any) => {
+  const editCancelFun = (data: any): any => {
     let duplicateArr = [...duplicateData];
-    let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObjMain = masterData[indexMain];
+    const indexMain = [...masterData].findIndex(
+      (obj: any) => obj.ID === data.ID
+    );
+    const tempObjMain = masterData[indexMain];
     if (tempObjMain) {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
       duplicateArr[index] = tempObjMain;
     } else {
       duplicateArr = duplicateArr.filter((obj) => obj.ID !== data.ID);
@@ -897,15 +910,15 @@ const Goals = () => {
     categoryHandleFun([...duplicateArr]);
   };
 
-  const goalDeleteFun = () => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+  const goalDeleteFun = (): any => {
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex(
       (obj) => obj.ID === goalDelPopup.delGoalId
     );
-    let delObj = duplicateArr[index];
+    const delObj = duplicateArr[index];
     setDeletedGoals([...deletedGoals, delObj]);
-    let delArray = duplicateArr.filter(
-      (items) => items.ID != goalDelPopup.delGoalId
+    const delArray = duplicateArr.filter(
+      (items) => items.ID !== goalDelPopup.delGoalId
     );
     sp.web.lists
       .getByTitle(`HrGoals`)
@@ -936,9 +949,9 @@ const Goals = () => {
     getUsersRoles();
   };
 
-  const onChangeHandleFun = (value: any, type: string, id: number) => {
-    let tempArr = duplicateData.map((obj) => {
-      if (obj.ID == id) {
+  const onChangeHandleFun = (value: any, type: string, id: number): any => {
+    const tempArr = duplicateData.map((obj) => {
+      if (obj.ID === id) {
         if (type === "GoalName") {
           obj.GoalName = value;
           return obj;
@@ -949,7 +962,7 @@ const Goals = () => {
         }
         if (type === "AssignLevel") {
           obj.AssignLevel = value;
-          if (value.name == "Organization") {
+          if (value.name === "Organization") {
             obj.Role = [];
             return obj;
           } else {
@@ -963,8 +976,8 @@ const Goals = () => {
     categoryHandleFun([...tempArr]);
   };
 
-  const GoalnameBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const GoalnameBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <InputTextarea
@@ -1001,8 +1014,8 @@ const Goals = () => {
     );
   };
 
-  const AssignLevelBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const AssignLevelBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <Dropdown
@@ -1062,10 +1075,10 @@ const Goals = () => {
     );
   };
 
-  const RoleBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const RoleBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
-      rowData.AssignLevel.name == "Role" && duplicateData[index].isRowEdit ? (
+      rowData.AssignLevel.name === "Role" && duplicateData[index].isRowEdit ? (
         <MultiSelect
           value={rowData.Role}
           onChange={(e) => onChangeHandleFun(e.value, "Role", rowData.ID)}
@@ -1076,7 +1089,7 @@ const Goals = () => {
           maxSelectedLabels={3}
           className="w-full md:w-20rem"
         />
-      ) : rowData.AssignLevel.name == "Role" ? (
+      ) : rowData.AssignLevel.name === "Role" ? (
         <div
           style={{
             display: "flex",
@@ -1085,8 +1098,9 @@ const Goals = () => {
             gap: "10px",
           }}
         >
-          {rowData.Role.map((role: any) => (
+          {rowData.Role.map((role: any, index: number) => (
             <p
+              key={index}
               style={{
                 fontFamily: `Roboto, Arial, Helvetica, sans-serif`,
                 color: `rgb(100, 114, 140)`,
@@ -1103,12 +1117,13 @@ const Goals = () => {
           ))}
         </div>
       ) : (
-        <div></div>
+        <div />
       )
     ) : (
       <div>
-        {rowData.Role.map((role: any) => (
+        {rowData.Role.map((role: any, index: number) => (
           <p
+            key={index}
             style={{
               fontFamily: "Roboto, Arial, Helvetica, sans-serif",
               color: "#64728c",
@@ -1123,8 +1138,8 @@ const Goals = () => {
       </div>
     );
   };
-  const ActionBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const ActionBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div>
@@ -1156,8 +1171,8 @@ const Goals = () => {
           <MdDelete
             className={styles.cancelIcon}
             onClick={() => {
-              let duplicateArr = [...duplicateData];
-              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              const duplicateArr = [...duplicateData];
+              const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
               if (isEdit.length > 0) {
                 toast.current?.show({
                   severity: "warn",
@@ -1220,7 +1235,7 @@ const Goals = () => {
               // icon="pi pi-check"
               label="confirm"
               className="mr-2 dltBtn"
-            ></Button>
+            />
             <Button
               onClick={() =>
                 setGoalDelPopup({
@@ -1233,7 +1248,7 @@ const Goals = () => {
               className="cancelBtn"
               // icon="pi pi-times"
               label="cancel"
-            ></Button>
+            />
           </div>
         </div>
       </Dialog>
@@ -1308,8 +1323,8 @@ const Goals = () => {
           <Button
             label="New Category"
             onClick={(e) => {
-              let duplicateArr = [...duplicateData];
-              let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+              const duplicateArr = [...duplicateData];
+              const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
               if (isEdit.length > 0) {
                 toast.current?.show({
                   severity: "warn",
@@ -1329,10 +1344,11 @@ const Goals = () => {
           activeIndex={activeIndex}
           onTabChange={(e) => setActiveIndex(e.index)}
         >
-          {categories.map((data, index) => {
+          {categories.map((data: any, index: number) => {
             return (
               <AccordionTab
                 className="accordionMain"
+                key={index}
                 header={
                   <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                     <span className="CategoryTitle">{data.GoalCategory}</span>
@@ -1360,7 +1376,7 @@ const Goals = () => {
                                   // icon="pi pi-check"
                                   label="Confirm"
                                   className="mr-2 dltBtn"
-                                ></Button>
+                                />
                                 <Button
                                   onClick={() =>
                                     setIsPopup({
@@ -1372,7 +1388,7 @@ const Goals = () => {
                                   // icon="pi pi-times"
                                   label="cancel"
                                   className="cancelBtn"
-                                ></Button>
+                                />
                               </div>
                             </div>
                           </Dialog>
@@ -1394,19 +1410,19 @@ const Goals = () => {
                         <MdEditDocument
                           className="editIcon"
                           onClick={(event) => {
-                            let duplicateArr = [...duplicateData];
-                            let isEdit = duplicateArr.filter(
+                            const duplicateArr = [...duplicateData];
+                            const isEdit = duplicateArr.filter(
                               (edit) => edit.isRowEdit
                             );
                             if (isEdit.length > 0) {
-                              event.preventDefault(),
-                                event.stopPropagation(),
-                                toast.current?.show({
-                                  severity: "warn",
-                                  summary: "Warning",
-                                  detail:
-                                    "Please save or cancel the current row before editing another row",
-                                });
+                              event.preventDefault();
+                              event.stopPropagation();
+                              toast.current?.show({
+                                severity: "warn",
+                                summary: "Warning",
+                                detail:
+                                  "Please save or cancel the current row before editing another row",
+                              });
                             } else {
                               event.preventDefault(),
                                 event.stopPropagation(),
@@ -1417,8 +1433,8 @@ const Goals = () => {
                         <MdDelete
                           className="deleteIcon"
                           onClick={(event) => {
-                            let duplicateArr = [...duplicateData];
-                            let isEdit = duplicateArr.filter(
+                            const duplicateArr = [...duplicateData];
+                            const isEdit = duplicateArr.filter(
                               (edit) => edit.isRowEdit
                             );
                             if (isEdit.length > 0) {
@@ -1460,28 +1476,28 @@ const Goals = () => {
                         width: "35%",
                       }}
                       body={GoalnameBodyTemplate}
-                    ></Column>
+                    />
                     <Column
                       className="col2"
                       field="AssignLevel"
                       header="Assign Level"
                       style={{ width: "20%" }}
                       body={AssignLevelBodyTemplate}
-                    ></Column>
+                    />
                     <Column
                       className="col3"
                       field="Role"
                       header="Role"
                       style={{ width: "35%" }}
                       body={RoleBodyTemplate}
-                    ></Column>
+                    />
                     {appraisalCycleId.goalSubmit ? (
                       <Column
                         className="col4"
                         header="Action"
                         style={{ width: "10%" }}
                         body={ActionBodyTemplate}
-                      ></Column>
+                      />
                     ) : null}
                   </DataTable>
                 </div>
@@ -1491,7 +1507,7 @@ const Goals = () => {
         </Accordion>
       </div>
       {categories.length > 0 ? (
-        <div></div>
+        <div />
       ) : (
         <div>
           <div className="noDataMsg">
