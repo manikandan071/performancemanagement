@@ -992,7 +992,7 @@ const SelfGoals = (props: any) => {
               </div>
             </Dialog>
             <Dialog
-              header="Header"
+              header="Delete"
               visible={goalDelPopup.delPopup}
               style={{ width: "25%" }}
               onClick={(e) => e.stopPropagation()}
@@ -1060,20 +1060,29 @@ const SelfGoals = (props: any) => {
                     style={{ width: "50%" }}
                     body={GoalnameBodyTemplate}
                   ></Column>
-                  <Column
-                    className="col1"
-                    field="EmployeeRating"
-                    header="Employee Rating"
-                    style={{ width: "20%" }}
-                    body={EmployeeRatingBodyTemplate}
-                  ></Column>
-                  <Column
-                    className="col1"
-                    field="ManagerRating"
-                    header="Manager Rating"
-                    style={{ width: "20%" }}
-                    body={ManagerRatingBodyTemplate}
-                  ></Column>
+                  {props.appraisalCycle.submitComments ? (
+                    <Column
+                      className="col1"
+                      field="EmployeeRating"
+                      header="Employee Rating"
+                      style={{ width: "20%" }}
+                      body={EmployeeRatingBodyTemplate}
+                    ></Column>
+                  ) : (
+                    null
+                  )}
+                  {props.appraisalCycle.submitComments ? (
+                    <Column
+                      className="col1"
+                      field="ManagerRating"
+                      header="Manager Rating"
+                      style={{ width: "20%" }}
+                      body={ManagerRatingBodyTemplate}
+                    ></Column>
+                  ) : (
+                    null
+                  )}
+
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (
                     <Column

@@ -14,19 +14,19 @@ import Loader from "../Loader/Loader";
 import "../masterStyle.css";
 
 const AdminComponent = () => {
-  // const rootClass = mergeStyles({
-  //   maxWidth: 300,
-  //   fontFamily: "Fluent MDL2 Hybrid Icons !important",
-  //   selectors: {
-  //     "> *": { marginBottom: 15 },
-  //     ".icon-95": {
-  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
-  //     },
-  //     ".root-110": {
-  //       fontFamily: "Fluent MDL2 Hybrid Icons !important",
-  //     },
-  //   },
-  // });
+  const rootClass = mergeStyles({
+    maxWidth: 300,
+    fontFamily: "Fluent MDL2 Hybrid Icons !important",
+    selectors: {
+      "> *": { marginBottom: 15 },
+      ".icon-95": {
+        fontFamily: "Fluent MDL2 Hybrid Icons !important",
+      },
+      ".root-110": {
+        fontFamily: "Fluent MDL2 Hybrid Icons !important",
+      },
+    },
+  });
 
   const [masterData, setmasterData] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);

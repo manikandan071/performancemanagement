@@ -236,12 +236,25 @@
     text-align: center;
     /* background: #f6f5fb; */
 }
-
+.ms-TextField-fieldGroup  div{
+    padding: 0px 8px 0px 8px;
+}
 .p-datatable-table td div{
     font-family: Roboto, Arial, Helvetica, sans-serif;
     color: rgb(100, 114, 140);
     font-size: 13px;
-    
+}
+.ms-CalendarDay-daySelected{
+    background-color:#006c2272 !important;
+}
+.ms-CalendarDay-daySelected:hover{
+    background-color:#006c2272 !important;
+}
+.ms-CalendarDay-daySelected::before{
+    border: 1px solid transparent !important;
+}
+.ms-CalendarDay-dayIsToday{
+    background-color:#006c2272 !important;
 }
 .p-datatable-table td{
     border-right: 1px solid #e3e3e3;
@@ -249,6 +262,11 @@
 }
 
 .p-datatable-table td .ms-TextField-fieldGroup {
+
+    border: 1px solid #e3e3e3 !important;
+}
+.p-datatable-table td .ms-TextField-fieldGroup  i{
+
     border: 1px solid #abeba8 !important;
 }
 
@@ -264,10 +282,10 @@
 
 .monthAndYear-112 span{
     color: #006c22 !important;
+    padding: 6px 0px 6px !important;
 }
-
-.ms-Callout .goTodayButton-108 {
-    color: #006c22 !important;
+.ms-DatePicker span{
+    color: rgb(100, 114, 140) !important;
 }
 .AppraisalCycle span{
 padding: 9px 12px 10px 10px;
