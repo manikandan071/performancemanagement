@@ -266,6 +266,9 @@ const Goals = () => {
       .expand("Employee,Members")
       .get()
       .then((res) => {
+         res.forEach((datas) => {
+            console.log(datas.Roles , "roles");
+         })
         if (res.length > 0) {
           let rolesSet = new Set();
           let uniqueArray = res.filter((data) => {
