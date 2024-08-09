@@ -1,0 +1,15 @@
+.AppraisalCycles {
+    // padding-right: 15px;
+    position: relative;
+    button {
+        padding: 5px 10px !important;
+        :hover{
+            color: #ae9447!important;
+        }
+    }
+}
+.sectionHeaderWrapper{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

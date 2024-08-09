@@ -11,6 +11,8 @@ import { sp } from "@pnp/sp";
 import { graph } from "@pnp/graph";
 import MainComponent from "./MainComponent";
 import "./style.css";
+import { store } from "../../../redux/store/store";
+import { Provider } from "react-redux";
 
 export default class Pms extends React.Component<IPmsProps, {}> {
   constructor(prop: IPmsProps, state: {}) {
@@ -33,7 +35,9 @@ export default class Pms extends React.Component<IPmsProps, {}> {
 
     return (
       <section style={{ margin: "0px 0px 0px 10px" }}>
-        <MainComponent context={this.props.context} />
+        <Provider store={store}>
+          <MainComponent context={this.props.context} />
+        </Provider>
       </section>
     );
   }

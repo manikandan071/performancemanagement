@@ -25,9 +25,16 @@ import styles from "./PreDefinedGoalsStyle.module.scss";
 import { RiInformationFill } from "react-icons/ri";
 import "../masterStyle.css";
 import Loader from "../Loader/Loader";
+import { useSelector } from "react-redux";
+import { getCurrentUserGoals } from "../../../../Services/PreDefineGoalService/PreDefineGoalService";
 
 const PredefinedGoals = (props: any): any => {
   const toast = useRef<Toast>(null);
+  const CurrentUserDetails: any = useSelector(
+    (state: any) => state.CommonServiceData.currentUserDetails
+  );
+  console.log();
+
   const appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<any>(null);
@@ -54,7 +61,7 @@ const PredefinedGoals = (props: any): any => {
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
-  console.log(props, "predefinedProps");
+  console.log(props, "predefinedProps", assignUserObj);
 
   const getDetails = (): any => {
     sp.web.lists
@@ -77,6 +84,8 @@ const PredefinedGoals = (props: any): any => {
             !item.isDelete &&
             !item.isDeleteHR
         );
+        console.log(filterData);
+
         const managerGoals: any = [];
         const preDefinedGoals = filterData.filter((pre: any) => {
           if (pre.GoalCategory === "ManagerGoal") {
@@ -209,25 +218,27 @@ const PredefinedGoals = (props: any): any => {
       });
   };
   const init = (): void => {
-    sp.web
-      .siteUsers()
-      .then((res) => {
-        res.forEach((user) => {
-          if (user.Email === props.EmployeeEmail) {
-            setAssignUserObj({
-              ...assignUserObj,
-              userID: user.Id,
-              userName: user.Title,
-              userEmail: user.Email,
-            });
-          }
-        });
-      })
-      .catch((err) => console.log("get user function error", err));
+    // sp.web
+    //   .siteUsers()
+    //   .then((res) => {
+    //     res.forEach((user) => {
+    //       if (user.Email === props.EmployeeEmail) {
+    //         setAssignUserObj({
+    //           ...assignUserObj,
+    //           userID: user.Id,
+    //           userName: user.Title,
+    //           userEmail: user.Email,
+    //         });
+    //       }
+    //     });
+    //   })
+    //   .catch((err) => console.log("get user function error", err));
     getDetails();
   };
   useEffect(() => {
     setIsLoader(true);
+    setAssignUserObj(CurrentUserDetails);
+    getCurrentUserGoals(appraisalCycleID, CurrentUserDetails);
     init();
   }, [props]);
 
@@ -1510,7 +1521,7 @@ const PredefinedGoals = (props: any): any => {
                           />
                         ) : null}
 
-                        <Column
+                        {/* <Column
                           className="col1"
                           field="EmployeeRating"
                           header="Employee Comments & Rating"
@@ -1527,7 +1538,7 @@ const PredefinedGoals = (props: any): any => {
                             width: "22%",
                           }}
                           body={ManagerRatingBodyTemplate}
-                        />
+                        /> */}
 
                         {props.appraisalCycle.submitComments ||
                         (props.appraisalCycle.goalSubmit && props.isManager) ? (

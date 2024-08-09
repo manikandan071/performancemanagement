@@ -4,7 +4,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import * as React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { sp } from "@pnp/sp/presets/all";
 import * as moment from "moment";
 import { Column } from "primereact/column";
@@ -16,7 +16,7 @@ import { InputText } from "primereact/inputtext";
 import { InputTextarea } from "primereact/inputtextarea";
 import { Button } from "primereact/button";
 import { Dialog } from "primereact/dialog";
-import { Toast } from "primereact/toast";
+// import { Toast } from "primereact/toast";
 // import { HiPencil } from "react-icons/hi2";
 import { MdEditDocument } from "react-icons/md";
 import { AddSquare28Regular } from "@fluentui/react-icons";
@@ -31,17 +31,52 @@ import "../../../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "primereact/resources/primereact.min.css";
 import styles from "./GoalsStyles.module.scss";
 import "../masterStyle.css";
+import Loader from "../Loader/Loader";
+import {
+  getAllHRGoals,
+  getAllPredefinedGoals,
+  getAppraisalCycles,
+  HRCategoryDelete,
+  HRgoalsDelete,
+  newHRCategoryAndGoalAdd,
+  updateGoalRoles,
+  updateGoalRolesToOrganization,
+} from "../../../../Services/HRGoalsServices/HRGoalServices";
+
+import ToastMessage from "../CommonComponents/Toast/ToastMessage";
+
+import { useSelector } from "react-redux";
+
+interface ICurrentCycle {
+  currentCycleId: any;
+  goalSubmit: boolean;
+}
 
 const Goals = (): any => {
-  const toast = useRef<Toast>(null);
-  const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+  // const dispatch = useDispatch();
+
+  // selectors
+  const AllUserDetails: any = useSelector(
+    (state: any) => state.HRServiceData.userDetails
+  );
+  const AllRoleList: any = useSelector(
+    (state: any) => state.HRServiceData.rolesList
+  );
+  const appraisalCycleList: any = useSelector(
+    (state: any) => state.HRServiceData.masterCycles
+  );
+
+  // const toast = useRef<Toast>(null);
+  // const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setMasterData] = useState<any[]>([]);
+  const [isLoader, setIsLoader] = useState<boolean>(true);
   const [predefinedGoalsList, setPredefinedGoals] = useState<any[]>([]);
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [deletedGoals, setDeletedGoals] = useState<any[]>([]);
   const [usersList, setUsersList] = useState<any[]>([]);
-  const [rolesList, setRolesList] = useState<any[]>([{ name: "", code: "" }]);
+  const [cyclesList, setCycleList] = useState<any[]>([]);
+  const [rolesList, setRolesList] = useState<any[]>([]);
   const [assignLevelList, setAssignLevelList] = useState<any[]>([
     { name: "", code: "" },
   ]);
@@ -56,7 +91,7 @@ const Goals = (): any => {
     isUpdate: false,
   });
   const [activeIndex, setActiveIndex] = useState<any>(null);
-  const [appraisalCycleId, setAppraisalCycleId] = useState({
+  const [appraisalCycleId, setAppraisalCycleId] = useState<ICurrentCycle>({
     currentCycleId: null,
     goalSubmit: false,
   });
@@ -64,258 +99,23 @@ const Goals = (): any => {
     delPopup: false,
     delGoalId: null,
   });
-  const [cyclesList, setCycleList] = useState<any[]>([]);
+  const [toastMessage, setToastMessage] = useState<any>({
+    isShow: false,
+    severity: "",
+    title: "",
+    message: "",
+    duration: "",
+  });
 
-  const getPredefinedGoals = (ACId: number): any => {
-    sp.web.lists
-      .getByTitle(`PredefinedGoals`)
-      .items.select("*,AssignTo/ID,AssignTo/Title,AssignTo/EMail,HRGoal/ID")
-      .expand("AssignTo,HRGoal")
-      .filter(`AppraisalCycleLookupId eq '${ACId}'`)
-      .get()
-      .then((res) => {
-        const tempArr: any = [];
-        res.forEach((obj) => {
-          tempArr.push({
-            ID: obj.ID ? obj.ID : null,
-            GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
-            GoalName: obj.GoalName ? obj.GoalName : "",
-            AssignTo: obj.AssignTo ? obj.AssignTo : {},
-            isDeleteHR: obj.isDeleteHR ? obj.isDeleteHR : false,
-            HRGoalId: obj.HRGoal ? obj.HRGoal.ID : "",
-          });
-        });
-        setPredefinedGoals([...tempArr]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getHRGoals = (ACId: number): any => {
-    sp.web.lists
-      .getByTitle(`HrGoals`)
-      .items.filter(`AppraisalCycleLookupId eq '${ACId}'`)
-      .get()
-      .then((res) => {
-        const tempArr: any = [];
-        let ID = 1;
-        const deletedGoals = res.filter((del) => del.isDelete);
-        const assignedGoals = res.filter((del) => !del.isDelete);
-        const groupedArray = assignedGoals.reduce((acc, obj) => {
-          const existingCategory = acc.find(
-            (item: any) => item.GoalCategory === obj.GoalCategory
-          );
-          if (existingCategory) {
-            existingCategory.values.push({
-              GoalName: obj.GoalName,
-              AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-              Role: obj.Role
-                ? obj.Role.map((role: any) => ({
-                    name: role,
-                    code: role,
-                  }))
-                : [],
-              ID: obj.ID,
-              isRowEdit: false,
-              isNew: false,
-            });
-          } else {
-            acc.push({
-              GoalCategory: obj.GoalCategory,
-              mainID: ID++,
-              values: [
-                {
-                  GoalName: obj.GoalName,
-                  AssignLevel: { name: obj.AssignLevel, code: obj.AssignLevel },
-                  Role: obj.Role
-                    ? obj.Role.map((role: any) => ({
-                        name: role,
-                        code: role,
-                      }))
-                    : [],
-                  ID: obj.ID,
-                  isRowEdit: false,
-                  isNew: false,
-                },
-              ],
-            });
-          }
-          return acc;
-        }, []);
-        assignedGoals.forEach((obj) => {
-          const json = {
-            ID: obj.ID ? obj.ID : null,
-            GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
-            GoalName: obj.GoalName ? obj.GoalName : "",
-            AssignLevel: obj.AssignLevel
-              ? { name: obj.AssignLevel, code: obj.AssignLevel }
-              : { name: "", code: "" },
-            Role: obj.Role
-              ? obj.Role.map((role: any) => ({ name: role, code: role }))
-              : [],
-            isRowEdit: false,
-            isNew: false,
-          };
-          tempArr.push(json);
-        });
-        const tempaArray = [...tempArr];
-        setDeletedGoals([...deletedGoals]);
-        setCategories([...groupedArray]);
-        setDuplicateData(tempaArray);
-        setMasterData(tempaArray);
-        getPredefinedGoals(ACId);
-      })
-      .catch((err) => console.log(err));
-  };
-
-  const getCycleYear = (): void => {
-    sp.web.lists
-      .getByTitle("AppraisalCycles")
-      .items.get()
-      .then((cycle) => {
-        const tempArr: any = [];
-        cycle.reverse();
-        cycle.forEach((res) => {
-          tempArr.push({
-            ID: res.ID,
-            Year: res.Title,
-            cycleCategory: res.cycleCategory,
-            startDate: res.startDate,
-            endDate: res.endDate,
-            commentsSubmitSDate: res.commentsSubmitSDate,
-            commentsSubmitEDate: res.commentsSubmitEDate,
-            goalsSubmitSDate: res.goalsSubmitSDate,
-            goalsSubmitEDate: res.goalsSubmitEDate,
-          });
-        });
-        for (let i = 0; i < cycle.length; i++) {
-          const sDate = new Date(cycle[i].startDate).setHours(0, 0, 0, 0);
-          const eDate = new Date(cycle[i].endDate).setHours(0, 0, 0, 0);
-          const goalsSDate = new Date(cycle[i].goalsSubmitSDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const goalsEDate = new Date(cycle[i].goalsSubmitEDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          if (
-            currentDate >= new Date(goalsSDate) &&
-            currentDate <= new Date(goalsEDate)
-          ) {
-            setAppraisalCycleId({
-              ...appraisalCycleId,
-              currentCycleId: cycle[i].ID,
-              goalSubmit: true,
-            });
-            getHRGoals(cycle[i].ID);
-            break;
-          } else {
-            if (
-              currentDate >= new Date(sDate) &&
-              currentDate <= new Date(eDate)
-            ) {
-              setAppraisalCycleId({
-                ...appraisalCycleId,
-                currentCycleId: cycle[i].ID,
-                goalSubmit: false,
-              });
-              getHRGoals(cycle[i].ID);
-            }
-          }
-        }
-        // cycle.forEach((res) => {
-        //   let sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
-        //   let eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
-        //   let goalsSDate = new Date(res.goalsSubmitSDate).setHours(0, 0, 0, 0);
-        //   let goalsEDate = new Date(res.goalsSubmitEDate).setHours(0, 0, 0, 0);
-        //   if (
-        //     currentDate >= new Date(goalsSDate) &&
-        //     currentDate <= new Date(goalsEDate)
-        //   ) {
-        //     setAppraisalCycleId({
-        //       ...appraisalCycleId,
-        //       currentCycleId: res.ID,
-        //       goalSubmit: true,
-        //     });
-        //     getHRGoals(res.ID);
-        //   } else {
-        //     if (
-        //       currentDate >= new Date(sDate) &&
-        //       currentDate <= new Date(eDate)
-        //     ) {
-        //       setAppraisalCycleId({
-        //         ...appraisalCycleId,
-        //         currentCycleId: res.ID,
-        //         goalSubmit: false,
-        //       });
-        //       getHRGoals(res.ID);
-        //     }
-        //   }
-        // });
-        setCycleList([...tempArr]);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const getUsersRoles = (): void => {
-    sp.web.lists
-      .getByTitle(`EmployeeList`)
-      .items.select(
-        "*,Employee/ID,Employee/Title,Employee/EMail,Members/ID,Members/Title,Members/EMail"
-      )
-      .expand("Employee,Members")
-      .get()
-      .then((res) => {
-        res.forEach((datas) => {
-          console.log(datas.Roles, "roles");
-        });
-        if (res.length > 0) {
-          const rolesSet = new Set();
-          const uniqueArray = res.filter((data) => {
-            if (!rolesSet.has(data.Roles) && data.Roles !== "Admin") {
-              rolesSet.add(data.Roles);
-              return true;
-            }
-            return false;
-          });
-          const rolesArr: any = uniqueArray.map((role) => {
-            return { name: role.Roles, code: role.Roles };
-          });
-          setRolesList([...rolesArr]);
-          setAssignLevelList([
-            { name: "Organization", code: "Organization" },
-            { name: "Role", code: "Role" },
-          ]);
-          const userArr: {
-            EmployeeName: string;
-            UserEmail: string;
-            Role: string;
-            EmployeeID: number;
-          }[] = [];
-          res.forEach((obj) => {
-            if (obj.Roles !== "Admin") {
-              userArr.push({
-                EmployeeName: obj.Employee.Title,
-                UserEmail: obj.Employee.EMail,
-                Role: obj.Roles,
-                EmployeeID: obj.Employee.ID,
-              });
-            }
-          });
-          setUsersList([...userArr]);
-          getCycleYear();
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+  console.log(
+    usersList,
+    rolesList,
+    cyclesList,
+    categories,
+    duplicateData,
+    masterData,
+    predefinedGoalsList
+  );
 
   const categoryHandleFun = (data: any): any => {
     let ID = 1;
@@ -429,7 +229,7 @@ const Goals = (): any => {
           });
         });
       }
-      getUsersRoles();
+      callBackDatas();
     }
   };
   const addGoalFunction = (ind: number): any => {
@@ -439,12 +239,20 @@ const Goals = (): any => {
     const data = tempArr[index];
     const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
-      toast.current?.show({
+      setToastMessage({
+        isShow: true,
         severity: "warn",
-        summary: "Warning",
-        detail:
-          "Please save or cancel the current row before editing another row",
+        title: "Warning!",
+        message:
+          "Please save or cancel the current row before editing another row.",
+        duration: 3000,
       });
+      // toast.current?.show({
+      //   severity: "warn",
+      //   summary: "Warning",
+      //   detail:
+      //     "Please save or cancel the current row before editing another row",
+      // });
     } else {
       setDuplicateData([
         ...duplicateData,
@@ -488,54 +296,38 @@ const Goals = (): any => {
     });
   };
 
-  const deleteCategoryFun = (): any => {
-    let duplicateArray = [...duplicateData];
-    const tempCategoryArr = [...categories];
-    const index = tempCategoryArr.findIndex(
-      (ind) => ind.mainID === isPopup.delIndex + 1
+  const deleteCategoryFun = async () => {
+    await HRCategoryDelete(
+      duplicateData,
+      categories,
+      predefinedGoalsList,
+      isPopup,
+      setIsPopup,
+      setMasterData,
+      setDuplicateData,
+      categoryHandleFun,
+      callBackDatas
     );
-    const tempObj = tempCategoryArr[index];
-    const categoryGoalsArr = tempObj.values;
-    categoryGoalsArr.forEach((obj: any) => {
-      duplicateArray = duplicateArray.filter((fill) => fill.ID !== obj.ID);
-      setDuplicateData([...duplicateArray]);
-      setIsPopup({ ...isPopup, delIndex: null, delPopup: false });
-      setMasterData([...duplicateArray]);
-      categoryHandleFun([...duplicateArray]);
-      sp.web.lists
-        .getByTitle(`HrGoals`)
-        .items.getById(obj.ID)
-        .update({ isDelete: true })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => console.log(err));
-    });
-    categoryGoalsArr.forEach((cat: any) => {
-      predefinedGoalsList.forEach((goal) => {
-        if (cat.ID === goal.HRGoalId) {
-          sp.web.lists
-            .getByTitle(`PredefinedGoals`)
-            .items.getById(goal.ID)
-            .update({ isDeleteHR: true })
-            .then((res) => console.log(res))
-            .catch((err) => console.log(err));
-        }
-      });
-    });
-    getUsersRoles();
   };
 
   const editRowFunction = (data: any): any => {
     const duplicateArr = [...duplicateData];
     const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
-      toast.current?.show({
+      setToastMessage({
+        isShow: true,
         severity: "warn",
-        summary: "Warning",
-        detail:
-          "Please save or cancel the current row before editing another row",
+        title: "Warning!",
+        message:
+          "Please save or cancel the current row before editing another row.",
+        duration: 3000,
       });
+      // toast.current?.show({
+      //   severity: "warn",
+      //   summary: "Warning",
+      //   detail:
+      //     "Please save or cancel the current row before editing another row",
+      // });
     } else {
       const index = [...duplicateArr].findIndex(
         (obj: any) => obj.ID === data.ID
@@ -553,30 +345,51 @@ const Goals = (): any => {
           if (tempObj.Role.length > 0) {
             return true;
           } else {
-            toast.current?.show({
+            setToastMessage({
+              isShow: true,
               severity: "warn",
-              summary: "Warning",
-              detail: "Please select Employee role ",
+              title: "Warning!",
+              message: "Please select Employee role.",
+              duration: 3000,
             });
+            // toast.current?.show({
+            //   severity: "warn",
+            //   summary: "Warning",
+            //   detail: "Please select Employee role.",
+            // });
             return false;
           }
         } else {
           return true;
         }
       } else {
-        toast.current?.show({
+        setToastMessage({
+          isShow: true,
           severity: "warn",
-          summary: "Warning",
-          detail: "Please select assign level ",
+          title: "Warning!",
+          message: "Please select assign level.",
+          duration: 3000,
         });
+        // toast.current?.show({
+        //   severity: "warn",
+        //   summary: "Warning",
+        //   detail: "Please select assign level ",
+        // });
         return false;
       }
     } else {
-      toast.current?.show({
+      setToastMessage({
+        isShow: true,
         severity: "warn",
-        summary: "Warning",
-        detail: "Please enter goal name",
+        title: "Warning!",
+        message: "Please enter goal name.",
+        duration: 3000,
       });
+      // toast.current?.show({
+      //   severity: "warn",
+      //   summary: "Warning",
+      //   detail: "Please enter goal name",
+      // });
       return false;
     }
   };
@@ -592,75 +405,18 @@ const Goals = (): any => {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
     };
-
     const validation = validationFun(tempObj);
-
     if (tempObj.isNew && validation) {
-      sp.web.lists
-        .getByTitle(`HrGoals`)
-        .items.add({
-          AssignLevel: tempObj.AssignLevel.name,
-          Role: tempObj.Role
-            ? { results: tempObj.Role.map((role: any) => role.name) }
-            : { results: [""] },
-          GoalName: tempObj.GoalName,
-          GoalCategory: tempObj.GoalCategory,
-          AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
-          isDelete: false,
-        })
-        .then((res) => {
-          const duplicateArr = [...duplicateData];
-          const index = [...duplicateArr].findIndex(
-            (obj: any) => obj.ID === data.ID
-          );
-          const tempObj = duplicateArr[index];
-          duplicateArr[index] = {
-            ...tempObj,
-            [`${"isRowEdit"}`]: false,
-            [`${"isNew"}`]: false,
-          };
-          setDuplicateData([...duplicateArr]);
-          setMasterData([...duplicateArr]);
-          categoryHandleFun([...duplicateArr]);
-
-          if (tempObj.AssignLevel.name === "Organization") {
-            usersList.forEach((user) => {
-              sp.web.lists
-                .getByTitle(`PredefinedGoals`)
-                .items.add({
-                  GoalName: tempObj.GoalName,
-                  GoalCategory: tempObj.GoalCategory,
-                  AssignToId: user.EmployeeID,
-                  HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
-                })
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err));
-            });
-            getUsersRoles();
-          } else {
-            const selectedRoles = tempObj.Role.map((item: any) => item.name);
-            const userListArray = usersList.filter((item) =>
-              selectedRoles.includes(item.Role)
-            );
-            userListArray.forEach((user) => {
-              sp.web.lists
-                .getByTitle(`PredefinedGoals`)
-                .items.add({
-                  GoalName: tempObj.GoalName,
-                  GoalCategory: tempObj.GoalCategory,
-                  AssignToId: user.EmployeeID,
-                  HRGoalId: res.data.ID,
-                  AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
-                })
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err));
-            });
-            getUsersRoles();
-          }
-        })
-        .catch((err) => console.log(err));
+      setIsLoader(true);
+      newHRCategoryAndGoalAdd(
+        tempObj,
+        usersList,
+        appraisalCycleId,
+        callBackDatas,
+        setToastMessage
+      );
     } else if (validation) {
+      setIsLoader(true);
       const duplicateArr = [...duplicateData];
       const masterArr = [...masterData];
       const index = [...duplicateArr].findIndex(
@@ -668,199 +424,24 @@ const Goals = (): any => {
       );
       const tempObj = duplicateArr[index];
       const masterObj = masterArr[index];
-      const permissionDeleted: any = [];
       if (tempObj.AssignLevel.name === "Organization") {
-        const allEmailIDs = new Set(
-          predefinedGoalsList.map((item) => {
-            if (item.HRGoalId === tempObj.ID) {
-              if (item.isDeleteHR) {
-                permissionDeleted.push(`${item.AssignTo.EMail}`);
-              }
-              return `${item.AssignTo.EMail}`;
-            }
-          })
+        updateGoalRolesToOrganization(
+          tempObj,
+          predefinedGoalsList,
+          usersList,
+          appraisalCycleId,
+          callBackDatas
         );
-        const getUserDetails = usersList.filter(
-          (item) => !allEmailIDs.has(`${item.UserEmail}`)
-        );
-        if (getUserDetails.length > 0) {
-          getUserDetails.forEach((user) => {
-            sp.web.lists
-              .getByTitle(`PredefinedGoals`)
-              .items.add({
-                GoalName: tempObj.GoalName,
-                GoalCategory: tempObj.GoalCategory,
-                AssignToId: user.EmployeeID,
-                HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
-              })
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err));
-          });
-          usersList.forEach((user) => {
-            predefinedGoalsList.forEach((goal) => {
-              if (
-                goal.HRGoalId === tempObj.ID &&
-                goal.AssignTo.EMail === user.UserEmail
-              ) {
-                sp.web.lists
-                  .getByTitle(`PredefinedGoals`)
-                  .items.getById(goal.ID)
-                  .update({ GoalName: tempObj.GoalName, isDeleteHR: false })
-                  .then((res) => console.log(res))
-                  .catch((err) => console.log(err));
-              }
-            });
-          });
-          getUsersRoles();
-        } else {
-          predefinedGoalsList.forEach((goal: any) => {
-            if (goal.HRGoalId === tempObj.ID) {
-              sp.web.lists
-                .getByTitle(`PredefinedGoals`)
-                .items.getById(goal.ID)
-                .update({ GoalName: tempObj.GoalName, isDeleteHR: false })
-                .then((res) => console.log(res))
-                .catch((err) => console.log(err));
-            }
-          });
-          getUsersRoles();
-        }
       } else {
-        let resultArray: any = [];
-        const allEmailIDs = new Set(
-          predefinedGoalsList.map((item: any) => {
-            if (item.HRGoalId === tempObj.ID && item.isDeleteHR !== true) {
-              return item.AssignTo.EMail;
-            }
-          })
+        updateGoalRoles(
+          masterObj,
+          tempObj,
+          predefinedGoalsList,
+          usersList,
+          appraisalCycleId,
+          callBackDatas,
+          setToastMessage
         );
-        const getUserEmailIDs = usersList.filter((item) =>
-          allEmailIDs.has(item.mailID)
-        );
-        const uniqueRoles = Array.from(
-          new Set(getUserEmailIDs.map((item) => item.Role))
-        );
-        if (masterObj.Role.length > 0) {
-          resultArray = masterObj.Role;
-        } else {
-          resultArray = uniqueRoles.map((role) => ({
-            name: role,
-            code: role,
-          }));
-        }
-
-        const commonRoles = tempObj.Role.filter((item1: any) =>
-          resultArray.some(
-            (item2: any) =>
-              item1.code === item2.code && item1.name === item2.name
-          )
-        );
-        const updateUser: any = tempObj.Role.filter(
-          (item: any) =>
-            !commonRoles.some(
-              (commonItem: any) =>
-                item.code === commonItem.code && item.name === commonItem.name
-            )
-        );
-        const removeUser: any = resultArray.filter(
-          (item: any) =>
-            !commonRoles.some(
-              (commonItem: any) =>
-                item.code === commonItem.code && item.name === commonItem.name
-            )
-        );
-        if (commonRoles.length > 0 && tempObj.GoalName !== masterObj.GoalName) {
-          const selectedRoles = commonRoles.map((item: any) => item.name);
-          const userListArray = usersList.filter((item) =>
-            selectedRoles.includes(item.Role)
-          );
-          userListArray.forEach((user) => {
-            predefinedGoalsList.forEach((goal: any) => {
-              if (
-                goal.AssignTo.EMail === user.UserEmail &&
-                goal.HRGoalId === tempObj.ID
-              ) {
-                sp.web.lists
-                  .getByTitle(`PredefinedGoals`)
-                  .items.getById(goal.ID)
-                  .update({ GoalName: tempObj.GoalName, isDeleteHR: false })
-                  .then((res) => console.log(res))
-                  .catch((err) => console.log(err));
-              }
-            });
-          });
-        }
-        if (removeUser.length > 0) {
-          const selectedRoles = removeUser.map((item: any) => item.name);
-          const userListArray = usersList.filter((item) =>
-            selectedRoles.includes(item.Role)
-          );
-          const lookUpGoalsList: any = [];
-          predefinedGoalsList.filter((goals) => {
-            userListArray.forEach((user) => {
-              if (
-                goals.AssignTo.EMail === user.UserEmail &&
-                goals.HRGoalId === tempObj.ID
-              ) {
-                lookUpGoalsList.push(goals);
-              }
-            });
-          });
-          lookUpGoalsList.forEach((goal: any) => {
-            sp.web.lists
-              .getByTitle(`PredefinedGoals`)
-              .items.getById(goal.ID)
-              .update({ isDeleteHR: true })
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err));
-          });
-        }
-        if (updateUser.length > 0 && masterObj.Role.length > 0) {
-          const selectedRoles = updateUser.map((item: any) => item.name);
-          const userListArray = usersList.filter((item) =>
-            selectedRoles.includes(item.Role)
-          );
-          const array2Emails = new Set(
-            predefinedGoalsList.map(
-              (item) => `${item.AssignTo.EMail}-${item.HRGoalId}`
-            )
-          );
-
-          const filteredArray1 = userListArray.filter(
-            (item) => !array2Emails.has(`${item.UserEmail}-${tempObj.ID}`)
-          );
-
-          filteredArray1.forEach((filter) => {
-            sp.web.lists
-              .getByTitle(`PredefinedGoals`)
-              .items.add({
-                GoalName: tempObj.GoalName,
-                GoalCategory: tempObj.GoalCategory,
-                AssignToId: filter.EmployeeID,
-                HRGoalId: tempObj.ID,
-                AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
-              })
-              .then((res) => console.log(res))
-              .catch((err) => console.log(err));
-          });
-          userListArray.forEach((user) => {
-            predefinedGoalsList.forEach((goal: any) => {
-              if (
-                goal.AssignTo.EMail === user.UserEmail &&
-                goal.HRGoalId === tempObj.ID
-              ) {
-                sp.web.lists
-                  .getByTitle(`PredefinedGoals`)
-                  .items.getById(goal.ID)
-                  .update({ GoalName: tempObj.GoalName, isDeleteHR: false })
-                  .then((res) => console.log(res))
-                  .catch((err) => console.log(err));
-              }
-            });
-          });
-        }
-        getUsersRoles;
       }
       sp.web.lists
         .getByTitle(`HrGoals`)
@@ -881,15 +462,20 @@ const Goals = (): any => {
           categoryHandleFun([...duplicateArr]);
         })
         .catch((err) => console.log(err));
+    } else {
+      // setToastMessage({
+      //   isShow: true,
+      //   severity: "warn",
+      //   title: "Warning!",
+      //   message: "Please enter mandatory fields.",
+      //   duration: 3000,
+      // });
+      // toast.current?.show({
+      //   severity: "warn",
+      //   summary: "Warning",
+      //   detail: "Please enter mandatory fields",
+      // });
     }
-    // else {
-    // alert("please enter Goal name");
-    //   toast.current?.show({
-    //     severity: "warn",
-    //     summary: "Warning",
-    //     detail: "Please enter goal name",
-    //   });
-    // }
   };
 
   const editCancelFun = (data: any): any => {
@@ -910,43 +496,18 @@ const Goals = (): any => {
     categoryHandleFun([...duplicateArr]);
   };
 
-  const goalDeleteFun = (): any => {
-    const duplicateArr = [...duplicateData];
-    const index = [...duplicateArr].findIndex(
-      (obj) => obj.ID === goalDelPopup.delGoalId
+  const goalDeleteFun = async (): Promise<void> => {
+    let updateArray = HRgoalsDelete(
+      duplicateData,
+      predefinedGoalsList,
+      goalDelPopup,
+      setDeletedGoals,
+      setGoalDelPopup,
+      callBackDatas
     );
-    const delObj = duplicateArr[index];
-    setDeletedGoals([...deletedGoals, delObj]);
-    const delArray = duplicateArr.filter(
-      (items) => items.ID !== goalDelPopup.delGoalId
-    );
-    sp.web.lists
-      .getByTitle(`HrGoals`)
-      .items.getById(delObj.ID)
-      .update({ isDelete: true })
-      .then((res) => {
-        categoryHandleFun([...delArray]);
-        setDuplicateData([...delArray]);
-        setMasterData([...delArray]);
-        setGoalDelPopup({
-          ...goalDelPopup,
-          delPopup: false,
-          delGoalId: null,
-        });
-      })
-      .catch((err) => console.log(err));
-
-    predefinedGoalsList.forEach((goal) => {
-      if (goal.HRGoalId === delObj.ID) {
-        sp.web.lists
-          .getByTitle(`PredefinedGoals`)
-          .items.getById(goal.ID)
-          .update({ isDeleteHR: true })
-          .then((res) => console.log(res))
-          .catch((err) => console.log(err));
-      }
-    });
-    getUsersRoles();
+    categoryHandleFun([...(await updateArray)]);
+    setDuplicateData([...(await updateArray)]);
+    setMasterData([...(await updateArray)]);
   };
 
   const onChangeHandleFun = (value: any, type: string, id: number): any => {
@@ -975,7 +536,6 @@ const Goals = (): any => {
     });
     categoryHandleFun([...tempArr]);
   };
-
   const GoalnameBodyTemplate = (rowData: any): any => {
     const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
@@ -1013,7 +573,6 @@ const Goals = (): any => {
       </div>
     );
   };
-
   const AssignLevelBodyTemplate = (rowData: any): any => {
     const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
@@ -1027,11 +586,18 @@ const Goals = (): any => {
             if (rowData.GoalName !== "") {
               onChangeHandleFun(e.value, "AssignLevel", rowData.ID);
             } else {
-              toast.current?.show({
+              setToastMessage({
+                isShow: true,
                 severity: "warn",
-                summary: "Warning",
-                detail: "Please add goalname first and then assign level.",
+                title: "Warning!",
+                message: "Please add goalname first and then assign level.",
+                duration: 3000,
               });
+              // toast.current?.show({
+              //   severity: "warn",
+              //   summary: "Warning",
+              //   detail: "Please add goalname first and then assign level.",
+              // });
             }
           }}
           options={assignLevelList}
@@ -1074,7 +640,6 @@ const Goals = (): any => {
       </div>
     );
   };
-
   const RoleBodyTemplate = (rowData: any): any => {
     const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
@@ -1152,46 +717,63 @@ const Goals = (): any => {
             onClick={() => editCancelFun(rowData)}
           />
         </div>
-      ) : appraisalCycleId.goalSubmit ? (
-        <div>
-          <MdEditDocument
-            className={styles.editIcon}
-            onClick={(e) => {
-              if (categoryHandleObj.isNew || categoryHandleObj.isUpdate) {
-                toast.current?.show({
-                  severity: "warn",
-                  summary: "Warning",
-                  detail: "Please save or cancel the category before editing.",
-                });
-              } else {
-                editRowFunction(rowData);
-              }
-            }}
-          />
-          <MdDelete
-            className={styles.cancelIcon}
-            onClick={() => {
-              const duplicateArr = [...duplicateData];
-              const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
-              if (isEdit.length > 0) {
-                toast.current?.show({
-                  severity: "warn",
-                  summary: "Warning",
-                  detail:
-                    "Please save or cancel the current row before editing another row",
-                });
-              } else {
-                setGoalDelPopup({
-                  ...goalDelPopup,
-                  delPopup: true,
-                  delGoalId: rowData.ID,
-                });
-              }
-            }}
-          />
-        </div>
       ) : (
-        <></>
+        appraisalCycleId.goalSubmit && (
+          <div>
+            <MdEditDocument
+              className={styles.editIcon}
+              onClick={(e) => {
+                if (categoryHandleObj.isNew || categoryHandleObj.isUpdate) {
+                  setToastMessage({
+                    isShow: true,
+                    severity: "warn",
+                    title: "Warning!",
+                    message:
+                      "Please save or cancel the category before editing.",
+                    duration: 3000,
+                  });
+                  // toast.current?.show({
+                  //   severity: "warn",
+                  //   summary: "Warning",
+                  //   detail:
+                  //     "Please save or cancel the category before editing.",
+                  // });
+                } else {
+                  editRowFunction(rowData);
+                }
+              }}
+            />
+            <MdDelete
+              className={styles.cancelIcon}
+              onClick={() => {
+                const duplicateArr = [...duplicateData];
+                const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                if (isEdit.length > 0) {
+                  setToastMessage({
+                    isShow: true,
+                    severity: "warn",
+                    title: "Warning!",
+                    message:
+                      "Please save or cancel the current row before editing another row.",
+                    duration: 3000,
+                  });
+                  // toast.current?.show({
+                  //   severity: "warn",
+                  //   summary: "Warning",
+                  //   detail:
+                  //     "Please save or cancel the current row before editing another row",
+                  // });
+                } else {
+                  setGoalDelPopup({
+                    ...goalDelPopup,
+                    delPopup: true,
+                    delGoalId: rowData.ID,
+                  });
+                }
+              }}
+            />
+          </div>
+        )
       )
     ) : (
       <div>
@@ -1207,315 +789,387 @@ const Goals = (): any => {
     );
   };
 
+  const callBackDatas = () => {
+    if (appraisalCycleId.currentCycleId) {
+      getAllHRGoals(
+        appraisalCycleId.currentCycleId,
+        setDeletedGoals,
+        setCategories,
+        setDuplicateData,
+        setMasterData
+      );
+      getAllPredefinedGoals(
+        appraisalCycleId.currentCycleId,
+        setPredefinedGoals,
+        setIsLoader
+      );
+    }
+  };
+
   useEffect(() => {
-    getUsersRoles();
+    // callBackDatas();
+    // getUsersDetailsAndRoles(dispatch);
+    setUsersList([...AllUserDetails]);
+    setCycleList([...appraisalCycleList]);
+    setRolesList([...AllRoleList]);
+    setAssignLevelList([
+      { name: "Organization", code: "Organization" },
+      { name: "Role", code: "Role" },
+    ]);
+    getAppraisalCycles(setAppraisalCycleId);
   }, []);
+  useEffect(() => {
+    callBackDatas();
+  }, [appraisalCycleId]);
 
-  return (
-    <div className={styles.background}>
-      <Toast ref={toast} />
-      <Dialog
-        header="Header"
-        visible={goalDelPopup.delPopup}
-        style={{ width: "25%" }}
-        onClick={(e) => e.stopPropagation()}
-        onHide={() =>
-          setGoalDelPopup({
-            ...goalDelPopup,
-            delPopup: false,
-            delGoalId: null,
-          })
-        }
-      >
-        <div className="DeletePopup">
-          <p>Do you want to delete this goal?</p>
-          <div>
-            <Button
-              onClick={() => goalDeleteFun()}
-              // icon="pi pi-check"
-              label="confirm"
-              className="mr-2 dltBtn"
-            />
-            <Button
-              onClick={() =>
-                setGoalDelPopup({
-                  ...goalDelPopup,
-                  delPopup: false,
-                  delGoalId: null,
-                })
-              }
-              text
-              className="cancelBtn"
-              // icon="pi pi-times"
-              label="cancel"
-            />
-          </div>
-        </div>
-      </Dialog>
-      <div className="appraisalTitle">
-        {cyclesList.map((data) => {
-          if (data.ID === appraisalCycleId.currentCycleId) {
-            return (
-              <span>
-                Appraisal {data.Year} - {data.cycleCategory}
-                {" ("}
-                {moment(data.startDate).format("DD/MMM")} to{" "}
-                {moment(data.endDate).format("DD/MMM")}
-                {")"}
-                <span className="appraisalLabel">
-                  {appraisalCycleId.goalSubmit ? " - Goal Submission" : ""}
-                </span>
-              </span>
-            );
+  const resetToastMessage = (value: boolean) => {
+    setToastMessage((prev: any) => ({
+      ...prev,
+      isShow: value,
+    }));
+  };
+
+  return isLoader ? (
+    <Loader />
+  ) : (
+    <>
+      <div className={styles.background}>
+        {/* <Toast ref={toast} /> */}
+        <ToastMessage
+          message={toastMessage.message}
+          severity={toastMessage.severity}
+          duration={toastMessage.duration}
+          title={toastMessage.title}
+          isShow={toastMessage.isShow}
+          setToastMessage={resetToastMessage}
+        />
+        <Dialog
+          header="Confirmation"
+          visible={goalDelPopup.delPopup}
+          style={{ width: "25%" }}
+          onClick={(e) => e.stopPropagation()}
+          onHide={() =>
+            setGoalDelPopup({
+              ...goalDelPopup,
+              delPopup: false,
+              delGoalId: null,
+            })
           }
-        })}
-      </div>
-      <div className="addCategory">
-        <div className="managerGoal">
-          <span>PREDEFINE GOALS</span>
-        </div>
-        {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
-          <div style={{ display: "flex", gap: 5 }}>
-            <InputText
-              value={categoryHandleObj.newCategory}
-              id="category"
-              type="text"
-              placeholder="Category"
-              onChange={(e) => {
-                setCategoryHandleObj({
-                  ...categoryHandleObj,
-                  newCategory: e.target.value,
-                });
-              }}
-            />
-            {categoryHandleObj.isUpdate ? (
-              <Button
-                label="Submit"
-                severity="success"
-                onClick={(e) => addNewCategory(false)}
-              />
-            ) : (
-              <Button
-                // className="addCategory"
-                label="Add"
-                severity="success"
-                onClick={(e) => addNewCategory(true)}
-              />
-            )}
-
-            <Button
-              label="Cancel"
-              severity="danger"
-              text
-              className="cancelBtn"
-              onClick={(e) => {
-                // setNewCategory("");
-                setCategoryHandleObj({
-                  ...categoryHandleObj,
-                  newCategory: "",
-                  isNew: false,
-                  isUpdate: false,
-                });
-              }}
-            />
-          </div>
-        ) : appraisalCycleId.goalSubmit ? (
-          <Button
-            label="New Category"
-            onClick={(e) => {
-              const duplicateArr = [...duplicateData];
-              const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
-              if (isEdit.length > 0) {
-                toast.current?.show({
-                  severity: "warn",
-                  summary: "Warning",
-                  detail:
-                    "Please save or cancel the current row before editing another row",
-                });
-              } else {
-                setCategoryHandleObj({ ...categoryHandleObj, isNew: true });
-              }
-            }}
-          />
-        ) : null}
-      </div>
-      <div className="hrGoals">
-        <Accordion
-          activeIndex={activeIndex}
-          onTabChange={(e) => setActiveIndex(e.index)}
         >
-          {categories.map((data: any, index: number) => {
-            return (
-              <AccordionTab
-                className="accordionMain"
-                key={index}
-                header={
-                  <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                    <span className="CategoryTitle">{data.GoalCategory}</span>
-                    {appraisalCycleId.goalSubmit && activeIndex === index ? (
-                      <div className="font-bold iconSec">
-                        {isPopup.delIndex === index && isPopup.delPopup && (
-                          <Dialog
-                            header="Confirmation"
-                            visible={isPopup.delPopup}
-                            style={{ width: "25%" }}
-                            onClick={(e) => e.stopPropagation()}
-                            onHide={() =>
-                              setIsPopup({
-                                ...isPopup,
-                                delPopup: false,
-                                delIndex: null,
-                              })
-                            }
-                          >
-                            <div className="DeletePopup">
-                              <p>Do you want to delete this category?</p>
-                              <div style={{ display: "flex" }}>
-                                <Button
-                                  onClick={() => deleteCategoryFun()}
-                                  // icon="pi pi-check"
-                                  label="Confirm"
-                                  className="mr-2 dltBtn"
-                                />
-                                <Button
-                                  onClick={() =>
-                                    setIsPopup({
-                                      ...isPopup,
-                                      delPopup: false,
-                                    })
-                                  }
-                                  text
-                                  // icon="pi pi-times"
-                                  label="cancel"
-                                  className="cancelBtn"
-                                />
-                              </div>
-                            </div>
-                          </Dialog>
-                        )}
-                        {data.values.filter((val: any) => val.isNew).length ===
-                        0 ? (
-                          <AddSquare28Regular
-                            className="addIcon"
-                            onClick={(event) => {
-                              if (activeIndex === index) {
-                                event.stopPropagation();
-                              } else {
-                                setActiveIndex(index);
-                              }
-                              addGoalFunction(index);
-                            }}
-                          />
-                        ) : null}
-                        <MdEditDocument
-                          className="editIcon"
-                          onClick={(event) => {
-                            const duplicateArr = [...duplicateData];
-                            const isEdit = duplicateArr.filter(
-                              (edit) => edit.isRowEdit
-                            );
-                            if (isEdit.length > 0) {
-                              event.preventDefault();
-                              event.stopPropagation();
-                              toast.current?.show({
-                                severity: "warn",
-                                summary: "Warning",
-                                detail:
-                                  "Please save or cancel the current row before editing another row",
-                              });
-                            } else {
-                              event.preventDefault(),
-                                event.stopPropagation(),
-                                editCategoryFun(index);
-                            }
-                          }}
-                        />
-                        <MdDelete
-                          className="deleteIcon"
-                          onClick={(event) => {
-                            const duplicateArr = [...duplicateData];
-                            const isEdit = duplicateArr.filter(
-                              (edit) => edit.isRowEdit
-                            );
-                            if (isEdit.length > 0) {
-                              event.preventDefault(),
-                                event.stopPropagation(),
-                                toast.current?.show({
-                                  severity: "warn",
-                                  summary: "Warning",
-                                  detail:
-                                    "Please save or cancel the current row before editing another row",
-                                });
-                            } else {
-                              event.preventDefault(),
-                                event.stopPropagation(),
+          <div className="DeletePopup">
+            <p>Do you want to delete this goal?</p>
+            <div>
+              <Button
+                onClick={() => goalDeleteFun()}
+                // icon="pi pi-check"
+                label="confirm"
+                className="mr-2 dltBtn"
+              />
+              <Button
+                onClick={() =>
+                  setGoalDelPopup({
+                    ...goalDelPopup,
+                    delPopup: false,
+                    delGoalId: null,
+                  })
+                }
+                text
+                className="cancelBtn"
+                // icon="pi pi-times"
+                label="cancel"
+              />
+            </div>
+          </div>
+        </Dialog>
+        <div className="appraisalTitle">
+          {cyclesList.map((data) => {
+            if (data.ID === appraisalCycleId.currentCycleId) {
+              return (
+                <span>
+                  Appraisal {data.Year} - {data.cycleCategory}
+                  {" ("}
+                  {moment(data.startDate).format("DD/MMM")} to{" "}
+                  {moment(data.endDate).format("DD/MMM")}
+                  {")"}
+                  <span className="appraisalLabel">
+                    {appraisalCycleId.goalSubmit ? " - Goal Submission" : ""}
+                  </span>
+                </span>
+              );
+            }
+          })}
+        </div>
+        <div className="addCategory">
+          <div className="managerGoal">
+            <span>PREDEFINE GOALS</span>
+          </div>
+          {categoryHandleObj.isNew || categoryHandleObj.isUpdate ? (
+            <div style={{ display: "flex", gap: 5 }}>
+              <InputText
+                value={categoryHandleObj.newCategory}
+                id="category"
+                type="text"
+                placeholder="Category"
+                onChange={(e) => {
+                  setCategoryHandleObj({
+                    ...categoryHandleObj,
+                    newCategory: e.target.value,
+                  });
+                }}
+              />
+              {categoryHandleObj.isUpdate ? (
+                <Button
+                  label="Submit"
+                  severity="success"
+                  onClick={(e) => addNewCategory(false)}
+                />
+              ) : (
+                <Button
+                  // className="addCategory"
+                  label="Add"
+                  severity="success"
+                  onClick={(e) => addNewCategory(true)}
+                />
+              )}
+
+              <Button
+                label="Cancel"
+                severity="danger"
+                text
+                className="cancelBtn"
+                onClick={(e) => {
+                  // setNewCategory("");
+                  setCategoryHandleObj({
+                    ...categoryHandleObj,
+                    newCategory: "",
+                    isNew: false,
+                    isUpdate: false,
+                  });
+                }}
+              />
+            </div>
+          ) : appraisalCycleId.goalSubmit ? (
+            <Button
+              label="New Category"
+              onClick={(e) => {
+                const duplicateArr = [...duplicateData];
+                const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                if (isEdit.length > 0) {
+                  setToastMessage({
+                    isShow: true,
+                    severity: "warn",
+                    title: "Warning!",
+                    message:
+                      "Please save or cancel the current row before editing another row.",
+                    duration: 3000,
+                  });
+                  // toast.current?.show({
+                  //   severity: "warn",
+                  //   summary: "Warning",
+                  //   detail:
+                  //     "Please save or cancel the current row before editing another row",
+                  // });
+                } else {
+                  setCategoryHandleObj({ ...categoryHandleObj, isNew: true });
+                }
+              }}
+            />
+          ) : null}
+        </div>
+        <div className="hrGoals">
+          <Accordion
+            activeIndex={activeIndex}
+            onTabChange={(e) => setActiveIndex(e.index)}
+          >
+            {categories.map((data: any, index: number) => {
+              return (
+                <AccordionTab
+                  className="accordionMain"
+                  key={index}
+                  header={
+                    <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
+                      <span className="CategoryTitle">{data.GoalCategory}</span>
+                      {appraisalCycleId.goalSubmit && activeIndex === index ? (
+                        <div className="font-bold iconSec">
+                          {isPopup.delIndex === index && isPopup.delPopup && (
+                            <Dialog
+                              header="Confirmation"
+                              visible={isPopup.delPopup}
+                              style={{ width: "25%" }}
+                              onClick={(e) => e.stopPropagation()}
+                              onHide={() =>
                                 setIsPopup({
                                   ...isPopup,
-                                  delPopup: true,
-                                  delIndex: index,
+                                  delPopup: false,
+                                  delIndex: null,
+                                })
+                              }
+                            >
+                              <div className="DeletePopup">
+                                <p>Do you want to delete this category?</p>
+                                <div style={{ display: "flex" }}>
+                                  <Button
+                                    onClick={() => deleteCategoryFun()}
+                                    // icon="pi pi-check"
+                                    label="Confirm"
+                                    className="mr-2 dltBtn"
+                                  />
+                                  <Button
+                                    onClick={() =>
+                                      setIsPopup({
+                                        ...isPopup,
+                                        delPopup: false,
+                                      })
+                                    }
+                                    text
+                                    // icon="pi pi-times"
+                                    label="cancel"
+                                    className="cancelBtn"
+                                  />
+                                </div>
+                              </div>
+                            </Dialog>
+                          )}
+                          {data.values.filter((val: any) => val.isNew)
+                            .length === 0 ? (
+                            <AddSquare28Regular
+                              className="addIcon"
+                              onClick={(event) => {
+                                if (activeIndex === index) {
+                                  event.stopPropagation();
+                                } else {
+                                  setActiveIndex(index);
+                                }
+                                addGoalFunction(index);
+                              }}
+                            />
+                          ) : null}
+                          <MdEditDocument
+                            className="editIcon"
+                            onClick={(event) => {
+                              const duplicateArr = [...duplicateData];
+                              const isEdit = duplicateArr.filter(
+                                (edit) => edit.isRowEdit
+                              );
+                              if (isEdit.length > 0) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                                setToastMessage({
+                                  isShow: true,
+                                  severity: "warn",
+                                  title: "Warning!",
+                                  message:
+                                    "Please save or cancel the current row before editing another row.",
+                                  duration: 3000,
                                 });
-                            }
-                          }}
-                        />
-                      </div>
-                    ) : null}
-                  </span>
-                }
-              >
-                <div className="goalsTable">
-                  <DataTable
-                    value={data.values}
-                    size="normal"
-                    tableStyle={{ minWidth: "30rem" }}
-                  >
-                    <Column
-                      className="col1"
-                      field="GoalName"
-                      header="Goal Name"
-                      style={{
-                        width: "35%",
-                      }}
-                      body={GoalnameBodyTemplate}
-                    />
-                    <Column
-                      className="col2"
-                      field="AssignLevel"
-                      header="Assign Level"
-                      style={{ width: "20%" }}
-                      body={AssignLevelBodyTemplate}
-                    />
-                    <Column
-                      className="col3"
-                      field="Role"
-                      header="Role"
-                      style={{ width: "35%" }}
-                      body={RoleBodyTemplate}
-                    />
-                    {appraisalCycleId.goalSubmit ? (
+                                // toast.current?.show({
+                                //   severity: "warn",
+                                //   summary: "Warning",
+                                //   detail:
+                                //     "Please save or cancel the current row before editing another row",
+                                // });
+                              } else {
+                                event.preventDefault(),
+                                  event.stopPropagation(),
+                                  editCategoryFun(index);
+                              }
+                            }}
+                          />
+                          <MdDelete
+                            className="deleteIcon"
+                            onClick={(event) => {
+                              const duplicateArr = [...duplicateData];
+                              const isEdit = duplicateArr.filter(
+                                (edit) => edit.isRowEdit
+                              );
+                              if (isEdit.length > 0) {
+                                event.preventDefault(),
+                                  event.stopPropagation(),
+                                  setToastMessage({
+                                    isShow: true,
+                                    severity: "warn",
+                                    title: "Warning!",
+                                    message:
+                                      "Please save or cancel the current row before editing another row.",
+                                    duration: 3000,
+                                  });
+                                // toast.current?.show({
+                                //   severity: "warn",
+                                //   summary: "Warning",
+                                //   detail:
+                                //     "Please save or cancel the current row before editing another row",
+                                // });
+                              } else {
+                                event.preventDefault(),
+                                  event.stopPropagation(),
+                                  setIsPopup({
+                                    ...isPopup,
+                                    delPopup: true,
+                                    delIndex: index,
+                                  });
+                              }
+                            }}
+                          />
+                        </div>
+                      ) : null}
+                    </span>
+                  }
+                >
+                  <div className="goalsTable">
+                    <DataTable
+                      value={data.values}
+                      size="normal"
+                      tableStyle={{ minWidth: "30rem" }}
+                    >
                       <Column
-                        className="col4"
-                        header="Action"
-                        style={{ width: "10%" }}
-                        body={ActionBodyTemplate}
+                        className="col1"
+                        field="GoalName"
+                        header="Goal Name *"
+                        style={{
+                          width: "35%",
+                        }}
+                        body={GoalnameBodyTemplate}
                       />
-                    ) : null}
-                  </DataTable>
-                </div>
-              </AccordionTab>
-            );
-          })}
-        </Accordion>
-      </div>
-      {categories.length > 0 ? (
-        <div />
-      ) : (
-        <div>
-          <div className="noDataMsg">
-            there are no predefined goals set at the moment
-          </div>
+                      <Column
+                        className="col2"
+                        field="AssignLevel"
+                        header="Assign Level *"
+                        style={{ width: "20%" }}
+                        body={AssignLevelBodyTemplate}
+                      />
+                      <Column
+                        className="col3"
+                        field="Role"
+                        header="Role *"
+                        style={{ width: "35%" }}
+                        body={RoleBodyTemplate}
+                      />
+                      {appraisalCycleId.goalSubmit ? (
+                        <Column
+                          className="col4"
+                          header="Action"
+                          style={{ width: "10%" }}
+                          body={ActionBodyTemplate}
+                        />
+                      ) : null}
+                    </DataTable>
+                  </div>
+                </AccordionTab>
+              );
+            })}
+          </Accordion>
+          {categories.length > 0 ? (
+            <div />
+          ) : (
+            <div>
+              <div className="noDataMsg">
+                there are no predefined goals set at the moment
+              </div>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </>
   );
 };
 export default Goals;

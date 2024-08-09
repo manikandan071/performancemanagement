@@ -1,0 +1,99 @@
+
+.p-toast{
+  z-index: 5000!important;
+}
+.p-toast-message {
+  background-color: #fff;
+  border-radius: 12px;
+}
+/* .p-toast-icon-close{
+
+} */
+.toastMainWrapperSuccess .p-toast-message-content {
+  padding: 7px 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border-left: 5px solid #1ba97b;
+  box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.03);
+}
+.toastMainWrapperSuccess .p-toast-summary {
+  display: flex;
+  padding-bottom: 5px;
+  font-family: "interMedium", sans-serif;
+  font-size: 15px;
+  color: #1ba97b;
+}
+.toastMainWrapperInfo .p-toast-message-content {
+  padding: 7px 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border-left: 5px solid #3f82f1;
+  box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.03);
+}
+.toastMainWrapperInfo .p-toast-summary {
+  display: flex;
+  padding-bottom: 5px;
+  font-family: "interMedium", sans-serif;
+  font-size: 15px;
+  color: #3f82f1;
+}
+.toastMainWrapperWarn .p-toast-message-content {
+  padding: 7px 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border-left: 5px solid #c48a37;
+  box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.03);
+}
+.toastMainWrapperWarn .p-toast-summary {
+  display: flex;
+  padding-bottom: 5px;
+  font-family: "interMedium", sans-serif;
+  font-size: 15px;
+  color: #c48a37;
+}
+.toastMainWrapperError .p-toast-message-content {
+  padding: 7px 15px;
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border-left: 5px solid #ff585b;
+  box-shadow: 0px 4px 10px 5px rgba(0, 0, 0, 0.03);
+}
+.toastMainWrapperError .p-toast-summary {
+  display: flex;
+  padding-bottom: 5px;
+  font-family: "interMedium", sans-serif;
+  font-size: 15px;
+  color: #ff585b;
+}
+.p-toast-message-text {
+  margin-left: 20px;
+}
+.p-toast-image {
+  display: flex;
+  align-items: center;
+  margin-right: 15px;
+}
+
+.p-toast-detail {
+  font-family: "interRegular", sans-serif;
+  color: #adadad;
+  font-size: 13px;
+  margin: 0px;
+}
+.toastImage {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 4px;
+  background-color: #fff;
+  margin-right: 10px;
+  padding: 0 10px;
+  /* @extend .flexCenter; */
+  cursor: pointer;
+}

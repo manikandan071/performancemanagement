@@ -354,7 +354,7 @@ padding: 9px 12px 10px 10px;
 
 .predefinedGoal {
     display: flex;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 .selfGoal {
     display: flex;
@@ -428,7 +428,7 @@ padding: 9px 12px 10px 10px;
     /* display: inline-block; */
     text-decoration: none;
     background-color: #f6f5fb;
-    padding: 15px 15px;
+    padding: 16px;
     color: #006c22;
     font-size: 14px;
     font-weight: 500;
@@ -677,7 +677,7 @@ padding: 9px 12px 10px 10px;
     border: 1px solid #f6f5fb;
     border-left: 3px solid #1cbf1c;
     border-radius: 0 5px 5px 0;
-    color: rgb(73, 105, 105);
+    color: #ae9447;
     font-size: 13px;
     font-weight: 500;
 }
@@ -1005,6 +1005,16 @@ padding: 9px 12px 10px 10px;
     border-bottom: 0 !important;
     z-index: 10;
     color:#61b061 !important;
+    padding: 16px;
+}
+.p-accordion-tab-active .p-accordion-header-link {
+    box-shadow: rgb(129 129 218 / 25%) 0px 6px 12px -2px,
+        rgb(21 199 78 / 30%) 0px 3px 7px -3px;
+    background-color: #fff !important;
+    border-bottom: 0 !important;
+    z-index: 10;
+    color:#61b061 !important;
+    padding: 16px;
 }
 
 .p-button:focus {
@@ -1092,6 +1102,7 @@ padding: 9px 12px 10px 10px;
     font-family: Roboto, Arial, Helvetica, sans-serif;
         color: #64728c;
         font-size: 15px;
+        text-align: center!important;
 }
 .adminDashboard{
     height: 84vh;
