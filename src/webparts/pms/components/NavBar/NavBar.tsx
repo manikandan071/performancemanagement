@@ -14,9 +14,12 @@ import { Persona, PersonaPresence, PersonaSize } from "@fluentui/react";
 import { PiUserCircleGearDuotone } from "react-icons/pi";
 import { PiUserCircleDuotone } from "react-icons/pi";
 import { HiUserGroup } from "react-icons/hi2";
+import { setAssignToUserDetails } from "../../../../redux/slices/CommonSlice";
+import { useDispatch } from "react-redux";
 
 const NavBar = (props: any): any => {
   console.log(props, "props");
+  const dispatch = useDispatch();
   const [currentUser, setCurrentUSer] = useState("");
   const [isShowEmployee, setIsShowEmployee] = useState(false);
   const [employeeList, setEmployeeList] = useState<any[]>([]);
@@ -155,7 +158,7 @@ const NavBar = (props: any): any => {
                 : styles.optionContainer
             }
             style={{
-              padding: props.isNav ? "3px 15px" : "0 15px",
+              // padding: props.isNav ? "3px 15px" : "0 15px",
               justifyContent: props.isNav ? "flex-start" : "center",
             }}
             onClick={() => {
@@ -168,7 +171,7 @@ const NavBar = (props: any): any => {
             {props.isNav ? (
               <div className={styles.optionIcon}>
                 <TbTargetArrow />
-                <span style={{ margin: "8px 0px 5px 10px" }}>Goals</span>
+                <span style={{ margin: "5px 0px 5px 10px" }}>Goals</span>
               </div>
             ) : (
               <div className={styles.onlyIcon}>
@@ -189,14 +192,14 @@ const NavBar = (props: any): any => {
             style={{
               display: props.isNav ? "" : "flex",
               justifyContent: props.isNav ? "flex-start" : "center",
-              padding: props.isNav ? "" : "0px",
+              // padding: props.isNav ? "" : "0px",
             }}
             onClick={() => setIsShowEmployee(!isShowEmployee)}
           >
             {props.isNav ? (
               <div className={styles.optionIcon}>
                 <HiUserGroup />
-                <span style={{ margin: "8px 0px 5px 10px" }}>Manager</span>
+                <span style={{ margin: "5px 0px 5px 10px" }}>Manager</span>
                 {isShowEmployee ? (
                   <FaChevronDown className={styles.DrpIcons} />
                 ) : (
@@ -233,6 +236,7 @@ const NavBar = (props: any): any => {
                       setTapName("Manager");
                       props.handleCilck("Manager");
                       props.getEmployeeEmail(emp.userEmail);
+                      dispatch(setAssignToUserDetails(emp));
                     }}
                   >
                     {props.isNav ? (
@@ -289,7 +293,7 @@ const NavBar = (props: any): any => {
             {props.isNav ? (
               <div className={styles.optionIcon}>
                 <PiUserCircleGearDuotone />
-                <span style={{ margin: "8px 0px 5px 10px" }}>Admin</span>
+                <span style={{ margin: "5px 0px 5px 10px" }}>Admin</span>
               </div>
             ) : (
               <div className={styles.onlyIcon}>
@@ -317,7 +321,7 @@ const NavBar = (props: any): any => {
             {props.isNav ? (
               <div className={styles.optionIcon}>
                 <PiUserCircleDuotone />
-                <span style={{ margin: "8px 0px 5px 10px" }}>Employee</span>
+                <span style={{ margin: "5px 0px 5px 10px" }}>Employee</span>
               </div>
             ) : (
               <div className={styles.onlyIcon}>

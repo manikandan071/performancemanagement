@@ -25,6 +25,7 @@ import { RiInformationFill } from "react-icons/ri";
 import styles from "./SelfGoalsStyle.module.scss";
 import "../masterStyle.css";
 import Loader from "../Loader/Loader";
+import { arrangeWord } from "../../../../Services/CommonServices/CommonServices";
 
 const SelfGoals = (props: any) => {
   const toast = useRef<Toast>(null);
@@ -468,7 +469,7 @@ const SelfGoals = (props: any) => {
       ) : (
         <div className="goalName">
           <RiInformationFill />
-          {rowData.GoalName}
+          {arrangeWord(rowData.GoalName)}
         </div>
       )
     ) : (

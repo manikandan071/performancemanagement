@@ -19,6 +19,7 @@ import { Dialog } from "primereact/dialog";
 // import { Toast } from "primereact/toast";
 // import { HiPencil } from "react-icons/hi2";
 import { MdEditDocument } from "react-icons/md";
+import { BiSolidEdit } from "react-icons/bi";
 import { AddSquare28Regular } from "@fluentui/react-icons";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
@@ -46,6 +47,7 @@ import {
 import ToastMessage from "../CommonComponents/Toast/ToastMessage";
 
 import { useSelector } from "react-redux";
+import { arrangeWord } from "../../../../Services/CommonServices/CommonServices";
 
 interface ICurrentCycle {
   currentCycleId: any;
@@ -557,7 +559,7 @@ const Goals = (): any => {
             width: "100%",
           }}
         >
-          {rowData.GoalName}
+          {arrangeWord(rowData.GoalName)}
         </div>
       )
     ) : (
@@ -976,7 +978,11 @@ const Goals = (): any => {
             />
           ) : null}
         </div>
-        <div className="hrGoals">
+        <div
+          className={`hrGoals ${
+            appraisalCycleId.goalSubmit ? "" : "noGoalSubmit"
+          }`}
+        >
           <Accordion
             activeIndex={activeIndex}
             onTabChange={(e) => setActiveIndex(e.index)}
@@ -988,7 +994,9 @@ const Goals = (): any => {
                   key={index}
                   header={
                     <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
-                      <span className="CategoryTitle">{data.GoalCategory}</span>
+                      <span className="CategoryTitle">
+                        {arrangeWord(data.GoalCategory)}
+                      </span>
                       {appraisalCycleId.goalSubmit && activeIndex === index ? (
                         <div className="font-bold iconSec">
                           {isPopup.delIndex === index && isPopup.delPopup && (
@@ -1044,7 +1052,7 @@ const Goals = (): any => {
                               }}
                             />
                           ) : null}
-                          <MdEditDocument
+                          <BiSolidEdit
                             className="editIcon"
                             onClick={(event) => {
                               const duplicateArr = [...duplicateData];

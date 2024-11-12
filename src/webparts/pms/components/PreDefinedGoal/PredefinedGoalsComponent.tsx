@@ -27,11 +27,15 @@ import "../masterStyle.css";
 import Loader from "../Loader/Loader";
 import { useSelector } from "react-redux";
 import { getCurrentUserGoals } from "../../../../Services/PreDefineGoalService/PreDefineGoalService";
+import { arrangeWord } from "../../../../Services/CommonServices/CommonServices";
 
 const PredefinedGoals = (props: any): any => {
   const toast = useRef<Toast>(null);
   const CurrentUserDetails: any = useSelector(
     (state: any) => state.CommonServiceData.currentUserDetails
+  );
+  const assignToUserDetails: any = useSelector(
+    (state: any) => state.CommonServiceData.assignToUserDetails
   );
   console.log();
 
@@ -61,7 +65,7 @@ const PredefinedGoals = (props: any): any => {
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
-  console.log(props, "predefinedProps", assignUserObj);
+  console.log(props, "predefinedProps", assignUserObj, managerGoals);
 
   const getDetails = (): any => {
     sp.web.lists
@@ -86,10 +90,10 @@ const PredefinedGoals = (props: any): any => {
         );
         console.log(filterData);
 
-        const managerGoals: any = [];
+        const tempManagerGoals: any = [];
         const preDefinedGoals = filterData.filter((pre: any) => {
           if (pre.GoalCategory === "ManagerGoal") {
-            managerGoals.push({
+            tempManagerGoals.push({
               ID: pre.ID ? pre.ID : null,
               GoalCategory: pre.GoalCategory ? pre.GoalCategory : "",
               GoalName: pre.GoalName ? pre.GoalName : "",
@@ -208,7 +212,7 @@ const PredefinedGoals = (props: any): any => {
           a.GoalCategory.localeCompare(b.GoalCategory)
         );
         setDuplicateData([...tempArr]);
-        setManagerGoals([...managerGoals]);
+        setManagerGoals([...tempManagerGoals]);
         setCategories([...splitCatList]);
         setMasterData([...tempArr]);
         setIsLoader(false);
@@ -236,8 +240,9 @@ const PredefinedGoals = (props: any): any => {
     getDetails();
   };
   useEffect(() => {
+    setActiveIndex(null);
     setIsLoader(true);
-    setAssignUserObj(CurrentUserDetails);
+    setAssignUserObj(assignToUserDetails);
     getCurrentUserGoals(appraisalCycleID, CurrentUserDetails);
     init();
   }, [props]);
@@ -755,7 +760,7 @@ const PredefinedGoals = (props: any): any => {
       ) : (
         <div className="goalName">
           <RiInformationFill />
-          {rowData.GoalName}
+          {arrangeWord(rowData.GoalName)}
         </div>
       )
     ) : (
@@ -1403,7 +1408,7 @@ const PredefinedGoals = (props: any): any => {
                     header={
                       <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                         <span className="CategoryTitle">
-                          {items.GoalCategory}
+                          {arrangeWord(items.GoalCategory)}
                         </span>
                         {/* {props.isManager ? (
                           <div className="font-bold iconSec">
@@ -1601,7 +1606,7 @@ const PredefinedGoals = (props: any): any => {
                     />
                   ) : null}
 
-                  <Column
+                  {/* <Column
                     className="col1"
                     field="EmployeeRating"
                     header="Employee Comments & Rating"
@@ -1614,7 +1619,7 @@ const PredefinedGoals = (props: any): any => {
                     header="Manager Comments & Rating"
                     style={{ width: "22%" }}
                     body={ManagerRatingBodyTemplate}
-                  />
+                  /> */}
 
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (

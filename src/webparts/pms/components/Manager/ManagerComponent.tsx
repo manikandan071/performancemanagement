@@ -5,17 +5,23 @@
 import * as React from "react";
 import styles from "./ManagerStyle.module.scss";
 import { useEffect, useState } from "react";
-import { sp } from "@pnp/sp";
+// import { sp } from "@pnp/sp";
 import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
 import SelfGoals from "../SelfGoals/SelfGoalsComponent";
 import * as moment from "moment";
-import { PiTargetBold } from "react-icons/pi";
-import { BiTargetLock } from "react-icons/bi";
-import Button from "@mui/material/Button";
-import { Dropdown } from "primereact/dropdown";
+// import { PiTargetBold } from "react-icons/pi";
+// import { BiTargetLock } from "react-icons/bi";
+// import Button from "@mui/material/Button";
+// import { Dropdown } from "primereact/dropdown";
 import "../masterStyle.css";
+import { useSelector } from "react-redux";
+import GoalScreenHeader from "../CommonComponents/Header/goalScreenHeader";
 
 const ManagerComponent = (props: any): any => {
+  const appraisalCycleList: any = useSelector(
+    (state: any) => state.HRServiceData.masterCycles
+  );
+
   const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setmasterData] = useState<any[]>([]);
   const [cyclesList, setCycleList] = useState<any[]>([]);
@@ -27,116 +33,106 @@ const ManagerComponent = (props: any): any => {
     goalSubmit: false,
   });
   const [selectCycle, setSelectCycle] = useState<any>([]);
+  console.log(appraisalCycle);
 
   const getDetails = (): any => {
-    sp.web.lists
-      .getByTitle("AppraisalCycles")
-      .items.get()
-      .then((items) => {
-        const tempArr: any = [];
-        const cycleYearList: any = [];
-        items.forEach((res) => {
-          tempArr.push({
-            ID: res.ID,
-            Year: res.Title,
-            cycleCategory: res.cycleCategory,
-            startDate: res.startDate,
-            endDate: res.endDate,
-            commentsSubmitSDate: res.commentsSubmitSDate,
-            commentsSubmitEDate: res.commentsSubmitEDate,
-            goalsSubmitSDate: res.goalsSubmitSDate,
-            goalsSubmitEDate: res.goalsSubmitEDate,
+    // sp.web.lists
+    //   .getByTitle("AppraisalCycles")
+    //   .items.get()
+    //   .then((items) => {
+    // const tempArr: any = [];
+    const cycleYearList: any = [];
+    console.log(appraisalCycleList);
+
+    appraisalCycleList?.forEach((res: any) => {
+      // tempArr.push({
+      //   ID: res.ID,
+      //   Year: res.Title,
+      //   cycleCategory: res.cycleCategory,
+      //   startDate: res.startDate,
+      //   endDate: res.endDate,
+      //   commentsSubmitSDate: res.commentsSubmitSDate,
+      //   commentsSubmitEDate: res.commentsSubmitEDate,
+      //   goalsSubmitSDate: res.goalsSubmitSDate,
+      //   goalsSubmitEDate: res.goalsSubmitEDate,
+      // });
+      cycleYearList.push({
+        code: res.Year + "-" + res.cycleCategory,
+        name: res.Year + "-" + res.cycleCategory,
+        // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+      });
+      const sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
+      const eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
+      const commentsSDate = new Date(res.commentsSubmitSDate).setHours(
+        0,
+        0,
+        0,
+        0
+      );
+      const commentsEDate = new Date(res.commentsSubmitEDate).setHours(
+        0,
+        0,
+        0,
+        0
+      );
+      const goalsSDate = new Date(res.goalsSubmitSDate).setHours(0, 0, 0, 0);
+      const goalsEDate = new Date(res.goalsSubmitEDate).setHours(0, 0, 0, 0);
+      if (
+        currentDate >= new Date(goalsSDate) &&
+        currentDate <= new Date(goalsEDate)
+      ) {
+        setAppraisalCycle({
+          ...appraisalCycle,
+          currentCycle: res.ID,
+          submitComments: false,
+          goalSubmit: true,
+        });
+        setSelectCycle({
+          code: res.Year + "-" + res.cycleCategory,
+          name: res.Year + "-" + res.cycleCategory,
+          // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+          // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        });
+      } else if (
+        currentDate >= new Date(commentsSDate) &&
+        currentDate <= new Date(commentsEDate)
+      ) {
+        setAppraisalCycle({
+          ...appraisalCycle,
+          currentCycle: res.ID,
+          submitComments: true,
+          goalSubmit: false,
+        });
+        setSelectCycle({
+          code: res.Year + "-" + res.cycleCategory,
+          name: res.Year + "-" + res.cycleCategory,
+          // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+          // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        });
+      } else {
+        if (currentDate >= new Date(sDate) && currentDate <= new Date(eDate)) {
+          setAppraisalCycle({
+            ...appraisalCycle,
+            currentCycle: res.ID,
+            submitComments: false,
+            goalSubmit: false,
           });
-          cycleYearList.push({
-            code: res.Title + "-" + res.cycleCategory,
-            name: res.Title + "-" + res.cycleCategory,
+          setSelectCycle({
+            code: res.Year + "-" + res.cycleCategory,
+            name: res.Year + "-" + res.cycleCategory,
             // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
             // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
           });
-          const sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
-          const eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
-          const commentsSDate = new Date(res.commentsSubmitSDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const commentsEDate = new Date(res.commentsSubmitEDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const goalsSDate = new Date(res.goalsSubmitSDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const goalsEDate = new Date(res.goalsSubmitEDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          if (
-            currentDate >= new Date(goalsSDate) &&
-            currentDate <= new Date(goalsEDate)
-          ) {
-            setAppraisalCycle({
-              ...appraisalCycle,
-              currentCycle: res.ID,
-              submitComments: false,
-              goalSubmit: true,
-            });
-            setSelectCycle({
-              code: res.Title + "-" + res.cycleCategory,
-              name: res.Title + "-" + res.cycleCategory,
-              // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-            });
-          } else if (
-            currentDate >= new Date(commentsSDate) &&
-            currentDate <= new Date(commentsEDate)
-          ) {
-            setAppraisalCycle({
-              ...appraisalCycle,
-              currentCycle: res.ID,
-              submitComments: true,
-              goalSubmit: false,
-            });
-            setSelectCycle({
-              code: res.Title + "-" + res.cycleCategory,
-              name: res.Title + "-" + res.cycleCategory,
-              // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-            });
-          } else {
-            if (
-              currentDate >= new Date(sDate) &&
-              currentDate <= new Date(eDate)
-            ) {
-              setAppraisalCycle({
-                ...appraisalCycle,
-                currentCycle: res.ID,
-                submitComments: false,
-                goalSubmit: false,
-              });
-              setSelectCycle({
-                code: res.Title + "-" + res.cycleCategory,
-                name: res.Title + "-" + res.cycleCategory,
-                // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-                // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              });
-            }
-          }
-        });
-        setmasterData([...tempArr]);
-        setCycleList([...cycleYearList]);
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
+        }
+      }
+    });
+    setmasterData([...appraisalCycleList]);
+    setCycleList([...cycleYearList]);
+    // })
+    // .catch((err: any) => {
+    //   console.log(err);
+    // });
   };
 
   const init = (): any => {
@@ -215,29 +211,29 @@ const ManagerComponent = (props: any): any => {
   return (
     <>
       <div className={styles.background}>
-        <div className={styles.container}>
-          <div className="appraisalTitle">
-            {masterData.map((data) => {
-              if (data.ID === appraisalCycle.currentCycle) {
-                return (
-                  <span>
-                    Appraisal {data.Year} - {data.cycleCategory}
-                    {" ("}
-                    {moment(data.startDate).format("DD/MMM")} to{" "}
-                    {moment(data.endDate).format("DD/MMM")}
-                    {")"}{" "}
-                    <span className="appraisalLabel">
-                      {appraisalCycle.goalSubmit ? " - Goals Submission" : ""}
-                    </span>
-                    <span className="appraisalLabel">
-                      {appraisalCycle.submitComments ? " - Goals Review" : ""}
-                    </span>
+        {/* <div className={styles.container}> */}
+        <div className="appraisalTitle">
+          {masterData.map((data) => {
+            if (data.ID === appraisalCycle.currentCycle) {
+              return (
+                <span>
+                  Appraisal {data.Year} - {data.cycleCategory}
+                  {" ("}
+                  {moment(data.startDate).format("DD/MMM")} to{" "}
+                  {moment(data.endDate).format("DD/MMM")}
+                  {")"}{" "}
+                  <span className="appraisalLabel">
+                    {appraisalCycle.goalSubmit ? " - Goals Submission" : ""}
                   </span>
-                );
-              }
-            })}
-          </div>
-          <div className="DrpYear">
+                  <span className="appraisalLabel">
+                    {appraisalCycle.submitComments ? " - Goals Review" : ""}
+                  </span>
+                </span>
+              );
+            }
+          })}
+        </div>
+        {/* <div className="DrpYear">
             <Dropdown
               value={selectCycle}
               onChange={(e) => onChangeHandleFun(e.value)}
@@ -246,9 +242,9 @@ const ManagerComponent = (props: any): any => {
               placeholder="Select appraisal Cycle"
               className="w-full md:w-20rem"
             />
-          </div>
-        </div>
-        <div
+          </div> */}
+        {/* </div> */}
+        {/* <div
           className={show === "PredefinedGoals" ? "predefinedGoal" : "selfGoal"}
         >
           <div
@@ -297,6 +293,14 @@ const ManagerComponent = (props: any): any => {
               SELF GOALS
             </Button>
           </div>
+        </div> */}
+        <div>
+          <GoalScreenHeader
+            cyclesList={cyclesList}
+            selectCycle={selectCycle}
+            navigateTab={setShow}
+            onChangeHandleFun={onChangeHandleFun}
+          />
         </div>
         <div
           style={{
@@ -305,13 +309,13 @@ const ManagerComponent = (props: any): any => {
             // marginTop: show == "PredefinedGoals" ? "20px" : "0px",
           }}
         >
-          {show === "PredefinedGoals" ? (
+          {show === "PredefinedGoals" && appraisalCycle?.currentCycle ? (
             <PredefinedGoals
               EmployeeEmail={props.EmployeeEmail}
               isManager={props.isManager}
               appraisalCycle={appraisalCycle}
             />
-          ) : show === "SelfGoals" ? (
+          ) : show === "SelfGoals" && appraisalCycle?.currentCycle ? (
             <SelfGoals
               EmployeeEmail={props.EmployeeEmail}
               isManager={!props.isManager}

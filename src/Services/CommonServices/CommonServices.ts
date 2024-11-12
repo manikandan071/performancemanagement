@@ -30,6 +30,10 @@ export const getCurrentUserDetails = (
   });
 };
 
+export const arrangeWord = (text: string) => {
+  return text.charAt(0).toUpperCase() + text.slice(1);
+};
+
 export const getAppraisalCycles = (dispatcher: any): void => {
   SpServices.SPReadItems({
     Listname: LISTNAMES.AppraisalCycles,

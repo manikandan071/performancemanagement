@@ -5,7 +5,7 @@
 
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { sp } from "@pnp/sp";
+// import { sp } from "@pnp/sp";
 import * as moment from "moment";
 import styles from "./EmployeeStyle.module.scss";
 import PredefinedGoals from "../PreDefinedGoal/PredefinedGoalsComponent";
@@ -16,8 +16,13 @@ import SelfGoals from "../SelfGoals/SelfGoalsComponent";
 // import { Dropdown } from "primereact/dropdown";
 import "../masterStyle.css";
 import GoalScreenHeader from "../CommonComponents/Header/goalScreenHeader";
+import { useSelector } from "react-redux";
 
 const EmployeeComponent = (props: any): any => {
+  const appraisalCycleList: any = useSelector(
+    (state: any) => state.HRServiceData.masterCycles
+  );
+
   const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setmasterData] = useState<any[]>([]);
   const [cyclesList, setCycleList] = useState<any[]>([]);
@@ -31,114 +36,101 @@ const EmployeeComponent = (props: any): any => {
   const [selectCycle, setSelectCycle] = useState<any>([]);
 
   const getDetails = (): any => {
-    sp.web.lists
-      .getByTitle("AppraisalCycles")
-      .items.get()
-      .then((items) => {
-        const tempArr: any = [];
-        const cycleYearList: any = [];
-        items.forEach((res: any) => {
-          tempArr.push({
-            ID: res.ID,
-            Year: res.Title,
-            cycleCategory: res.cycleCategory,
-            startDate: res.startDate,
-            endDate: res.endDate,
-            commentsSubmitSDate: res.commentsSubmitSDate,
-            commentsSubmitEDate: res.commentsSubmitEDate,
-            goalsSubmitSDate: res.goalsSubmitSDate,
-            goalsSubmitEDate: res.goalsSubmitEDate,
+    // sp.web.lists
+    //   .getByTitle("AppraisalCycles")
+    //   .items.get()
+    //   .then((items) => {
+    // const tempArr: any = [];
+    const cycleYearList: any = [];
+    appraisalCycleList?.forEach((res: any) => {
+      // tempArr.push({
+      //   ID: res.ID,
+      //   Year: res.Title,
+      //   cycleCategory: res.cycleCategory,
+      //   startDate: res.startDate,
+      //   endDate: res.endDate,
+      //   commentsSubmitSDate: res.commentsSubmitSDate,
+      //   commentsSubmitEDate: res.commentsSubmitEDate,
+      //   goalsSubmitSDate: res.goalsSubmitSDate,
+      //   goalsSubmitEDate: res.goalsSubmitEDate,
+      // });
+      cycleYearList.push({
+        code: res.Year + "-" + res.cycleCategory,
+        name: res.Year + "-" + res.cycleCategory,
+        // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+      });
+      const sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
+      const eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
+      const commentsSDate = new Date(res.commentsSubmitSDate).setHours(
+        0,
+        0,
+        0,
+        0
+      );
+      const commentsEDate = new Date(res.commentsSubmitEDate).setHours(
+        0,
+        0,
+        0,
+        0
+      );
+      const goalsSDate = new Date(res.goalsSubmitSDate).setHours(0, 0, 0, 0);
+      const goalsEDate = new Date(res.goalsSubmitEDate).setHours(0, 0, 0, 0);
+      if (
+        currentDate >= new Date(goalsSDate) &&
+        currentDate <= new Date(goalsEDate)
+      ) {
+        setAppraisalCycle({
+          ...appraisalCycle,
+          currentCycle: res.ID,
+          submitComments: false,
+          goalSubmit: true,
+        });
+        setSelectCycle({
+          code: res.Year + "-" + res.cycleCategory,
+          name: res.Year + "-" + res.cycleCategory,
+          // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+          // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        });
+      } else if (
+        currentDate >= new Date(commentsSDate) &&
+        currentDate <= new Date(commentsEDate)
+      ) {
+        setAppraisalCycle({
+          ...appraisalCycle,
+          currentCycle: res.ID,
+          submitComments: true,
+          goalSubmit: false,
+        });
+        setSelectCycle({
+          code: res.Year + "-" + res.cycleCategory,
+          name: res.Year + "-" + res.cycleCategory,
+          // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
+          // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
+        });
+      } else {
+        if (currentDate >= new Date(sDate) && currentDate <= new Date(eDate)) {
+          setAppraisalCycle({
+            ...appraisalCycle,
+            currentCycle: res.ID,
+            submitComments: false,
+            goalSubmit: false,
           });
-          cycleYearList.push({
-            code: res.Title + "-" + res.cycleCategory,
-            name: res.Title + "-" + res.cycleCategory,
+          setSelectCycle({
+            code: res.Year + "-" + res.cycleCategory,
+            name: res.Year + "-" + res.cycleCategory,
             // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
             // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
           });
-          const sDate = new Date(res.startDate).setHours(0, 0, 0, 0);
-          const eDate = new Date(res.endDate).setHours(0, 0, 0, 0);
-          const commentsSDate = new Date(res.commentsSubmitSDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const commentsEDate = new Date(res.commentsSubmitEDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const goalsSDate = new Date(res.goalsSubmitSDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          const goalsEDate = new Date(res.goalsSubmitEDate).setHours(
-            0,
-            0,
-            0,
-            0
-          );
-          if (
-            currentDate >= new Date(goalsSDate) &&
-            currentDate <= new Date(goalsEDate)
-          ) {
-            setAppraisalCycle({
-              ...appraisalCycle,
-              currentCycle: res.ID,
-              submitComments: false,
-              goalSubmit: true,
-            });
-            setSelectCycle({
-              code: res.Title + "-" + res.cycleCategory,
-              name: res.Title + "-" + res.cycleCategory,
-              // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-            });
-          } else if (
-            currentDate >= new Date(commentsSDate) &&
-            currentDate <= new Date(commentsEDate)
-          ) {
-            setAppraisalCycle({
-              ...appraisalCycle,
-              currentCycle: res.ID,
-              submitComments: true,
-              goalSubmit: false,
-            });
-            setSelectCycle({
-              code: res.Title + "-" + res.cycleCategory,
-              name: res.Title + "-" + res.cycleCategory,
-              // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-            });
-          } else {
-            if (
-              currentDate >= new Date(sDate) &&
-              currentDate <= new Date(eDate)
-            ) {
-              setAppraisalCycle({
-                ...appraisalCycle,
-                currentCycle: res.ID,
-                submitComments: false,
-                goalSubmit: false,
-              });
-              setSelectCycle({
-                code: res.Title + "-" + res.cycleCategory,
-                name: res.Title + "-" + res.cycleCategory,
-                // code: `${res.Title}` + "-" + `${res.cycleCategory}`,
-                // name: `${res.Title}` + "-" + `${res.cycleCategory}`,
-              });
-            }
-          }
-        });
-        setmasterData([...tempArr]);
-        setCycleList([...cycleYearList]);
-      })
-      .catch((err: any) => {
-        console.log(err);
-      });
+        }
+      }
+    });
+    setmasterData([...appraisalCycleList]);
+    setCycleList([...cycleYearList]);
+    // })
+    // .catch((err: any) => {
+    //   console.log(err);
+    // });
   };
 
   const init = (): any => {

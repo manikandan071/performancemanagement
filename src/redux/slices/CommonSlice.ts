@@ -4,10 +4,12 @@ import { Reducer } from "redux";
 
 interface CommonServiceState {
   currentUserDetails: any;
+  assignToUserDetails: any;
 }
 
 const mainData: CommonServiceState = {
   currentUserDetails: {},
+  assignToUserDetails: {},
 };
 
 const CommonServiceData = createSlice({
@@ -17,8 +19,12 @@ const CommonServiceData = createSlice({
     setCurrentUserDetails: (state, action: PayloadAction<any>) => {
       state.currentUserDetails = action.payload;
     },
+    setAssignToUserDetails: (state, action: PayloadAction<any>) => {
+      state.assignToUserDetails = action.payload;
+    },
   },
 });
 
-export const { setCurrentUserDetails } = CommonServiceData.actions;
+export const { setCurrentUserDetails, setAssignToUserDetails } =
+  CommonServiceData.actions;
 export default CommonServiceData.reducer as Reducer<CommonServiceState>;

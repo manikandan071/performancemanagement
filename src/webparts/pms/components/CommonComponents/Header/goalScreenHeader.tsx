@@ -31,7 +31,7 @@ const goalScreenHeader = ({
       >
         <div
           className={styles.AppraisalCycles}
-          //   style={{ paddingBottom: "10px" }}
+          style={{ background: show !== "PredefinedGoals" ? "#fff" : "" }}
         >
           <Button
             onClick={() => {
@@ -56,10 +56,13 @@ const goalScreenHeader = ({
                 // backgroundColor: show == "PredefinedGoals" ? "#35803510" : "",
               }}
             />
-            PREDEFINEDGOALS
+            PREDEFINED GOALS
           </Button>
         </div>
-        <div className={styles.AppraisalCycles}>
+        <div
+          className={styles.AppraisalCycles}
+          style={{ background: show !== "SelfGoals" ? "#fff" : "" }}
+        >
           <Button
             onClick={() => {
               setShow("SelfGoals");
@@ -81,7 +84,35 @@ const goalScreenHeader = ({
                 color: show === "SelfGoals" ? "#ae9447" : "#a5c0c0",
               }}
             />
-            SELFGOALS
+            SELF GOALS
+          </Button>
+        </div>
+        <div
+          className={styles.AppraisalCycles}
+          style={{ background: show !== "SelfGoals" ? "#fff" : "" }}
+        >
+          <Button
+            onClick={() => {
+              setShow("SelfGoals");
+              navigateTab("SelfGoals");
+            }}
+            size="small"
+            style={{
+              color: show === "SelfGoals" ? "#ae9447" : "#a5c0c0",
+              // borderBottom: show === "SelfGoals" ? "2px solid #1cbf1c" : "",
+              border: "1px solid #00ff3921",
+              backgroundColor: show === "SelfGoals" ? "#00ff3921" : "",
+              borderRadius: "0px",
+            }}
+          >
+            <BiTargetLock
+              style={{
+                paddingRight: "5px",
+                fontSize: "22px",
+                color: show === "SelfGoals" ? "#ae9447" : "#a5c0c0",
+              }}
+            />
+            MANAGER GOALS
           </Button>
         </div>
       </div>
