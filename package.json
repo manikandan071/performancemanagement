@@ -16,6 +16,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@fluentui/react": "^8.106.4",
+    "@fluentui/react-icons": "^2.0.252",
     "@microsoft/sp-component-base": "1.18.2",
     "@microsoft/sp-core-library": "1.18.2",
     "@microsoft/sp-lodash-subset": "1.18.2",
@@ -27,6 +28,7 @@
     "@pnp/cli-microsoft365": "^7.5.0",
     "@pnp/pnpjs": "^2.14.0",
     "@pnp/sp": "^2.11.0",
+    "@reduxjs/toolkit": "^2.2.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
     "moment": "^2.30.1",
@@ -34,6 +36,7 @@
     "react": "17.0.1",
     "react-dom": "17.0.1",
     "react-icons": "^5.0.1",
+    "react-redux": "^7.2.8",
     "spfx-fast-serve": "^4.0.0",
     "tslib": "2.3.1"
   },

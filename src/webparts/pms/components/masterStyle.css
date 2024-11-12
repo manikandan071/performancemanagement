@@ -64,17 +64,26 @@
     text-decoration: none;
     /* background-color: #fff; */
     padding: 17px 15px;
-    color: #006c22;
+    /* color: #006c22; */
+    color: #000;
     font-size: 14px;
 }
 .hrGoals .p-accordion-tab-active .p-accordion-header-link{
     padding: 10px 15px;
 }
+.noGoalSubmit .p-accordion-tab-active .p-accordion-header-link{
+    padding: 17px 15px!important;
+}
 
-.hrGoals .accordionMain a .p-accordion-toggle-icon {
+.hrGoals .p-accordion-tab .accordionMain a .p-accordion-toggle-icon {
     width: 14px;
-        height: 14px;
-        color: #61b061;
+    height: 14px;
+    color: #000;
+}
+.hrGoals .p-accordion-tab-active .accordionMain a .p-accordion-toggle-icon {
+    width: 14px;
+    height: 14px;
+    color: #61b061;
 }
 
 .hrGoals .accordionMain .p-accordion-content {
@@ -103,7 +112,7 @@
     margin-right: 10px;
     cursor: pointer;
     padding: 5px;
-    font-size: 26px;
+    font-size: 28px;
     border-radius: 30px;
     transition: all 0.2s;
 }
@@ -112,7 +121,7 @@
     background-color: #555;
     color: #fff;
     padding: 5px;
-    font-size: 26px;
+    font-size: 28px;
 }
 
 .hrGoals .accordionMain a .category-sec .iconSec .deleteIcon {
@@ -340,11 +349,16 @@ padding: 9px 12px 10px 10px;
 .DrpYear .p-inputtext {
     padding: 4px 10px !important;
     font-size: 12px;
-    color: rgb(73, 105, 105);
+    color: rgb(174, 148, 71);
+    font-weight: 600;
 }
 
 .DrpYear .p-dropdown {
     width: 100%;
+    border: 1px solid #d6f6e2 !important;
+}
+.DrpYear .p-dropdown-trigger svg {
+    color: rgb(174, 148, 71);
 }
 
 .DrpYear {
@@ -354,7 +368,7 @@ padding: 9px 12px 10px 10px;
 
 .predefinedGoal {
     display: flex;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
 }
 .selfGoal {
     display: flex;
@@ -418,18 +432,26 @@ padding: 9px 12px 10px 10px;
     background-color: #f6f5fb;
 }
 
-.accordionMain .p-accordion-toggle-icon {
+.p-accordion-tab .p-accordion-toggle-icon {
     width: 12px;
-    height: 12px;
+    height: 16px;
+    color: #000;
+    padding-top: 2px;
+}
+.p-accordion-tab-active .p-accordion-toggle-icon {
+    width: 12px;
+    height: 16px;
     color: #61b061;
+    padding-top: 2px;
 }
 
 .accordionMain .p-accordion-header-link {
     /* display: inline-block; */
     text-decoration: none;
     background-color: #f6f5fb;
-    padding: 15px 15px;
-    color: #006c22;
+    padding: 16px;
+    /* color: #006c22; */
+    color: #000;
     font-size: 14px;
     font-weight: 500;
 }
@@ -677,7 +699,7 @@ padding: 9px 12px 10px 10px;
     border: 1px solid #f6f5fb;
     border-left: 3px solid #1cbf1c;
     border-radius: 0 5px 5px 0;
-    color: rgb(73, 105, 105);
+    color: #ae9447;
     font-size: 13px;
     font-weight: 500;
 }
@@ -998,6 +1020,15 @@ padding: 9px 12px 10px 10px;
     border-color: #e3e3e3 !important;
 }
 
+/* .p-accordion-tab-active .p-accordion-header-link {
+    box-shadow: rgb(129 129 218 / 25%) 0px 6px 12px -2px,
+        rgb(21 199 78 / 30%) 0px 3px 7px -3px;
+    background-color: #fff !important;
+    border-bottom: 0 !important;
+    z-index: 10;
+    color:#006c22 !important;
+    padding: 16px;
+} */
 .p-accordion-tab-active .p-accordion-header-link {
     box-shadow: rgb(129 129 218 / 25%) 0px 6px 12px -2px,
         rgb(21 199 78 / 30%) 0px 3px 7px -3px;
@@ -1005,6 +1036,7 @@ padding: 9px 12px 10px 10px;
     border-bottom: 0 !important;
     z-index: 10;
     color:#61b061 !important;
+    padding: 16px;
 }
 
 .p-button:focus {
@@ -1092,6 +1124,7 @@ padding: 9px 12px 10px 10px;
     font-family: Roboto, Arial, Helvetica, sans-serif;
         color: #64728c;
         font-size: 15px;
+        text-align: center!important;
 }
 .adminDashboard{
     height: 84vh;

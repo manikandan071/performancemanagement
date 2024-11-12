@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/no-use-before-define */
 import { sp } from "@pnp/sp";
 import * as React from "react";
 import { useEffect, useState, useRef } from "react";
@@ -21,10 +25,21 @@ import styles from "./PreDefinedGoalsStyle.module.scss";
 import { RiInformationFill } from "react-icons/ri";
 import "../masterStyle.css";
 import Loader from "../Loader/Loader";
+import { useSelector } from "react-redux";
+import { getCurrentUserGoals } from "../../../../Services/PreDefineGoalService/PreDefineGoalService";
+import { arrangeWord } from "../../../../Services/CommonServices/CommonServices";
 
-const PredefinedGoals = (props: any) => {
+const PredefinedGoals = (props: any): any => {
   const toast = useRef<Toast>(null);
-  let appraisalCycleID = props.appraisalCycle.currentCycle;
+  const CurrentUserDetails: any = useSelector(
+    (state: any) => state.CommonServiceData.currentUserDetails
+  );
+  const assignToUserDetails: any = useSelector(
+    (state: any) => state.CommonServiceData.assignToUserDetails
+  );
+  console.log();
+
+  const appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [activeIndex, setActiveIndex] = useState<any>(null);
   const [managerGoals, setManagerGoals] = useState<any[]>([]);
@@ -50,9 +65,9 @@ const PredefinedGoals = (props: any) => {
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
-  console.log(props, "predefinedProps");
+  console.log(props, "predefinedProps", assignUserObj, managerGoals);
 
-  const getDetails = () => {
+  const getDetails = (): any => {
     sp.web.lists
       .getByTitle("PredefinedGoals")
       .items.select(
@@ -69,14 +84,16 @@ const PredefinedGoals = (props: any) => {
       .then((items: any) => {
         const filterData = items.filter(
           (item: any) =>
-            props.EmployeeEmail == item.AssignTo.EMail &&
+            props.EmployeeEmail === item.AssignTo.EMail &&
             !item.isDelete &&
             !item.isDeleteHR
         );
-        let managerGoals: any = [];
-        let preDefinedGoals = filterData.filter((pre: any) => {
+        console.log(filterData);
+
+        const tempManagerGoals: any = [];
+        const preDefinedGoals = filterData.filter((pre: any) => {
           if (pre.GoalCategory === "ManagerGoal") {
-            managerGoals.push({
+            tempManagerGoals.push({
               ID: pre.ID ? pre.ID : null,
               GoalCategory: pre.GoalCategory ? pre.GoalCategory : "",
               GoalName: pre.GoalName ? pre.GoalName : "",
@@ -104,11 +121,11 @@ const PredefinedGoals = (props: any) => {
             return true;
           }
         });
-        let tempArr: any = [];
+        const tempArr: any = [];
         let ID = 1;
         const categorizedItems = preDefinedGoals.reduce(
           (acc: any, obj: any) => {
-            let existingCategory = acc.find(
+            const existingCategory = acc.find(
               (item: any) => item.GoalCategory === obj.GoalCategory
             );
             if (existingCategory) {
@@ -191,11 +208,11 @@ const PredefinedGoals = (props: any) => {
             isNew: false,
           });
         });
-        let splitCatList = categorizedItems.sort((a: any, b: any) =>
+        const splitCatList = categorizedItems.sort((a: any, b: any) =>
           a.GoalCategory.localeCompare(b.GoalCategory)
         );
         setDuplicateData([...tempArr]);
-        setManagerGoals([...managerGoals]);
+        setManagerGoals([...tempManagerGoals]);
         setCategories([...splitCatList]);
         setMasterData([...tempArr]);
         setIsLoader(false);
@@ -204,32 +221,35 @@ const PredefinedGoals = (props: any) => {
         console.log("get Data function error", err);
       });
   };
-  const init = () => {
-    sp.web
-      .siteUsers()
-      .then((res) => {
-        res.forEach((user) => {
-          if (user.Email === props.EmployeeEmail) {
-            setAssignUserObj({
-              ...assignUserObj,
-              userID: user.Id,
-              userName: user.Title,
-              userEmail: user.Email,
-            });
-          }
-        });
-      })
-      .catch((err) => console.log("get user function error", err));
+  const init = (): void => {
+    // sp.web
+    //   .siteUsers()
+    //   .then((res) => {
+    //     res.forEach((user) => {
+    //       if (user.Email === props.EmployeeEmail) {
+    //         setAssignUserObj({
+    //           ...assignUserObj,
+    //           userID: user.Id,
+    //           userName: user.Title,
+    //           userEmail: user.Email,
+    //         });
+    //       }
+    //     });
+    //   })
+    //   .catch((err) => console.log("get user function error", err));
     getDetails();
   };
   useEffect(() => {
+    setActiveIndex(null);
     setIsLoader(true);
+    setAssignUserObj(assignToUserDetails);
+    getCurrentUserGoals(appraisalCycleID, CurrentUserDetails);
     init();
   }, [props]);
 
-  const categoryHandleFun = (data: any) => {
-    let managerGoals: any = [];
-    let preDefinedGoals = data.filter((pre: any) => {
+  const categoryHandleFun = (data: any): void => {
+    const managerGoals: any = [];
+    const preDefinedGoals = data.filter((pre: any) => {
       if (pre.GoalCategory === "ManagerGoal") {
         managerGoals.push({
           ID: pre.ID ? pre.ID : null,
@@ -250,8 +270,8 @@ const PredefinedGoals = (props: any) => {
       }
     });
     let ID = 1;
-    let groupedArray = preDefinedGoals.reduce((acc: any, obj: any) => {
-      let existingCategory = acc.find(
+    const groupedArray = preDefinedGoals.reduce((acc: any, obj: any) => {
+      const existingCategory = acc.find(
         (item: any) => item.GoalCategory === obj.GoalCategory
       );
       if (existingCategory) {
@@ -289,18 +309,18 @@ const PredefinedGoals = (props: any) => {
       }
       return acc;
     }, []);
-    let splitCatList = groupedArray.sort((a: any, b: any) =>
+    const splitCatList = groupedArray.sort((a: any, b: any) =>
       a.GoalCategory.localeCompare(b.GoalCategory)
     );
     setManagerGoals([...managerGoals]);
     setCategories([...splitCatList]);
   };
-  const addGoalFunction = (ind: number) => {
-    let duplicateArr = [...duplicateData];
-    let tempArr = categories;
-    let index = [...tempArr].findIndex((obj) => obj.mainID == ind + 1);
-    let data = tempArr[index];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+  const addGoalFunction = (ind: number): void => {
+    const duplicateArr = [...duplicateData];
+    const tempArr = categories;
+    const index = [...tempArr].findIndex((obj) => obj.mainID === ind + 1);
+    const data = tempArr[index];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -343,12 +363,12 @@ const PredefinedGoals = (props: any) => {
       ]);
     }
   };
-  const goalSubmitFun = async (data: any) => {
+  const goalSubmitFun = async (data: any): Promise<any> => {
     setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
-    let tempObj = duplicateArr[index];
-    let updateObj: any = {
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex((obj) => obj.ID === data.ID);
+    const tempObj = duplicateArr[index];
+    const updateObj: any = {
       GoalName: tempObj.GoalName,
       GoalCategory: tempObj.GoalCategory,
       ManagerComments: tempObj.ManagerComments,
@@ -370,7 +390,7 @@ const PredefinedGoals = (props: any) => {
           AppraisalCycleLookupId: appraisalCycleID,
         })
         .then(async (res) => {
-          let managerGoalArr = [...managerGoals];
+          const managerGoalArr = [...managerGoals];
           setManagerGoals(
             [...managerGoalArr].map((manager) => {
               if (manager.ID === data.ID) {
@@ -407,7 +427,7 @@ const PredefinedGoals = (props: any) => {
           setMasterData([...duplicateArr]);
           categoryHandleFun([...duplicateArr]);
 
-          let newFiles = tempObj.AttachmentFiles.filter(
+          const newFiles = tempObj.AttachmentFiles.filter(
             (fill: any) => fill.isStatus === "new"
           ).map((file: any) => {
             return {
@@ -416,7 +436,7 @@ const PredefinedGoals = (props: any) => {
             };
           });
 
-          let deleteFiles = tempObj.AttachmentFiles.filter(
+          const deleteFiles = tempObj.AttachmentFiles.filter(
             (fill: any) => fill.isStatus === "delete"
           ).map((file: any) => {
             return {
@@ -431,7 +451,7 @@ const PredefinedGoals = (props: any) => {
                 .getByName(deleteFiles[ind].name)
                 .delete()
                 .then((delRes) => {
-                  let duplicateArr = [...duplicateData];
+                  const duplicateArr = [...duplicateData];
                   tempObj.AttachmentFiles = tempObj.AttachmentFiles.filter(
                     (file: any) => file.isStatus !== "delete"
                   );
@@ -469,7 +489,7 @@ const PredefinedGoals = (props: any) => {
             res.item.attachmentFiles
               .addMultiple(newFiles)
               .then((res) => {
-                let duplicateArr = [...duplicateData];
+                const duplicateArr = [...duplicateData];
                 tempObj.AttachmentFiles = tempObj.AttachmentFiles.map(
                   (file: any) => {
                     if (file.isStatus === "new") {
@@ -503,14 +523,14 @@ const PredefinedGoals = (props: any) => {
       });
     }
   };
-  const goalDeleteFun = () => {
-    let duplicateArr = [...duplicateData];
-    let index = [...duplicateArr].findIndex(
+  const goalDeleteFun = (): void => {
+    const duplicateArr = [...duplicateData];
+    const index = [...duplicateArr].findIndex(
       (obj) => obj.ID === goalDelPopup.delGoalId
     );
-    let delObj = duplicateArr[index];
-    let delArray = duplicateArr.filter(
-      (items) => items.ID != goalDelPopup.delGoalId
+    const delObj = duplicateArr[index];
+    const delArray = duplicateArr.filter(
+      (items) => items.ID !== goalDelPopup.delGoalId
     );
     sp.web.lists
       .getByTitle(`PredefinedGoals`)
@@ -528,13 +548,17 @@ const PredefinedGoals = (props: any) => {
       })
       .catch((err) => console.log("goal delete function error", err));
   };
-  const editCancelFun = (data: any) => {
+  const editCancelFun = (data: any): void => {
     setRating({ ...rating, MangerRating: 0, EmployeeRating: 0 });
     let duplicateArr = [...duplicateData];
-    let indexMain = [...masterData].findIndex((obj: any) => obj.ID === data.ID);
-    let tempObjMain = masterData[indexMain];
+    const indexMain = [...masterData].findIndex(
+      (obj: any) => obj.ID === data.ID
+    );
+    const tempObjMain = masterData[indexMain];
     if (tempObjMain) {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
       duplicateArr[index] = tempObjMain;
     } else {
       duplicateArr = duplicateArr.filter((obj) => obj.ID !== data.ID);
@@ -542,9 +566,9 @@ const PredefinedGoals = (props: any) => {
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
   };
-  const editRowFunction = (data: any) => {
-    let duplicateArr = [...duplicateData];
-    let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+  const editRowFunction = (data: any): void => {
+    const duplicateArr = [...duplicateData];
+    const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
     if (isEdit.length > 0) {
       toast.current?.show({
         severity: "warn",
@@ -553,8 +577,10 @@ const PredefinedGoals = (props: any) => {
           "Please save or cancel the current row before editing another row",
       });
     } else {
-      let index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
-      let tempObj = duplicateArr[index];
+      const index = [...duplicateArr].findIndex(
+        (obj: any) => obj.ID === data.ID
+      );
+      const tempObj = duplicateArr[index];
       duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
       setDuplicateData([...duplicateArr]);
       categoryHandleFun([...duplicateArr]);
@@ -656,13 +682,13 @@ const PredefinedGoals = (props: any) => {
   //       .catch((err) => console.log(err));
   //   });
   // };
-  const onChangeHandleFun = (value: any, type: string, id: number) => {
-    let duplicateArr = duplicateData;
-    let index = duplicateArr.findIndex((obj: any) => obj.ID === id);
-    let orignalObj = duplicateArr[index];
-    let temp: any = [...orignalObj.AttachmentFiles];
+  const onChangeHandleFun = (value: any, type: string, id: number): void => {
+    const duplicateArr = duplicateData;
+    const index = duplicateArr.findIndex((obj: any) => obj.ID === id);
+    const orignalObj = duplicateArr[index];
+    const temp: any = [...orignalObj.AttachmentFiles];
 
-    let editObj = {
+    const editObj = {
       ID: orignalObj.ID,
       GoalCategory: orignalObj.GoalCategory,
       AssignToId: orignalObj.AssignToId,
@@ -711,15 +737,15 @@ const PredefinedGoals = (props: any) => {
     setDuplicateData([...duplicateArr]);
     categoryHandleFun([...duplicateArr]);
   };
-  const handleMouseOver = (value: any, type: string) => {
+  const handleMouseOver = (value: any, type: string): any => {
     if (type === "manger") {
       setRating({ ...rating, MangerRating: value });
     } else {
       setRating({ ...rating, EmployeeRating: value });
     }
   };
-  const GoalnameBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const GoalnameBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <InputTextarea
@@ -734,17 +760,17 @@ const PredefinedGoals = (props: any) => {
       ) : (
         <div className="goalName">
           <RiInformationFill />
-          {rowData.GoalName}
+          {arrangeWord(rowData.GoalName)}
         </div>
       )
     ) : (
       <div className="goalName">{rowData.GoalName}</div>
     );
   };
-  const EmployeeRatingBodyTemplate = (rowData: any) => {
+  const EmployeeRatingBodyTemplate = (rowData: any): any => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
 
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div className=" d-flex">
@@ -772,7 +798,7 @@ const PredefinedGoals = (props: any) => {
                     onChangeHandleFun(index, "EmployeeRating", rowData.ID);
                   }}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -780,7 +806,7 @@ const PredefinedGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.EmployeeComments == ""
+              rowData.EmployeeComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -809,7 +835,7 @@ const PredefinedGoals = (props: any) => {
                     value <= rowData.EmployeeRating ? "active" : ""
                   } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -817,7 +843,7 @@ const PredefinedGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.EmployeeComments == ""
+              rowData.EmployeeComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -847,7 +873,7 @@ const PredefinedGoals = (props: any) => {
                   value <= rowData.EmployeeRating ? "active" : ""
                 } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
               >
-                <span></span>
+                <span />
               </a>
             ))}
           </div>
@@ -855,7 +881,9 @@ const PredefinedGoals = (props: any) => {
         </div>
         <FaCommentDots
           className={
-            rowData.EmployeeComments == "" ? "commentIcon" : "filledCommentIcon"
+            rowData.EmployeeComments === ""
+              ? "commentIcon"
+              : "filledCommentIcon"
           }
           onClick={() =>
             setRowHandleObj({
@@ -872,9 +900,9 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  const ManagerRatingBodyTemplate = (rowData: any) => {
+  const ManagerRatingBodyTemplate = (rowData: any): any => {
     const ratingValues = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5];
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div className="d-flex">
@@ -902,7 +930,7 @@ const PredefinedGoals = (props: any) => {
                     onChangeHandleFun(index, "ManagerRating", rowData.ID);
                   }}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -910,7 +938,7 @@ const PredefinedGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.ManagerComments == ""
+              rowData.ManagerComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -938,7 +966,7 @@ const PredefinedGoals = (props: any) => {
                     value <= rowData.ManagerRating ? "active" : ""
                   } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
                 >
-                  <span></span>
+                  <span />
                 </a>
               ))}
             </div>
@@ -946,7 +974,7 @@ const PredefinedGoals = (props: any) => {
           </div>
           <FaCommentDots
             className={
-              rowData.ManagerComments == ""
+              rowData.ManagerComments === ""
                 ? "commentIcon"
                 : "filledCommentIcon"
             }
@@ -975,7 +1003,7 @@ const PredefinedGoals = (props: any) => {
                   value <= rowData.ManagerRating ? "active" : ""
                 } ${![1, 2, 3, 4, 5].includes(value) ? "noPadding" : ""}`}
               >
-                <span></span>
+                <span />
               </a>
             ))}
           </div>
@@ -983,7 +1011,7 @@ const PredefinedGoals = (props: any) => {
         </div>
         <FaCommentDots
           className={
-            rowData.ManagerComments == "" ? "commentIcon" : "filledCommentIcon"
+            rowData.ManagerComments === "" ? "commentIcon" : "filledCommentIcon"
           }
           onClick={() =>
             setRowHandleObj({
@@ -999,8 +1027,8 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  const ActionBodyTemplate = (rowData: any) => {
-    let index = duplicateData.findIndex((obj) => obj.ID == rowData.ID);
+  const ActionBodyTemplate = (rowData: any): any => {
+    const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
     return 0 <= index ? (
       duplicateData[index].isRowEdit ? (
         <div>
@@ -1026,8 +1054,8 @@ const PredefinedGoals = (props: any) => {
             <MdDelete
               className={styles.cancelIcon}
               onClick={() => {
-                let duplicateArr = [...duplicateData];
-                let isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
+                const duplicateArr = [...duplicateData];
+                const isEdit = duplicateArr.filter((edit) => edit.isRowEdit);
                 if (isEdit.length > 0) {
                   toast.current?.show({
                     severity: "warn",
@@ -1062,13 +1090,13 @@ const PredefinedGoals = (props: any) => {
       </div>
     );
   };
-  const fileDeleteFunction = (ind: number) => {
-    let duplicateArr = duplicateData;
-    let index = duplicateArr.findIndex(
+  const fileDeleteFunction = (ind: number): any => {
+    const duplicateArr = duplicateData;
+    const index = duplicateArr.findIndex(
       (obj: any) => obj.ID === rowHandleObj.ID
     );
-    let orignalObj = duplicateArr[index];
-    let temp: any = [...orignalObj.AttachmentFiles];
+    const orignalObj = duplicateArr[index];
+    const temp: any = [...orignalObj.AttachmentFiles];
     if (temp[ind].isStatus === "new") {
       temp.splice(ind, 1);
       orignalObj.AttachmentFiles = temp;
@@ -1085,11 +1113,11 @@ const PredefinedGoals = (props: any) => {
       setRowHandleObj({ ...rowHandleObj, files: orignalObj.AttachmentFiles });
     }
   };
-  const dialogCancelFuntion = () => {
-    let masterArr = [...masterData];
-    let index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
-    let orignalObj = masterArr[index];
-    let changeArray = duplicateData.map((obj) => {
+  const dialogCancelFuntion = (): any => {
+    const masterArr = [...masterData];
+    const index = masterArr.findIndex((obj) => obj.ID === rowHandleObj.ID);
+    const orignalObj = masterArr[index];
+    const changeArray = duplicateData.map((obj) => {
       if (obj.ID === rowHandleObj.ID) {
         if (rowHandleObj.commentType === "Manager") {
           obj.ManagerComments =
@@ -1194,6 +1222,7 @@ const PredefinedGoals = (props: any) => {
           <Toast ref={toast} />
           <div className="">
             <Dialog
+              draggable={false}
               className="reviewDialog"
               header={rowHandleObj.commentType + " Comments"}
               visible={rowHandleObj.isPopup}
@@ -1320,10 +1349,11 @@ const PredefinedGoals = (props: any) => {
                   onClick={() => dialogCancelFuntion()}
                   text
                   label="cancel"
-                ></Button>
+                />
               </div>
             </Dialog>
             <Dialog
+              draggable={false}
               header="Delete"
               visible={goalDelPopup.delPopup}
               style={{ width: "25%" }}
@@ -1344,7 +1374,7 @@ const PredefinedGoals = (props: any) => {
                     // icon="pi pi-check"
                     label="confirm"
                     className="mr-2 dltBtn"
-                  ></Button>
+                  />
                   <Button
                     onClick={() =>
                       setGoalDelPopup({
@@ -1357,7 +1387,7 @@ const PredefinedGoals = (props: any) => {
                     className="cancelBtn"
                     // icon="pi pi-times"
                     label="cancel"
-                  ></Button>
+                  />
                 </div>
               </div>
             </Dialog>
@@ -1373,11 +1403,12 @@ const PredefinedGoals = (props: any) => {
               {categories.map((items, index: any) => {
                 return (
                   <AccordionTab
+                    key={index}
                     className="accordionMain"
                     header={
                       <span className="flex d-flex justify-content-between align-items-center gap-2 w-full category-sec">
                         <span className="CategoryTitle">
-                          {items.GoalCategory}
+                          {arrangeWord(items.GoalCategory)}
                         </span>
                         {/* {props.isManager ? (
                           <div className="font-bold iconSec">
@@ -1470,7 +1501,7 @@ const PredefinedGoals = (props: any) => {
                             width: "46%",
                           }}
                           body={GoalnameBodyTemplate}
-                        ></Column>
+                        />
 
                         {props.appraisalCycle.submitComments ? (
                           <Column
@@ -1481,7 +1512,7 @@ const PredefinedGoals = (props: any) => {
                               width: "20%",
                             }}
                             body={EmployeeRatingBodyTemplate}
-                          ></Column>
+                          />
                         ) : null}
                         {props.appraisalCycle.submitComments ? (
                           <Column
@@ -1492,10 +1523,10 @@ const PredefinedGoals = (props: any) => {
                               width: "20%",
                             }}
                             body={ManagerRatingBodyTemplate}
-                          ></Column>
+                          />
                         ) : null}
 
-                        <Column
+                        {/* <Column
                           className="col1"
                           field="EmployeeRating"
                           header="Employee Comments & Rating"
@@ -1503,7 +1534,7 @@ const PredefinedGoals = (props: any) => {
                             width: "22%",
                           }}
                           body={EmployeeRatingBodyTemplate}
-                        ></Column>
+                        />
                         <Column
                           className="col1"
                           field="ManagerRating"
@@ -1512,8 +1543,8 @@ const PredefinedGoals = (props: any) => {
                             width: "22%",
                           }}
                           body={ManagerRatingBodyTemplate}
-                        ></Column>
-                        
+                        /> */}
+
                         {props.appraisalCycle.submitComments ||
                         (props.appraisalCycle.goalSubmit && props.isManager) ? (
                           <Column
@@ -1521,7 +1552,7 @@ const PredefinedGoals = (props: any) => {
                             header="Action"
                             style={{ width: "10%" }}
                             body={ActionBodyTemplate}
-                          ></Column>
+                          />
                         ) : null}
                       </DataTable>
                     </div>
@@ -1554,7 +1585,7 @@ const PredefinedGoals = (props: any) => {
                     header="Goal Name"
                     style={{ width: "46%" }}
                     body={GoalnameBodyTemplate}
-                  ></Column>
+                  />
 
                   {props.appraisalCycle.submitComments ? (
                     <Column
@@ -1563,7 +1594,7 @@ const PredefinedGoals = (props: any) => {
                       header="Employee Comments & Rating"
                       style={{ width: "20%" }}
                       body={EmployeeRatingBodyTemplate}
-                    ></Column>
+                    />
                   ) : null}
                   {props.appraisalCycle.submitComments ? (
                     <Column
@@ -1572,24 +1603,24 @@ const PredefinedGoals = (props: any) => {
                       header="Manager Comments & Rating"
                       style={{ width: "20%" }}
                       body={ManagerRatingBodyTemplate}
-                    ></Column>
+                    />
                   ) : null}
 
-                  <Column
+                  {/* <Column
                     className="col1"
                     field="EmployeeRating"
                     header="Employee Comments & Rating"
                     style={{ width: "22%" }}
                     body={EmployeeRatingBodyTemplate}
-                  ></Column>
+                  />
                   <Column
                     className="col1"
                     field="ManagerRating"
                     header="Manager Comments & Rating"
                     style={{ width: "22%" }}
                     body={ManagerRatingBodyTemplate}
-                  ></Column>
-                  
+                  /> */}
+
                   {props.appraisalCycle.submitComments ||
                   (props.appraisalCycle.goalSubmit && props.isManager) ? (
                     <Column
@@ -1597,7 +1628,7 @@ const PredefinedGoals = (props: any) => {
                       header="Action"
                       style={{ width: "10%" }}
                       body={ActionBodyTemplate}
-                    ></Column>
+                    />
                   ) : null}
                 </DataTable>
 
