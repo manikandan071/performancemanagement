@@ -22,7 +22,7 @@ const EmployeeComponent = (props: any): any => {
   const appraisalCycleList: any = useSelector(
     (state: any) => state.HRServiceData.masterCycles
   );
-
+  console.log(appraisalCycleList, "APPRAISALCYCLE ");
   const currentDate = new Date(new Date().setHours(0, 0, 0, 0));
   const [masterData, setmasterData] = useState<any[]>([]);
   const [cyclesList, setCycleList] = useState<any[]>([]);
@@ -139,7 +139,7 @@ const EmployeeComponent = (props: any): any => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [appraisalCycleList]);
 
   const onChangeHandleFun = (value: any): any => {
     setSelectCycle(value);

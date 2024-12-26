@@ -37,6 +37,8 @@ const MainComponent = (props: any): any => {
   };
 
   useEffect(() => {
+    console.log("render");
+
     // getUsersRoles();
     getCurrentUserDetails(dispatch, props.context.pageContext.user.email);
     getUsersDetailsAndRoles(dispatch);

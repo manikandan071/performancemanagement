@@ -13,6 +13,7 @@ import { MdEditDocument } from "react-icons/md";
 import { IoMdCheckmark } from "react-icons/io";
 import { MdOutlineClose } from "react-icons/md";
 import { DatePicker } from "@fluentui/react";
+import { Toast } from "primereact/toast";
 // import styles from "./AdminStyle.module.scss";
 import styles from "../PreDefinedGoal/PreDefinedGoalsStyle.module.scss";
 import Loader from "../Loader/Loader";
@@ -37,6 +38,7 @@ const AdminComponent = (): any => {
   const [duplicateData, setDuplicateData] = useState<any[]>([]);
   const [displayData, setDisplayData] = useState<any[]>([]);
   const [isLoader, setIsLoader] = useState<boolean>(false);
+  const toast = React.useRef<Toast>(null);
   console.log(masterData, duplicateData, displayData);
 
   const getAppraisalList = (): any => {
@@ -72,6 +74,20 @@ const AdminComponent = (): any => {
     getAppraisalList();
   }, []);
 
+  const editRowFunctionWithCheck = (rowData: any) => {
+    const isAnyRowInEdit = duplicateData.some((item) => item.isRowEdit);
+    if (isAnyRowInEdit) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Warning",
+        detail:
+          "Please save or cancel the current row before editing another row",
+      });
+    } else {
+      editRowFunction(rowData);
+    }
+  };
+
   const editRowFunction = (data: any): any => {
     const duplicateArr = [...duplicateData];
     const index = [...duplicateArr].findIndex((obj: any) => obj.ID === data.ID);
@@ -79,6 +95,7 @@ const AdminComponent = (): any => {
     duplicateArr[index] = { ...tempObj, [`${"isRowEdit"}`]: true };
     setDuplicateData([...duplicateArr]);
   };
+
   const editCancelFun = (data: any): any => {
     let duplicateArr = [...duplicateData];
     const indexMain = [...masterData].findIndex(
@@ -250,6 +267,7 @@ const AdminComponent = (): any => {
 
   const ActionBodyTemplate = (rowData: any): any => {
     const index = duplicateData.findIndex((obj) => obj.ID === rowData.ID);
+
     return duplicateData[index].isRowEdit ? (
       <div>
         <IoMdCheckmark
@@ -265,7 +283,7 @@ const AdminComponent = (): any => {
       <div>
         <MdEditDocument
           className={styles.editIcon}
-          onClick={(e) => editRowFunction(rowData)}
+          onClick={(e) => editRowFunctionWithCheck(rowData)}
         />
       </div>
     );
@@ -275,6 +293,7 @@ const AdminComponent = (): any => {
     <Loader />
   ) : (
     <>
+      <Toast ref={toast} />
       <div className="AppraisalCycle">
         <span>APPRAISAL CYCLE</span>
       </div>

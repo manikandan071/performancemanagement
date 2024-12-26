@@ -30,6 +30,7 @@ import { getCurrentUserGoals } from "../../../../Services/PreDefineGoalService/P
 import { arrangeWord } from "../../../../Services/CommonServices/CommonServices";
 
 const PredefinedGoals = (props: any): any => {
+  console.log(props, "props");
   const toast = useRef<Toast>(null);
   const CurrentUserDetails: any = useSelector(
     (state: any) => state.CommonServiceData.currentUserDetails
@@ -37,7 +38,6 @@ const PredefinedGoals = (props: any): any => {
   const assignToUserDetails: any = useSelector(
     (state: any) => state.CommonServiceData.assignToUserDetails
   );
-  console.log();
 
   const appraisalCycleID = props.appraisalCycle.currentCycle;
   const [isLoader, setIsLoader] = useState<boolean>(false);
@@ -65,8 +65,6 @@ const PredefinedGoals = (props: any): any => {
   });
   const [rating, setRating] = useState({ MangerRating: 0, EmployeeRating: 0 });
 
-  console.log(props, "predefinedProps", assignUserObj, managerGoals);
-
   const getDetails = (): any => {
     sp.web.lists
       .getByTitle("PredefinedGoals")
@@ -88,7 +86,6 @@ const PredefinedGoals = (props: any): any => {
             !item.isDelete &&
             !item.isDeleteHR
         );
-        console.log(filterData);
 
         const tempManagerGoals: any = [];
         const preDefinedGoals = filterData.filter((pre: any) => {
