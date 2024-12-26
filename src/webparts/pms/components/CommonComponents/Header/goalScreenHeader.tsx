@@ -87,7 +87,7 @@ const goalScreenHeader = ({
             SELF GOALS
           </Button>
         </div>
-        <div
+        {/* <div
           className={styles.AppraisalCycles}
           style={{ background: show !== "SelfGoals" ? "#fff" : "" }}
         >
@@ -114,7 +114,7 @@ const goalScreenHeader = ({
             />
             MANAGER GOALS
           </Button>
-        </div>
+        </div> */}
       </div>
       <div className="DrpYear">
         <Dropdown

@@ -79,7 +79,7 @@ export const getUsersDetailsAndRoles = async (dispatcher: any) => {
           }
           return false;
         });
-        debugger;
+
         const rolesArr: any = uniqueArray.map((role: any) => {
           return { name: role.Roles, code: role.Roles };
         });
