@@ -8,7 +8,7 @@ import * as React from "react";
 import type { IPmsProps } from "./IPmsProps";
 // import { escape } from "@microsoft/sp-lodash-subset";
 import { sp } from "@pnp/sp";
-import { graph } from "@pnp/graph";
+import { graph } from "@pnp/graph/presets/all";
 import MainComponent from "./MainComponent";
 import "./style.css";
 import { store } from "../../../redux/store/store";
