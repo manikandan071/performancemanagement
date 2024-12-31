@@ -29,6 +29,7 @@
     "@pnp/cli-microsoft365": "^7.5.0",
     "@pnp/pnpjs": "^2.14.0",
     "@pnp/sp": "^2.11.0",
+    "@pnp/graph": "^2.11.0",
     "@reduxjs/toolkit": "^2.2.3",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
