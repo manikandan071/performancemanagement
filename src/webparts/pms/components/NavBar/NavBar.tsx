@@ -16,6 +16,10 @@ import { PiUserCircleDuotone } from "react-icons/pi";
 import { HiUserGroup } from "react-icons/hi2";
 import { setAssignToUserDetails } from "../../../../redux/slices/CommonSlice";
 import { useDispatch } from "react-redux";
+import { graph } from "@pnp/graph/presets/all";
+const Manager: any = [];
+const Reportees: any = [];
+const tempReportees: any[] = [];
 
 const NavBar = (props: any): any => {
   console.log(props, "props");
@@ -26,47 +30,239 @@ const NavBar = (props: any): any => {
   const [Role, setRole] = useState("");
   const [tapName, setTapName] = useState("");
   const [tapMembersList, setTabMembersList] = useState("");
+  const [users, setUsers] = useState<any[]>([]);
+  const [topUser, setTopUser] = useState([]);
+  const [ManagerList, setManagerList] = useState(Manager);
+  const [ReporteeList, setReporteeList] = useState(Reportees);
+  const [tempReporteesList, setTempReportees] = useState(tempReportees);
 
-  console.log(employeeList, currentUser, Role);
+  // console.log(employeeList, currentUser, Role);
+  console.log(
+    currentUser,
+    "currentUser",
+    topUser,
+    "topUser",
+    ManagerList,
+    "ManagerList",
+    ReporteeList,
+    "ReporteeList",
+    users,
+    "users",
+    tempReporteesList,
+    "tempReporteesList"
+  );
+
+  //Get Azure Users , Managers and directRepotees..........................................................................................
+  async function getAllUsers(mail: string) {
+    graph.users
+      .top(999)
+      .select("*,Sponsors")
+      .expand("Sponsors")
+      .filter("accountEnabled eq true")
+      .get()
+      .then((data) => {
+        const tempUsers: any[] = [];
+        data.forEach((user: any) => {
+          tempUsers.push({
+            id: user.id,
+            displayName: user.displayName ? user.displayName : "",
+            mail: user.mail ? user.mail : "",
+            jobTitle: user.jobTitle ? user.jobTitle : "",
+          });
+          if (user.sponsors[0]?.mail === mail) {
+            tempReportees.push({
+              id: user.id,
+              displayName: user.displayName ? user.displayName : "",
+              mail: user.mail ? user.mail : "",
+              jobTitle: user.jobTitle ? user.jobTitle : "",
+            });
+          }
+        });
+        setUsers(tempUsers);
+        setTempReportees(tempReportees);
+        getCurrentUser(tempUsers);
+      })
+      .catch(function (error) {
+        console.log(error, "-Error in getting current user");
+      });
+  }
+
+  const getCurrentUser = (allUsers: any) => {
+    graph.me
+      .get()
+      .then(function (user) {
+        const crntUserDetails = [];
+        crntUserDetails.push({
+          id: user.id,
+          displayName: user.displayName ? user.displayName : "",
+          mail: user.mail ? user.mail : "",
+          jobTitle: user.jobTitle ? user.jobTitle : "",
+        });
+        setManagerList([...crntUserDetails]);
+        getManager(user.id, allUsers);
+      })
+      .catch(function (error) {
+        console.log(error, "Get current user error");
+      });
+  };
+
+  async function getManager(userID: any, allUsers: any) {
+    await graph.users
+      // .getById("effd0552-a3bb-4b19-88ae-eba3e59f297f")
+      .getById(userID)
+      .manager()
+      .then(function (user: any) {
+        const userdetails: any = [];
+        if (user) {
+          userdetails.push({
+            id: user.id,
+            displayName: user.displayName ? user.displayName : "",
+            mail: user.mail ? user.mail : "",
+            jobTitle: user.jobTitle ? user.jobTitle : "",
+          });
+        }
+        setTopUser(userdetails);
+        getDirectreports(userID, allUsers);
+      })
+      .catch(function (error) {
+        setTopUser([]);
+        getDirectreports(userID, allUsers);
+        console.log(error, "Get manager error");
+      });
+  }
+
+  async function getDirectreports(userID: any, allUsers: any) {
+    await graph.users
+      // .getById("763b431f-aa6e-4dc6-bb85-5acf6cd1f9e5")
+      .getById(userID)
+      .directReports()
+      .then(function (user: any) {
+        const directreports: any = [];
+        for (let i = 0; i < user.length; i++) {
+          if (allUsers?.some((val: any) => val?.id == user[i].id)) {
+            directreports.push({
+              id: user[i].id,
+              displayName: user[i].displayName ? user[i].displayName : "",
+              mail: user[i].mail ? user[i].mail : "",
+              jobTitle: user[i].jobTitle ? user[i].jobTitle : "",
+            });
+          }
+        }
+        setReporteeList([...directreports]);
+      })
+      .catch(function (error) {
+        setReporteeList([]);
+        console.log(error, "Get direct reports error");
+      });
+  }
+  //...............................................................................................................................................
 
   const getUserRole = (mail: string) => {
-    sp.web.lists
-      .getByTitle(`EmployeeList`)
-      .items.select(
-        "*,Employee/ID,Employee/Title,Employee/EMail,Members/ID,Members/Title,Members/EMail"
-      )
-      .expand("Employee,Members")
+    // sp.web.lists
+    //   .getByTitle(`EmployeeList`)
+    //   .items.select(
+    //     "*,Employee/ID,Employee/Title,Employee/EMail,Members/ID,Members/Title,Members/EMail"
+    //   )
+    //   .expand("Employee,Members")
+    //   .get()
+    //   .then((res) => {
+    //     if (res.length > 0) {
+    //       const teamMembers: any = [];
+    //       res.forEach((obj) => {
+    //         if (obj.Employee.EMail === mail) {
+    //           if (obj.Roles === "HR") {
+    //             setTapName("Goals");
+    //             setRole("HR");
+    //             props.handleCilck("Goals");
+    //           } else if (obj.Roles === "Manager") {
+    //             setRole("Manager");
+    //             setTapName("Employee");
+    //             props.handleCilck("Employee");
+    //             obj.Members.forEach((user: any) => {
+    //               teamMembers.push({
+    //                 userID: user.ID,
+    //                 userEmail: user.EMail,
+    //                 userName: user.Title,
+    //               });
+    //             });
+    //           } else if (obj.Roles === "Admin") {
+    //             setRole("Admin");
+    //             setTapName("Admin");
+    //             props.handleCilck("Admin");
+    //             obj.Members.forEach((user: any) => {
+    //               teamMembers.push({
+    //                 userID: user.ID,
+    //                 userEmail: user.EMail,
+    //                 userName: user.Title,
+    //               });
+    //             });
+    //           } else {
+    //             setTapName("Employee");
+    //             props.handleCilck("Employee");
+    //           }
+    //         }
+    //       });
+    //       const teamEmployees = teamMembers.sort((a: any, b: any) =>
+    //         a.userName.localeCompare(b.userName)
+    //       );
+    //       setEmployeeList([...teamEmployees]);
+    //       console.log(teamEmployees);
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err, "getRoleFunction");
+    //   });
+
+    graph.users
+      .top(999)
+      .select("*,Sponsors")
+      .expand("Sponsors")
+      .filter("accountEnabled eq true")
       .get()
-      .then((res) => {
-        console.log(res, "navbarResponse");
+      .then((res: any) => {
+        console.log(res, "aari's Users");
         if (res.length > 0) {
           const teamMembers: any = [];
-          res.forEach((obj) => {
-            if (obj.Employee.EMail === mail) {
-              if (obj.Roles === "HR") {
+          res.forEach((obj: any) => {
+            if (obj.mail === mail) {
+              if (obj.jobTitle === "HR") {
                 setTapName("Goals");
                 setRole("HR");
                 props.handleCilck("Goals");
-              } else if (obj.Roles === "Manager") {
+              } else if (obj.jobTitle === "Manager") {
                 setRole("Manager");
                 setTapName("Employee");
                 props.handleCilck("Employee");
-                obj.Members.forEach((user: any) => {
+                const mergedArray = [...ReporteeList, ...tempReporteesList];
+                mergedArray?.forEach((user: any) => {
                   teamMembers.push({
-                    userID: user.ID,
-                    userEmail: user.EMail,
-                    userName: user.Title,
+                    userID: user.id,
+                    userEmail: user.mail,
+                    userName: user.displayName,
                   });
                 });
-              } else if (obj.Roles === "Admin") {
+              }
+              // else if (obj.jobTitle === "Senior Software Developer") {
+              //   setRole("Manager");
+              //   setTapName("Employee");
+              //   props.handleCilck("Employee");
+              //   ReporteeList?.forEach((user: any) => {
+              //     teamMembers.push({
+              //       userID: user.id,
+              //       userEmail: user.mail,
+              //       userName: user.displayName,
+              //     });
+              //   });
+              // }
+              else if (obj.jobTitle === "Admin") {
                 setRole("Admin");
                 setTapName("Admin");
                 props.handleCilck("Admin");
-                obj.Members.forEach((user: any) => {
+                ReporteeList?.forEach((user: any) => {
                   teamMembers.push({
-                    userID: user.ID,
-                    userEmail: user.EMail,
-                    userName: user.Title,
+                    userID: user.id,
+                    userEmail: user.mail,
+                    userName: user.displayName,
                   });
                 });
               } else {
@@ -83,19 +279,31 @@ const NavBar = (props: any): any => {
         }
       })
       .catch((err) => {
-        console.log(err, "getRoleFunction");
+        console.log(err, "getRoleFunctionAzureSetUp");
       });
   };
+
   useEffect(() => {
     sp.web
       .currentUser()
       .then((user) => {
         console.log(user);
         setCurrentUSer(user.Email);
-        getUserRole(user.Email);
+        // getUserRole(user.Email);
+        getAllUsers(user.Email);
       })
       .catch((err) => console.log(err));
   }, []);
+
+  useEffect(() => {
+    sp.web
+      .currentUser()
+      .then((user) => {
+        getUserRole(user.Email);
+      })
+      .catch((err) => console.log(err));
+  }, [ReporteeList?.length !== 0]);
+
   return (
     <div
       className=""

@@ -312,7 +312,8 @@ export const newHRCategoryAndGoalAdd = async (
             RequestJSON: {
               GoalName: tempObj.GoalName,
               GoalCategory: tempObj.GoalCategory,
-              AssignToId: user.EmployeeID,
+              AssignToId: null,
+              AssignToEmail: user.UserEmail,
               HRGoalId: res.data.ID,
               AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
             },
@@ -339,12 +340,14 @@ export const newHRCategoryAndGoalAdd = async (
           selectedRoles.includes(item.Role)
         );
         selectedUserListArray.forEach((user: any, index: number) => {
+          debugger;
           SpServices.SPAddItem({
             Listname: LISTNAMES.PredefinedGoals,
             RequestJSON: {
               GoalName: tempObj.GoalName,
               GoalCategory: tempObj.GoalCategory,
-              AssignToId: user.EmployeeID,
+              AssignToId: null,
+              AssignToEmail: user.UserEmail,
               HRGoalId: res.data.ID,
               AppraisalCycleLookupId: appraisalCycleId.currentCycleId,
             },

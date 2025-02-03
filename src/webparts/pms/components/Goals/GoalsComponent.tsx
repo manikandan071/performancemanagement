@@ -64,6 +64,8 @@ const Goals = (): any => {
   const AllRoleList: any = useSelector(
     (state: any) => state.HRServiceData.rolesList
   );
+  console.log("AllRoleList", AllRoleList);
+
   const appraisalCycleList: any = useSelector(
     (state: any) => state.HRServiceData.masterCycles
   );
@@ -111,7 +113,9 @@ const Goals = (): any => {
 
   console.log(
     usersList,
+    "userList",
     rolesList,
+    "rolesList",
     cyclesList,
     categories,
     duplicateData,
@@ -811,18 +815,23 @@ const Goals = (): any => {
   useEffect(() => {
     // callBackDatas();
     // getUsersDetailsAndRoles(dispatch);
-    setUsersList([...AllUserDetails]);
+    // setUsersList([...AllUserDetails]);
     setCycleList([...appraisalCycleList]);
-    setRolesList([...AllRoleList]);
     setAssignLevelList([
       { name: "Organization", code: "Organization" },
       { name: "Role", code: "Role" },
     ]);
     getAppraisalCycles(setAppraisalCycleId);
   }, []);
+
   useEffect(() => {
     callBackDatas();
   }, [appraisalCycleId]);
+
+  useEffect(() => {
+    setRolesList([...AllRoleList]);
+    setUsersList([...AllUserDetails]);
+  }, [AllRoleList, AllUserDetails]);
 
   const resetToastMessage = (value: boolean) => {
     setToastMessage((prev: any) => ({

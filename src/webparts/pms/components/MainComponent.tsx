@@ -20,7 +20,6 @@ import {
   getCurrentUserDetails,
   getUsersDetailsAndRoles,
 } from "../../../Services/CommonServices/CommonServices";
-import { graph } from "@pnp/graph/presets/all";
 
 const MainComponent = (props: any): any => {
   const UserEmail = props.context.pageContext.user.email;
@@ -28,7 +27,6 @@ const MainComponent = (props: any): any => {
   const [isNavBar, setIsNavBar] = useState(true);
   const [isNavOption, setNavOption] = useState("");
   const [employeeEmail, setEmployeeEmail] = useState("");
-  console.log(UserEmail, "currentUser");
 
   const handleCilck = (item: string): void => {
     setNavOption(item);
@@ -37,43 +35,8 @@ const MainComponent = (props: any): any => {
     setEmployeeEmail(item);
   };
 
-  async function getcurrentuser() {
-    // props.context._msGraphClientFactory.getClient().then((client: any) => {
-    //   const userId = "2afdc70c-f2d5-40f5-84d6-a3fcd85f9072";
-    //   client
-    //     .api(`/users/${userId}`)
-    //     .get()
-    //     .then((response: any) => {
-    //       console.log("User Details:", response);
-    //     })
-    //     .catch((error: any) => {
-    //       console.error("Error fetching user details:", error);
-    //     });
-    // });
-    graph.me
-      .get()
-      .then(function (data) {
-        console.log(data, "Current User Properties");
-        //const cnrtUserDetails = [];
-        // cnrtUserDetails.push({
-        //   imageUrl: "/_layouts/15/userphoto.aspx?size=L&username=" + data.mail,
-        //   isValid: true,
-        //   Email: data.mail,
-        //   ID: data.id,
-        //   key: 0,
-        //   text: data.displayName,
-        //   jobTitle: data.jobTitle,
-        //   mobilePhone: data.mobilePhone,
-        // });
-      })
-      .catch(function (error) {
-        console.log(error, "-Error in getting current user");
-      });
-  }
-
   useEffect(() => {
     console.log("render");
-    getcurrentuser();
     // getUsersRoles();
     getCurrentUserDetails(dispatch, props.context.pageContext.user.email);
     getUsersDetailsAndRoles(dispatch);
