@@ -82,7 +82,8 @@ const PredefinedGoals = (props: any): any => {
       .then((items: any) => {
         const filterData = items.filter(
           (item: any) =>
-            props.EmployeeEmail === item.AssignTo.EMail &&
+            // props.EmployeeEmail === item.AssignTo.EMail &&
+            props.EmployeeEmail === item.AssignToEmail &&
             !item.isDelete &&
             !item.isDeleteHR
         );
@@ -95,6 +96,7 @@ const PredefinedGoals = (props: any): any => {
               GoalCategory: pre.GoalCategory ? pre.GoalCategory : "",
               GoalName: pre.GoalName ? pre.GoalName : "",
               AssignToId: pre.AssignTo ? pre.AssignTo.Id : "",
+              AssignToEmail: pre.AssignToEmail ? pre.AssignToEmail : "",
               ManagerComments: pre.ManagerComments ? pre.ManagerComments : "",
               EmployeeComments: pre.EmployeeComments
                 ? pre.EmployeeComments
@@ -188,6 +190,7 @@ const PredefinedGoals = (props: any): any => {
             GoalCategory: obj.GoalCategory ? obj.GoalCategory : "",
             GoalName: obj.GoalName ? obj.GoalName : "",
             AssignToId: obj.AssignTo ? obj.AssignTo.Id : "",
+            AssignToEmail: obj.AssignToEmail ? obj.AssignToEmail : "",
             ManagerComments: obj.ManagerComments ? obj.ManagerComments : "",
             EmployeeComments: obj.EmployeeComments ? obj.EmployeeComments : "",
             ManagerRating: obj.ManagerRating ? obj.ManagerRating : 0,
@@ -379,7 +382,8 @@ const PredefinedGoals = (props: any): any => {
         .items.add({
           GoalName: tempObj.GoalName,
           GoalCategory: tempObj.GoalCategory,
-          AssignToId: assignUserObj.userID,
+          AssignToId: null,
+          AssignToEmail: assignUserObj.userEmail,
           ManagerComments: tempObj.ManagerComments,
           EmployeeComments: tempObj.EmployeeComments,
           ManagerRating: tempObj.ManagerRating,
